@@ -2,7 +2,7 @@
 name: Bug report (버그 수정 템플릿)
 about: 버그 제보 관련 템플릿
 title: "[BUG]"
-labels: bug
+labels: 버그
 assignees: ''
 
 ---
