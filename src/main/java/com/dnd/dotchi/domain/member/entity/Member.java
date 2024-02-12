@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
@@ -50,15 +51,14 @@ public class Member extends BaseEntity {
             final String description,
             final String email,
             final String nickname,
-            final String imageUrl,
-            final Long cardCount
+            final String imageUrl
     ) {
         this.sub = sub;
         this.description = description;
         this.email = email;
         this.nickname = nickname;
         this.imageUrl = imageUrl;
-        this.cardCount = cardCount;
+        this.cardCount = 0L;
     }
 
 }
