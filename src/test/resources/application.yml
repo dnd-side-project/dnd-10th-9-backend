@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MySQL
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 50
+
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+
+    defer-datasource-initialization: true
+
+  h2:
+    console:
+      enabled: false
+      path: /h2-console
+
+springdoc:
+  swagger-ui:
+    enabled: false
+
+dotchi:
+  openapi:
+    dev-url: http://localhost:8080

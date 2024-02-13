@@ -20,7 +20,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         name = "TODAY_CARD",

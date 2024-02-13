@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.card.dto.response;
 
+import com.dnd.dotchi.domain.card.entity.Card;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "해당 테마의 최신순 카드 응답")
@@ -25,4 +26,17 @@ public record RecentCardsByThemeResponse(
         @Schema(description = "30")
         Long commentCount
 ) {
+
+    public static RecentCardsByThemeResponse from(final Card card) {
+        return new RecentCardsByThemeResponse(
+                card.getId(),
+                card.getMember().getId(),
+                card.getMember().getNickname(),
+                card.getImageUrl(),
+                card.getTheme().getId(),
+                card.getBackName(),
+                card.getCommentCount()
+        );
+    }
+
 }

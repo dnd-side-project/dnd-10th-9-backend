@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
 @RequiredArgsConstructor
 @RequestMapping("/cards")
-public class CardController {
+@RestController
+public class CardController implements CardControllerDocs {
 
     private final CardService cardService;
 

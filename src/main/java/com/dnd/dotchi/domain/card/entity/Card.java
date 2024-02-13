@@ -21,13 +21,13 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         name = "CARD",
         indexes = {
                 @Index(name = "idx_member_id", columnList = "member_id"),
-                @Index(name = "idx_theme_id", columnList = "theme_id"),
+                @Index(name = "idx_theme_id_id", columnList = "theme_id, id"),
                 @Index(name = "idx_theme_id_comment_count", columnList = "theme_id, comment_count")
         }
 )
@@ -54,7 +54,7 @@ public class Card extends BaseEntity {
     @Column(name = "back_mood", nullable = false, length = 15)
     private String backMood;
 
-    @Column(name = "back_count", length = 20)
+    @Column(name = "back_content", length = 20)
     private String backContent;
 
     @Column(name = "comment_count")

@@ -17,7 +17,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "MEMBER")
 public class Member extends BaseEntity {
@@ -59,6 +59,13 @@ public class Member extends BaseEntity {
         this.nickname = nickname;
         this.imageUrl = imageUrl;
         this.cardCount = 0L;
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 30; i++) {
+            System.out.println("INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content)\n"
+                    + "VALUES ("+ (i % 2 + 1) + ", "+(i % 4 + 1)+", 'http://example.com/image.jpg', '따봉도치"+(i+1)+"', '행복해"+(i+1)+"', '뭐든 더 써봐"+(i+1)+"');\n");
+        }
     }
 
 }
