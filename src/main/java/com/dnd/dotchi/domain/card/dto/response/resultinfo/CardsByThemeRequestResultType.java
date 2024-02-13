@@ -4,10 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum CardsByThemeRequestResultType {
-    SUCCESS(1020, "요청에 성공하였습니다."),
-
-
-    CARD_SUCCESS(1020, "요청에 성공하였습니다.");
+    SUCCESS(1020, "요청에 성공하였습니다.");
 
     private final int code;
     private final String message;

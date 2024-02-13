@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +20,7 @@ public class CardController implements CardControllerDocs {
 
     @GetMapping("/theme")
     public ResponseEntity<CardsByThemeResponse> getCardsByTheme(
-            @Valid @RequestBody CardsByThemeRequest request
+            @Valid @ModelAttribute CardsByThemeRequest request
     ) {
         final CardsByThemeResponse response = cardService.getCardsByTheme(request);
         return ResponseEntity.ok(response);

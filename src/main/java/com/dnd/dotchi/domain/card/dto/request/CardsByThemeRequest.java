@@ -15,7 +15,6 @@ public record CardsByThemeRequest(
 
         @Schema(description = "카드 정렬 타입", example = "LATEST")
         @NotNull(message = "카드 정렬 타입은 빈 값일 수 없습니다.")
-        @Pattern(regexp = "LATEST|HOT", message = "카드 정렬 타입은 LATEST or HOT만 가능합니다.")
         CardSortType cardSortType,
 
         @Schema(description = "마지막 조회 카드 ID", example = "1")

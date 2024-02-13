@@ -38,3 +38,7 @@ springdoc:
 dotchi:
   openapi:
     dev-url: http://localhost:8080
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: trace
