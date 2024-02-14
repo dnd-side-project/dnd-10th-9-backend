@@ -3,12 +3,13 @@ package com.dnd.dotchi.domain.card.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
-import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsByThemeRequestResultType;
+import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import io.restassured.common.mapper.TypeRef;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CardController.class)
@@ -49,7 +51,7 @@ class CardControllerTest {
         );
 
         final CardsByThemeResponse response = CardsByThemeResponse.of(
-                CardsByThemeRequestResultType.SUCCESS,
+                CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS,
                 List.of()
         );
 
@@ -84,7 +86,7 @@ class CardControllerTest {
         );
 
         final CardsByThemeResponse response = CardsByThemeResponse.of(
-                CardsByThemeRequestResultType.SUCCESS,
+                CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS,
                 List.of()
         );
 
@@ -103,6 +105,30 @@ class CardControllerTest {
                 .body("message", containsString("테마 ID는 양수만 가능합니다."))
                 .body("message", containsString("마지막 조회 가드 ID는 양수만 가능합니다."))
                 .body("message", containsString("마지막 조회 카드의 댓글 개수는 양수만 가능합니다."));
+    }
+
+    @Test
+    @DisplayName("댓글 작성에 성공하면 200 응답을 반환한다.")
+    void writeCommentOnCardReturn200Success() {
+        // given
+        // data.sql
+        final WriteCommentOnCardResponse response =
+                WriteCommentOnCardResponse.from(CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS);
+        given(cardService.writeCommentOnCard(anyLong())).willReturn(response);
+
+        // when
+        final WriteCommentOnCardResponse result = RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("cardId", 1L)
+                .when().post("/cards/{cardId}/comments")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(result).usingRecursiveComparison().isEqualTo(response);
     }
 
 }
