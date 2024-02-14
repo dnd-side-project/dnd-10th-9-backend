@@ -3,7 +3,6 @@ package com.dnd.dotchi.domain.card.dto.request;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
 @Schema(description = "테마별 카드 조회 요청")
