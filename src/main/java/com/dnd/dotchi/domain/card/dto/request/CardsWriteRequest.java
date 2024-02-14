@@ -1,28 +1,28 @@
 package com.dnd.dotchi.domain.card.dto.request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
 
 @Schema(description = "카드 작성시 요청")
-public record CardsWriteRequest (
+public record CardsWriteRequest(
 	@Schema(description = "멤버 ID", example = "1")
 	@NotNull(message = "멤버 ID는 빈 값일 수 없습니다.")
 	@Positive(message = "멤버 ID는 양수만 가능합니다.")
 	Long memberId,
 
 	@Schema(description = "테마 ID", example = "1")
-	@NotNull(message = "테마 ID는 빈 값일 수 없습닌다.")
+	@NotNull(message = "테마 ID는 빈 값일 수 없습니다.")
 	@Positive(message = "테마 ID는 양수만 가능합니다.")
 	Long themeId,
 
-	@Schema(description = "카드 이미지", example = "http://image.jpg")
-	@NotBlank(message = "카드 이미지는 빈 값일 수 없습니다.")
-	String imageUrl,
+	@Schema(description = "카드 이미지", example = "image.jpg")
+	@NotNull(message = "카드 이미지는 빈 값일 수 없습니다.")
+	MultipartFile image,
 
 	@Schema(description = "따봉네임", example = "따봉냥이")
 	@NotBlank(message = "따봉네임은 빈 값일 수 없습니다.")

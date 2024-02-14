@@ -5,7 +5,10 @@ import lombok.Getter;
 @Getter
 public enum CardsRequestResultType {
 
+    INVALID_IMAGE(800, "유효하지 않은 이미지 정보입니다."),
+
     GET_CARDS_BY_THEME_SUCCESS(1020, "테마별 카드 조회 요청에 성공하였습니다."),
+
     WRITE_CARDS_SUCCESS(1030, "카드 작성에 성공하였습니다.");
 
     private final int code;

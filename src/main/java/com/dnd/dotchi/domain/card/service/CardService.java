@@ -20,6 +20,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
+import com.dnd.dotchi.infra.image.ImageUploader;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +33,15 @@ public class CardService {
 	private final CardRepository cardRepository;
 	private final ThemeRepository themeJpaRepository;
 	private final MemberRepository memberJpaRepository;
+	private final ImageUploader imageUploader;
 
 	public CardsWriteResponse write(final CardsWriteRequest request) {
+		String fileFullPath = imageUploader.upload(request.image());
+
 		final Card cardEntity = Card.builder()
 				.member(getMember(request))
 				.theme(getTheme(request))
-				.imageUrl(request.imageUrl())
+				.imageUrl(fileFullPath)
 				.backName(request.backName())
 				.backMood(request.backMood())
 				.backContent(request.backContent())
