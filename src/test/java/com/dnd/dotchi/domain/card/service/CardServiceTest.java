@@ -6,8 +6,10 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
+import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +29,9 @@ class CardServiceTest {
     CardRepository cardRepository;
 
     @Autowired
+    TodayCardRepository todayCardRepository;
+
+    @Autowired
     EntityManager em;
 
     @Test
@@ -43,12 +48,14 @@ class CardServiceTest {
 
         // then
         final Card card = cardRepository.findById(cardId).get();
+        final TodayCard todayCard = todayCardRepository.findByCardId(cardId).get();
         final CardsRequestResultType resultType = CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
         assertSoftly(softly -> {
             softly.assertThat(card.getCommentCount()).isEqualTo(32L);
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());
             softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(todayCard.getTodayCommentCount()).isOne();
         });
     }
 
@@ -57,7 +64,7 @@ class CardServiceTest {
     void writeCommentOnCardNotFoundException() {
         // given
         // data.sql
-        final long cardId = cardRepository.findAll().size() + 1L;
+        final long cardId = cardRepository.count() + 1L;
 
         // when, then
         assertThatThrownBy(() -> cardService.writeCommentOnCard(cardId))

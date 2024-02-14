@@ -7,11 +7,15 @@ import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
+import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CardService {
 
     private final CardRepository cardRepository;
+    private final TodayCardRepository todayCardRepository;
 
     @Transactional(readOnly = true)
     public CardsByThemeResponse getCardsByTheme(final CardsByThemeRequest request) {
@@ -39,7 +44,26 @@ public class CardService {
                 .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
 
         card.increaseCommentCountByOne();
+        todayCardIncreaseCommentCount(cardId, card);
+
         return WriteCommentOnCardResponse.from(WRITE_COMMENT_ON_CARD_SUCCESS);
+    }
+
+    private void todayCardIncreaseCommentCount(final Long cardId, final Card card) {
+        final Optional<TodayCard> todayCard = todayCardRepository.findByCardId(cardId);
+        if (todayCard.isEmpty()) {
+            final TodayCard todayCardToSave = TodayCard.builder().card(card).build();
+            todayCardToSave.increaseTodayCommentCountByOne();
+            todayCardRepository.save(todayCardToSave);
+            return;
+        }
+
+        todayCard.get().increaseTodayCommentCountByOne();
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteAllTodayCardTableAtMidnight() {
+        todayCardRepository.deleteAll();
     }
 
 }
