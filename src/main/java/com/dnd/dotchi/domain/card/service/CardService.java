@@ -1,12 +1,15 @@
 package com.dnd.dotchi.domain.card.service;
 
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS;
+import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
+import com.dnd.dotchi.global.exception.NotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,11 @@ public class CardService {
     }
 
     public WriteCommentOnCardResponse writeCommentOnCard(final Long cardId) {
-        return null;
+        final Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
+
+        card.increaseCommentCountByOne();
+        return WriteCommentOnCardResponse.from(WRITE_COMMENT_ON_CARD_SUCCESS);
     }
 
 }

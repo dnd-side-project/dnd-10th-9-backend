@@ -1,11 +1,15 @@
 package com.dnd.dotchi.domain.card.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
-import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
+import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
-import java.util.List;
+import com.dnd.dotchi.global.exception.NotFoundException;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,55 +21,47 @@ import org.springframework.transaction.annotation.Transactional;
 class CardServiceTest {
 
     @Autowired
-    private CardRepository cardRepository;
+    CardService cardService;
+
+    @Autowired
+    CardRepository cardRepository;
+
+    @Autowired
+    EntityManager em;
 
     @Test
-    @DisplayName("테마별 카드를 인기순으로 가져온다.")
-    void getCardsByThemeWithHotSortType() {
+    @DisplayName("카드에 댓글을 작성한다.")
+    void writeCommentOnCard() {
         // given
         // data.sql
+        final long cardId = 1L;
 
         // when
-        final List<Card> result = cardRepository.findCardsByThemeWithFilteringAndPaging(
-                2L,
-                CardSortType.HOT,
-                20L,
-                20L
-        );
+        final WriteCommentOnCardResponse result = cardService.writeCommentOnCard(cardId);
+        em.flush();
+        em.clear();
 
         // then
+        final Card card = cardRepository.findById(cardId).get();
+        final CardsRequestResultType resultType = CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
+
         assertSoftly(softly -> {
-            softly.assertThat(result).hasSize(5);
-            softly.assertThat(result.get(0).getId()).isEqualTo(14);
-            softly.assertThat(result.get(1).getId()).isEqualTo(18);
-            softly.assertThat(result.get(2).getId()).isEqualTo(22);
-            softly.assertThat(result.get(3).getId()).isEqualTo(26);
-            softly.assertThat(result.get(4).getId()).isEqualTo(30);
+            softly.assertThat(card.getCommentCount()).isEqualTo(32L);
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
         });
     }
 
     @Test
-    @DisplayName("테마별 카드를 최신순으로 가져온다.")
-    void getCardsByThemeWithLatestSortType() {
+    @DisplayName("카드에 댓글 작성시, 존재하지 않는 카드 ID를 전달할 때 NotFound 예외가 발생한다.")
+    void writeCommentOnCardNotFoundException() {
         // given
         // data.sql
+        final long cardId = cardRepository.findAll().size() + 1L;
 
-        // when
-        final List<Card> result = cardRepository.findCardsByThemeWithFilteringAndPaging(
-                2L,
-                CardSortType.LATEST,
-                20L,
-                20L
-        );
-
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(result).hasSize(5);
-            softly.assertThat(result.get(0).getId()).isEqualTo(18);
-            softly.assertThat(result.get(1).getId()).isEqualTo(14);
-            softly.assertThat(result.get(2).getId()).isEqualTo(10);
-            softly.assertThat(result.get(3).getId()).isEqualTo(6);
-            softly.assertThat(result.get(4).getId()).isEqualTo(2);
-        });
+        // when, then
+        assertThatThrownBy(() -> cardService.writeCommentOnCard(cardId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
     }
 }
