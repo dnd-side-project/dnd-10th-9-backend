@@ -1,9 +1,13 @@
 spring:
   datasource:
-    driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME}
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MySQL
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: always
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -15,23 +19,25 @@ spring:
         default_batch_fetch_size: 50
 
     hibernate:
-      ddl-auto: ${HIBERNATE_DDL_AUTO}
+      ddl-auto: create
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
 
+    defer-datasource-initialization: true
+
   h2:
     console:
-      enabled: ${H2_CONSOLE_ENABLE}
+      enabled: false
       path: /h2-console
 
 springdoc:
   swagger-ui:
-    enabled: ${SWAGGER_UI_ENABLE}
+    enabled: false
 
 dotchi:
   openapi:
-    dev-url: ${DEV_URL}
+    dev-url: http://localhost:8080
 
 logging:
   level:

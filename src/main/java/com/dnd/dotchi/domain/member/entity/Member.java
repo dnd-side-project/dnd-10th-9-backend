@@ -17,7 +17,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "MEMBER")
 public class Member extends BaseEntity {
