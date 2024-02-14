@@ -3,12 +3,11 @@ package com.dnd.dotchi.domain.card.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
-import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsByThemeRequestResultType;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import io.restassured.common.mapper.TypeRef;
@@ -49,7 +48,7 @@ class CardControllerTest {
         );
 
         final CardsByThemeResponse response = CardsByThemeResponse.of(
-                CardsByThemeRequestResultType.SUCCESS,
+                CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS,
                 List.of()
         );
 
@@ -84,7 +83,7 @@ class CardControllerTest {
         );
 
         final CardsByThemeResponse response = CardsByThemeResponse.of(
-                CardsByThemeRequestResultType.SUCCESS,
+                CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS,
                 List.of()
         );
 
