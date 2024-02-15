@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CardController implements CardControllerDocs {
 
-    final CardService cardService;
+    private final CardService cardService;
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<CardsWriteResponse> write(@Valid @ModelAttribute final CardsWriteRequest request) {
