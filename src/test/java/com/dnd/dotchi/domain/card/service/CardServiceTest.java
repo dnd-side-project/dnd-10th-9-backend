@@ -1,43 +1,56 @@
 package com.dnd.dotchi.domain.card.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.assertj.core.api.SoftAssertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsByThemeResponse;
+import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
+import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.card.exception.ThemeExceptionType;
+import com.dnd.dotchi.domain.card.repository.CardRepository;
+import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.global.exception.NotFoundException;
+import jakarta.persistence.EntityManager;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+import javax.imageio.ImageIO;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @SpringBootTest
 class CardServiceTest {
 
     @Autowired
-    private CardService cardService;
+    CardService cardService;
+
+    @Autowired
+    CardRepository cardRepository;
+
+    @Autowired
+    TodayCardRepository todayCardRepository;
+
+    @Autowired
+    EntityManager em;
 
     @Test
     @DisplayName("테마별 카드를 인기순으로 가져온다.")
@@ -45,13 +58,14 @@ class CardServiceTest {
         // given
         // data.sql
         final CardsByThemeRequest request = new CardsByThemeRequest(
-            2L,
-            CardSortType.HOT,
-            20L,
-            20L
+                2L,
+                CardSortType.HOT,
+                20L,
+                20L
         );
 
         // when
+
         final CardsByThemeResponse result = cardService.getCardsByTheme(request);
 
         // then
@@ -72,10 +86,10 @@ class CardServiceTest {
         // given
         // data.sql
         final CardsByThemeRequest request = new CardsByThemeRequest(
-            2L,
-            CardSortType.LATEST,
-            20L,
-            20L
+                2L,
+                CardSortType.LATEST,
+                20L,
+                20L
         );
 
         // when
@@ -99,12 +113,12 @@ class CardServiceTest {
         // given
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
-            2L,
-            2L,
-            mockingMultipartFile("test.jpg"),
-            "hihi",
-            "happy",
-            "good"
+                2L,
+                2L,
+                mockingMultipartFile("test.jpg"),
+                "hihi",
+                "happy",
+                "good"
         );
 
         // when
@@ -123,17 +137,17 @@ class CardServiceTest {
         // given
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
-            3L,
-            2L,
-            mockingMultipartFile("test.jpg"),
-            "hihi",
-            "happy",
-            "good"
+                3L,
+                2L,
+                mockingMultipartFile("test.jpg"),
+                "hihi",
+                "happy",
+                "good"
         );
 
         // when
         final NotFoundException exception
-            = assertThrows(NotFoundException.class, () -> cardService.write(request));
+                = assertThrows(NotFoundException.class, () -> cardService.write(request));
 
         // then
         assertEquals(MemberExceptionType.NOT_FOUND_MEMBER.getCode(), exception.getExceptionType().getCode());
@@ -146,29 +160,69 @@ class CardServiceTest {
         // given
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
-            2L,
-            5L,
-            mockingMultipartFile("test.jpg"),
-            "hihi",
-            "happy",
-            "good"
+                2L,
+                5L,
+                mockingMultipartFile("test.jpg"),
+                "hihi",
+                "happy",
+                "good"
         );
 
         // when
         final NotFoundException exception
-            = assertThrows(NotFoundException.class, () -> cardService.write(request));
+                = assertThrows(NotFoundException.class, () -> cardService.write(request));
 
         // then
         assertEquals(ThemeExceptionType.NOT_FOUND_THEME.getCode(), exception.getExceptionType().getCode());
         assertEquals(ThemeExceptionType.NOT_FOUND_THEME.getMessage(), exception.getExceptionType().getMessage());
     }
 
-    private MultipartFile mockingMultipartFile(String fileName) {
+    @Test
+    @DisplayName("카드에 댓글을 작성한다.")
+    void writeCommentOnCard() {
+        // given
+        // data.sql
+        final long cardId = 1L;
+
+        // when
+        final WriteCommentOnCardResponse result = cardService.writeCommentOnCard(cardId);
+        em.flush();
+        em.clear();
+
+        // then
+        final Card card = cardRepository.findById(cardId).get();
+        final TodayCard todayCard = todayCardRepository.findByCardId(cardId).get();
+        final CardsRequestResultType resultType = CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
+
+        assertSoftly(softly -> {
+            softly.assertThat(card.getCommentCount()).isEqualTo(32L);
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(todayCard.getTodayCommentCount()).isOne();
+        });
+    }
+
+        @Test
+        @DisplayName("카드에 댓글 작성시, 존재하지 않는 카드 ID를 전달할 때 NotFound 예외가 발생한다.")
+        void writeCommentOnCardNotFoundException() {
+            // given
+            // data.sql
+            final long cardId = cardRepository.count() + 1L;
+
+            // when, then
+            assertThatThrownBy(() -> cardService.writeCommentOnCard(cardId))
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
+        }
+
+
+
+        private MultipartFile mockingMultipartFile(String fileName) {
         return new MockMultipartFile(
-            "images",
-            fileName,
-            MediaType.IMAGE_JPEG_VALUE,
-            generateMockImage()
+                "images",
+                fileName,
+                MediaType.IMAGE_JPEG_VALUE,
+                generateMockImage()
         );
     }
 

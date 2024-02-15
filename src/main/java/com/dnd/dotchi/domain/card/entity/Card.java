@@ -80,4 +80,8 @@ public class Card extends BaseEntity {
         this.commentCount = 0L;
     }
 
+    public void increaseCommentCountByOne() {
+        this.commentCount += 1;
+    }
+
 }
