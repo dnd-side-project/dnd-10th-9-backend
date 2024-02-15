@@ -13,4 +13,10 @@ public interface CardCustomRepository {
             Long lastCardCommentCount
     );
 
+    List<Card> findCardsAllWithFilteringAndPaging(
+            CardSortType cardSortType,
+            Long lastCardId,
+            Long lastCardCommentCount
+    );
+
 }

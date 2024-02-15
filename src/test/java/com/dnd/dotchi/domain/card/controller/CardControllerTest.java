@@ -7,11 +7,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
+import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
+import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
+import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
@@ -229,4 +232,67 @@ class CardControllerTest {
 
     }
 
+    @Test
+    @DisplayName("전체 카드 조회에 성공하면 200 응답을 반환한다.")
+    void getCardsAllReturn200Success() {
+        // given
+        final CardsAllRequest request = new CardsAllRequest(
+            CardSortType.HOT,
+            1L,
+            1L
+        );
+
+        final CardsAllResponse response = CardsAllResponse.of(
+            CardsRequestResultType.GET_CARDS_ALL_SUCCESS,
+            List.of()
+        );
+
+        given(cardService.getCardAll(request)).willReturn(response);
+
+        // when
+        final CardsAllResponse result = RestAssuredMockMvc.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("cardSortType", CardSortType.HOT)
+            .param("lastCardId", 1L)
+            .param("lastCardCommentCount", 1L)
+            .when().get("/cards/all")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>() {
+            });
+
+        // then
+        assertThat(result).usingRecursiveComparison().isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("전체 카드 조회에 잘못된 값으로 요청하면 400 응답을 반환한다.")
+    void getCardsAllReturn400BadRequest() {
+        // given
+        final CardsAllRequest request = new CardsAllRequest(
+            CardSortType.HOT,
+            1L,
+            1L
+        );
+
+        final CardsAllResponse response = CardsAllResponse.of(
+            CardsRequestResultType.GET_CARDS_ALL_SUCCESS,
+            List.of()
+        );
+
+        given(cardService.getCardAll(request)).willReturn(response);
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("cardSortType", CardSortType.HOT)
+            .param("lastCardId", 0L)
+            .param("lastCardCommentCount", 0L)
+            .when().get("/cards/all")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(200))
+            .body("message", containsString("마지막으로 조회한 카드 ID는 양수만 가능합니다."))
+            .body("message", containsString("마지막으로 조회한 카드의 댓글 수는 양수만 가능합니다."));
+    }
 }
