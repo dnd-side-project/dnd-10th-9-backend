@@ -42,18 +42,14 @@ public class TodayCard extends BaseEntity {
     @ColumnDefault("0")
     private Long todayCommentCount;
 
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
-
     @Builder
-    public TodayCard(
-            final Card card,
-            final Long todayCommentCount,
-            final String imageUrl
-    ) {
+    public TodayCard(final Card card) {
         this.card = card;
-        this.todayCommentCount = todayCommentCount;
-        this.imageUrl = imageUrl;
+        this.todayCommentCount = 0L;
+    }
+
+    public void increaseTodayCommentCountByOne() {
+        this.todayCommentCount += 1L;
     }
 
 }

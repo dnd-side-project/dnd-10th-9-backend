@@ -1,6 +1,6 @@
 package com.dnd.dotchi.domain.card.dto.response;
 
-import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsByThemeRequestResultType;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -18,7 +18,7 @@ public record CardsByThemeResponse(
 ) {
 
         public static CardsByThemeResponse of(
-                final CardsByThemeRequestResultType resultType,
+                final CardsRequestResultType resultType,
                 final List<Card> cardsByTheme
         ) {
                 return new CardsByThemeResponse(

@@ -77,7 +77,11 @@ public class Card extends BaseEntity {
         this.backName = backName;
         this.backMood = backMood;
         this.backContent = backContent;
-        this.commentCount = commentCount;
+        this.commentCount = 0L;
+    }
+
+    public void increaseCommentCountByOne() {
+        this.commentCount += 1;
     }
 
 }
