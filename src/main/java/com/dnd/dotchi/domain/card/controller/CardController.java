@@ -1,7 +1,9 @@
 package com.dnd.dotchi.domain.card.controller;
 
+import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
+import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,4 +28,11 @@ public class CardController implements CardControllerDocs {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<Card> getCardsAll(
+            @Valid @ModelAttribute CardsAllRequest request
+    ) {
+
+        return null;
+    }
 }

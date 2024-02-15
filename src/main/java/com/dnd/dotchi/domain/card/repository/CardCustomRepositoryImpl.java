@@ -38,6 +38,15 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
                 .fetch();
     }
 
+    @Override
+    public List<Card> findCardsAllWithFilteringAndPaging(
+            final CardSortType cardSortType,
+            final Long lastCardId,
+            final Long lastCardCommentCount
+    ) {
+        return null;
+    }
+
     private Predicate defineCriteriaForSortedCards(
             final CardSortType cardSortType,
             final Long lastCardId,

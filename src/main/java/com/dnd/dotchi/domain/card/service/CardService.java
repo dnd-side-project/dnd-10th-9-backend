@@ -2,7 +2,9 @@ package com.dnd.dotchi.domain.card.service;
 
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsByThemeRequestResultType.SUCCESS;
 
+import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
+import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
@@ -28,6 +30,11 @@ public class CardService {
         );
 
         return CardsByThemeResponse.of(SUCCESS, cardsByTheme);
+    }
+
+    @Transactional(readOnly = true)
+    public CardsAllResponse getCardAll(final CardsAllRequest request) {
+        return null;
     }
 
 }

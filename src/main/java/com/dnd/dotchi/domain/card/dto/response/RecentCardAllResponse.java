@@ -1,0 +1,49 @@
+package com.dnd.dotchi.domain.card.dto.response;
+
+import com.dnd.dotchi.domain.card.entity.Card;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record RecentCardAllResponse(
+        @Schema(description = "카드 ID")
+        Long cardId,
+
+        @Schema(description = "카드를 작성한 회원 ID")
+        Long memberId,
+
+        @Schema(description = "카드를 작성한 회원 닉네임")
+        String memberName,
+
+        @Schema(description = "카드 이미지 URL")
+        String cardImageUrl,
+
+        @Schema(description = "카드의 테마 ID")
+        Long themeId,
+
+        @Schema(description = "따봉도치")
+        String backName,
+
+        @Schema(description = "행복해")
+        String backMood,
+
+        @Schema(description = "적어도 뭐는 쓰게")
+        String backContent,
+
+        @Schema(description = "카드의 댓글 수")
+        Long commentCount
+) {
+
+    public static RecentCardAllResponse from(final Card card) {
+        return new RecentCardAllResponse(
+                card.getId(),
+                card.getMember().getId(),
+                card.getMember().getNickname(),
+                card.getImageUrl(),
+                card.getTheme().getId(),
+                card.getBackName(),
+                card.getBackMood(),
+                card.getBackContent(),
+                card.getCommentCount()
+        );
+    }
+
+}
