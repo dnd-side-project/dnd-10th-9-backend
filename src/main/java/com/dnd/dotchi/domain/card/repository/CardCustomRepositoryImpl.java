@@ -44,7 +44,13 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
             final Long lastCardId,
             final Long lastCardCommentCount
     ) {
-        return null;
+        return jpaQueryFactory.selectFrom(card)
+                .join(card.member).fetchJoin()
+                .join(card.theme).fetchJoin()
+                .where(defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount))
+                .orderBy(orderBy(cardSortType))
+                .limit(BASIC_PAGE_SIZE)
+                .fetch();
     }
 
     private Predicate defineCriteriaForSortedCards(
