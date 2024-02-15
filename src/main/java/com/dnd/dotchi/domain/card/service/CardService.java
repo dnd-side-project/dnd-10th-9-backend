@@ -36,7 +36,7 @@ public class CardService {
 	private final ImageUploader imageUploader;
 
 	public CardsWriteResponse write(final CardsWriteRequest request) {
-		String fileFullPath = imageUploader.upload(request.image());
+		final String fileFullPath = imageUploader.upload(request.image());
 
 		final Card cardEntity = Card.builder()
 				.member(getMember(request))
@@ -63,7 +63,7 @@ public class CardService {
 
     @Transactional(readOnly = true)
     public CardsByThemeResponse getCardsByTheme(final @Valid CardsByThemeRequest request) {
-        List<Card> cardsByTheme = cardRepository.findCardsByThemeWithFilteringAndPaging(
+        final List<Card> cardsByTheme = cardRepository.findCardsByThemeWithFilteringAndPaging(
                 request.themeId(),
                 request.cardSortType(),
                 request.lastCardId(),

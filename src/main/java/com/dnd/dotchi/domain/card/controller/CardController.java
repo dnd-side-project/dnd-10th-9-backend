@@ -28,7 +28,8 @@ public class CardController implements CardControllerDocs {
 
 	@PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<CardsWriteResponse> write(
-		@Valid @ModelAttribute CardsWriteRequest request
+		@Valid @ModelAttribute
+		final CardsWriteRequest request
 	) {
 		if (!request.image().getContentType().startsWith("image")) {
 			throw new BadRequestException(CardExceptionType.NOT_IMAGE);
@@ -40,7 +41,8 @@ public class CardController implements CardControllerDocs {
 
 	@GetMapping("/theme")
 	public ResponseEntity<CardsByThemeResponse> getCardsByTheme(
-		@Valid @ModelAttribute CardsByThemeRequest request
+		@Valid @ModelAttribute
+		final CardsByThemeRequest request
 	) {
 		final CardsByThemeResponse response = cardService.getCardsByTheme(request);
 		return ResponseEntity.ok(response);

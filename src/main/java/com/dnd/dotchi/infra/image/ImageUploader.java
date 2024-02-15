@@ -26,34 +26,34 @@ public class ImageUploader {
 		this.uploadDirPath = uploadDirPath;
 	}
 
-	public String upload(MultipartFile image) {
+	public String upload(final MultipartFile image) {
 
-		String fileSavePath = SYSTEM_PATH + SLASH + uploadDirPath;
+		final String fileSavePath = SYSTEM_PATH + SLASH + uploadDirPath;
 		makeDirectory(fileSavePath);
 
-		String saveFileName = parseSaveFileName(image);
-		File uploadPath = new File(fileSavePath, saveFileName);
+		final String saveFileName = parseSaveFileName(image);
+		final File uploadPath = new File(fileSavePath, saveFileName);
 
 		transferFile(image, uploadPath);
 		return url + File.separator + uploadDirPath + File.separator + saveFileName;
 	}
 
-	private void makeDirectory(String fileSavePath) {
-		File directory = new File(fileSavePath);
+	private void makeDirectory(final String fileSavePath) {
+		final File directory = new File(fileSavePath);
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
 	}
 
-	private String parseSaveFileName(MultipartFile image) {
-		String imageName = image.getOriginalFilename();
-		String extension = StringUtils.getFilenameExtension(imageName);
-		String fileBaseName = UUID.randomUUID().toString().substring(0, 8);
+	private String parseSaveFileName(final MultipartFile image) {
+		final String imageName = image.getOriginalFilename();
+		final String extension = StringUtils.getFilenameExtension(imageName);
+		final String fileBaseName = UUID.randomUUID().toString().substring(0, 8);
 
 		return fileBaseName + "_" + System.currentTimeMillis() + "." + extension;
 	}
 
-	private void transferFile(MultipartFile image, File uploadPath) {
+	private void transferFile(final MultipartFile image, final File uploadPath) {
 		try {
 			image.transferTo(uploadPath);
 		} catch (IOException e) {

@@ -173,7 +173,7 @@ class CardServiceTest {
     }
 
     private byte[] generateMockImage() {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+        final BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             ImageIO.write(image, "jpg", byteArrayOutputStream);
