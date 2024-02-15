@@ -4,11 +4,14 @@ import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestRes
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_CARDS_SUCCESS;
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
+import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
+import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.Theme;
 import com.dnd.dotchi.domain.card.entity.TodayCard;
@@ -130,6 +133,17 @@ public class CardService {
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteAllTodayCardTableAtMidnight() {
         todayCardRepository.deleteAll();
+    }
+
+    @Transactional(readOnly = true)
+    public CardsAllResponse getCardAll(final CardsAllRequest request) {
+        final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
+            request.cardSortType(),
+            request.lastCardId(),
+            request.lastCardCommentCount()
+        );
+
+        return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
     }
 
 }

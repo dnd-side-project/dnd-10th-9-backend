@@ -74,4 +74,52 @@ public class CardRepositoryTest {
 		});
 	}
 
+	@Test
+	@DisplayName("전체 카드를 최신순으로 가져온다.")
+	void getCardsAllWithLatestSortType() {
+		// given
+		// data.sql
+
+		// when
+		final List<Card> result = cardRepository.findCardsAllWithFilteringAndPaging(
+			CardSortType.LATEST,
+			15L,
+			20L
+		);
+
+		// then
+		assertSoftly(softly -> {
+			softly.assertThat(result).hasSize(10);
+			softly.assertThat(result.get(0).getId()).isEqualTo(14);
+			softly.assertThat(result.get(1).getId()).isEqualTo(13);
+			softly.assertThat(result.get(2).getId()).isEqualTo(12);
+			softly.assertThat(result.get(3).getId()).isEqualTo(11);
+			softly.assertThat(result.get(4).getId()).isEqualTo(10);
+		});
+	}
+
+	@Test
+	@DisplayName("전체 카드를 인기순으로 가져온다.")
+	void getCardsAllWithHotSortType() {
+		// given
+		// data.sql
+
+		// when
+		final List<Card> result = cardRepository.findCardsAllWithFilteringAndPaging(
+			CardSortType.HOT,
+			15L,
+			20L
+		);
+
+		// then
+		assertSoftly(softly -> {
+			softly.assertThat(result).hasSize(10);
+			softly.assertThat(result.get(0).getId()).isEqualTo(13);
+			softly.assertThat(result.get(1).getId()).isEqualTo(14);
+			softly.assertThat(result.get(2).getId()).isEqualTo(15);
+			softly.assertThat(result.get(3).getId()).isEqualTo(16);
+			softly.assertThat(result.get(4).getId()).isEqualTo(17);
+		});
+	}
+
 }
