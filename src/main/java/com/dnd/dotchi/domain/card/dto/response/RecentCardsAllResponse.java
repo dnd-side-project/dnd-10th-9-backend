@@ -3,7 +3,7 @@ package com.dnd.dotchi.domain.card.dto.response;
 import com.dnd.dotchi.domain.card.entity.Card;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record RecentCardAllResponse(
+public record RecentCardsAllResponse(
         @Schema(description = "카드 ID")
         Long cardId,
 
@@ -32,8 +32,8 @@ public record RecentCardAllResponse(
         Long commentCount
 ) {
 
-    public static RecentCardAllResponse from(final Card card) {
-        return new RecentCardAllResponse(
+    public static RecentCardsAllResponse from(final Card card) {
+        return new RecentCardsAllResponse(
                 card.getId(),
                 card.getMember().getId(),
                 card.getMember().getNickname(),

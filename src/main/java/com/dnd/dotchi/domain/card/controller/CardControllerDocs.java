@@ -1,7 +1,9 @@
 package com.dnd.dotchi.domain.card.controller;
 
+import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
+import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
@@ -71,5 +73,25 @@ public interface CardControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<WriteCommentOnCardResponse> writeCommentOnCard(@PathVariable("cardId") Long cardId);
+
+	@Operation(summary = "전체 카드 조회", description = "전체 카드를 조회한다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "전체 카드 조회 성공"
+	)
+	@ApiResponse(
+		responseCode = "400",
+		description = """
+                    1.Request의 변수 타입이 맞지 않는 경우
+                    2.Request의 변수 값이 올바르지 않는 경우
+                    """,
+		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+	)
+	@ApiResponse(
+		responseCode = "404",
+		description = "존재하지 않는 테마 ID인 경우",
+		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+	)
+	ResponseEntity<CardsAllResponse> getCardsAll(final CardsAllRequest request);
 
 }

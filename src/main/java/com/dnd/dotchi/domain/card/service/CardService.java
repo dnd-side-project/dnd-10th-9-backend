@@ -11,6 +11,7 @@ import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.Theme;
 import com.dnd.dotchi.domain.card.entity.TodayCard;
@@ -110,7 +111,13 @@ public class CardService {
 
     @Transactional(readOnly = true)
     public CardsAllResponse getCardAll(final CardsAllRequest request) {
-        return null;
+        final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
+            request.cardSortType(),
+            request.lastCardId(),
+            request.lastCardCommentCount()
+        );
+
+        return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
     }
 
 }
