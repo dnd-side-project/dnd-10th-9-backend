@@ -36,3 +36,7 @@ dotchi:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
+
+image:
+  upload_url: ${IMAGE_UPLOAD_URL}
+  upload_directory: ${IMAGE_UPLOAD_DIRECTORY}

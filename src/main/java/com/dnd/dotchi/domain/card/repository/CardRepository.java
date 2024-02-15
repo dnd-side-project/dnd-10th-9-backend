@@ -1,7 +1,8 @@
 package com.dnd.dotchi.domain.card.repository;
 
-import com.dnd.dotchi.domain.card.entity.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.dnd.dotchi.domain.card.entity.Card;
 
 public interface CardRepository extends JpaRepository<Card, Long>, CardCustomRepository {
 }
