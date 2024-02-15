@@ -88,4 +88,11 @@ public class GlobalExceptionHandler {
                 .body(ExceptionResponse.from(e.getExceptionType()));
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ExceptionResponse> handleRetryLimitExceededException(final RetryLimitExceededException e) {
+        log.warn("[" + e.getClass() + "] : " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ExceptionResponse.from(e.getExceptionType()));
+    }
+
 }

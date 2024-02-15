@@ -13,6 +13,7 @@ import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.Theme;
 import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
+import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.domain.card.exception.ThemeExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
 import com.dnd.dotchi.domain.card.repository.ThemeRepository;
@@ -26,6 +27,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,18 +85,22 @@ public class CardService {
         return CardsByThemeResponse.of(GET_CARDS_BY_THEME_SUCCESS, cardsByTheme);
     }
 
+    @Retryable(
+            retryFor = ObjectOptimisticLockingFailureException.class,
+            backoff = @Backoff(delay = 100)
+    )
     public WriteCommentOnCardResponse writeCommentOnCard(final Long cardId) {
         final Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
 
         card.increaseCommentCountByOne();
-        todayCardIncreaseCommentCount(cardId, card);
+        todayCardIncreaseCommentCount(card);
 
         return WriteCommentOnCardResponse.from(WRITE_COMMENT_ON_CARD_SUCCESS);
     }
 
-    private void todayCardIncreaseCommentCount(final Long cardId, final Card card) {
-        final Optional<TodayCard> todayCard = todayCardRepository.findByCardId(cardId);
+    private void todayCardIncreaseCommentCount(final Card card) {
+        final Optional<TodayCard> todayCard = todayCardRepository.findByCardId(card.getId());
         if (todayCard.isEmpty()) {
             final TodayCard todayCardToSave = TodayCard.builder().card(card).build();
             todayCardToSave.increaseTodayCommentCountByOne();
@@ -99,6 +109,22 @@ public class CardService {
         }
 
         todayCard.get().increaseTodayCommentCountByOne();
+    }
+
+    @Recover
+    public WriteCommentOnCardResponse recoverWriteCommentOnCard(
+            final OptimisticLockingFailureException e,
+            final Long cardId
+    ) {
+        throw new RetryLimitExceededException(CardExceptionType.WRITE_COMMENT_ON_CARD_FAILURE);
+    }
+
+    @Recover
+    public WriteCommentOnCardResponse recoverWriteCommentOnCard(
+            final NotFoundException e,
+            final Long cardId
+    ) {
+        throw e;
     }
 
     @Scheduled(cron = "0 0 0 * * *")
