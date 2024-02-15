@@ -82,14 +82,9 @@ public interface CardControllerDocs {
 	@ApiResponse(
 		responseCode = "400",
 		description = """
-                    1.Request의 변수 타입이 맞지 않는 경우
-                    2.Request의 변수 값이 올바르지 않는 경우
-                    """,
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
-	@ApiResponse(
-		responseCode = "404",
-		description = "존재하지 않는 테마 ID인 경우",
+			 		1.Request의 변수 타입이 맞지 않는 경우
+				 	2.Request의 변수 값이 올바르지 않는 경우
+					""",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
 	ResponseEntity<CardsAllResponse> getCardsAll(final CardsAllRequest request);
