@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -22,6 +23,7 @@ import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
@@ -176,5 +178,12 @@ public class CardService {
             authors,
             CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
         );
+    }
+
+    public HomePageResponse home() {
+        final List<TodayCard> todayCards = null;
+        final List<Card> recentCards = null;
+        final List<Card> recentCardsByThemes = null;
+        return null;
     }
 }
