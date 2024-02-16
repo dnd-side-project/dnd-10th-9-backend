@@ -21,7 +21,7 @@ public class BlacklistController {
 
     @PostMapping("{blacklistedId}")
     public ResponseEntity<BlockResponse> block(
-            @PathVariable final Long blacklistedId,
+            @PathVariable("blacklistedId") final Long blacklistedId,
             @Valid @ModelAttribute final BlockRequest request
     ) {
         final BlockResponse response = blacklistService.block(blacklistedId, request);
