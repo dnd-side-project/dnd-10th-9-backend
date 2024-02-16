@@ -6,6 +6,7 @@ import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
+import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,4 +90,20 @@ public interface CardControllerDocs {
 	)
 	ResponseEntity<CardsAllResponse> getCardsAll(final CardsAllRequest request);
 
+	@Operation(summary = "댓글 조회", description = "카드의 댓글을 조회한다.")
+	@ApiResponse(
+			responseCode = "200",
+			description = "댓글 조회 성공"
+	)
+	@ApiResponse(
+			responseCode = "400",
+			description = "Request의 변수 타입이 맞지 않는 경우",
+			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+	)
+	@ApiResponse(
+			responseCode = "404",
+			description = "존재하지 않는 카드인 경우",
+			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+	)
+	ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(final Long cardId);
 }

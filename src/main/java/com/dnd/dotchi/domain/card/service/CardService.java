@@ -146,4 +146,8 @@ public class CardService {
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
     }
 
+    @Transactional(readOnly = true)
+    public Card getCommentOnCard(final Long cardId) {
+        return cardRepository.findById(cardId).orElseThrow();
+    }
 }

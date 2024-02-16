@@ -1,13 +1,12 @@
 package com.dnd.dotchi.domain.card.controller;
 
-import java.util.List;
+import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
-import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
@@ -61,5 +60,11 @@ public class CardController implements CardControllerDocs {
     ) {
         final CardsAllResponse response = cardService.getCardAll(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{cardId}/comments")
+    public ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(@PathVariable("cardId") Long cardId) {
+        cardService.getCommentOnCard(cardId);
+        return null;
     }
 }
