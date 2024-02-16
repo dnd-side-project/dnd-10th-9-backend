@@ -10,7 +10,7 @@ public record CardsByThemeResponse(
         @Schema(description = "응답 코드", example = "100")
         Integer code,
 
-        @Schema(description = "응답 상태 메시지", example = "100")
+        @Schema(description = "응답 상태 메시지", example = "요청에 성공하였습니다.")
         String message,
 
         @Schema(description = "테마별 카드 조회 결과")

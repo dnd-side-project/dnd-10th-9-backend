@@ -14,7 +14,6 @@ import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
-import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
@@ -158,7 +157,7 @@ class CardControllerTest {
         // given
         final String contenBody = "image";
 
-        final CardsWriteResponse response = CardsWriteResponse.of(CardsRequestResultType.WRITE_CARDS_SUCCESS);
+        final CardsWriteResponse response = CardsWriteResponse.from(CardsRequestResultType.WRITE_CARDS_SUCCESS);
         given(cardService.write(any())).willReturn(response);
 
         // when
