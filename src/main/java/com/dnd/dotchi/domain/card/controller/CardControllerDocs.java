@@ -98,11 +98,6 @@ public interface CardControllerDocs {
 			description = "댓글 조회 성공"
 	)
 	@ApiResponse(
-			responseCode = "400",
-			description = "Request의 변수 타입이 맞지 않는 경우",
-			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
-	@ApiResponse(
 			responseCode = "404",
 			description = "존재하지 않는 카드인 경우",
 			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))

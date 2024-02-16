@@ -10,12 +10,15 @@ import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.Comment;
 import com.dnd.dotchi.domain.card.entity.Theme;
 import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
+import com.dnd.dotchi.domain.card.repository.CommentRepository;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.domain.card.exception.ThemeExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
@@ -49,6 +52,7 @@ public class CardService {
     private final ThemeRepository themeJpaRepository;
     private final MemberRepository memberJpaRepository;
     private final ImageUploader imageUploader;
+    private final CommentRepository commentRepository;
 
     public CardsWriteResponse write(final CardsWriteRequest request) {
         final String fileFullPath = imageUploader.upload(request.image());
@@ -147,7 +151,19 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public Card getCommentOnCard(final Long cardId) {
-        return cardRepository.findById(cardId).orElseThrow();
+    public GetCommentOnCardResponse getCommentOnCard(final Long cardId) {
+        final Card card = cardRepository.findById(cardId)
+            .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
+
+        final List<Member> authors
+            = commentRepository.findTop3ByCardIdOrderByIdDesc(cardId).stream()
+            .map(Comment::getMember)
+            .toList();
+
+        return GetCommentOnCardResponse.of(
+            card,
+            authors,
+            CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
+        );
     }
 }

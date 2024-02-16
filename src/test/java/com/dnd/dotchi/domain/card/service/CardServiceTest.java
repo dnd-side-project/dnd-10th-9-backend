@@ -12,7 +12,7 @@ import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
-import com.dnd.dotchi.domain.card.dto.response.RecentCardsAllResponse;
+import com.dnd.dotchi.domain.card.dto.response.CardsResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
@@ -128,7 +128,7 @@ class CardServiceTest {
         final CardsAllResponse result = cardService.getCardAll(request);
 
         // then
-        final List<RecentCardsAllResponse> responses = result.result().recentCards();
+        final List<CardsResponse> responses = result.result().recentCards();
         final CardsRequestResultType resultType = CardsRequestResultType.GET_CARDS_ALL_SUCCESS;
         assertSoftly(softly -> {
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());

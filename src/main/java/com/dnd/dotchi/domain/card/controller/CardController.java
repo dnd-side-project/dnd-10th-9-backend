@@ -64,7 +64,8 @@ public class CardController implements CardControllerDocs {
 
     @GetMapping("/{cardId}/comments")
     public ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(@PathVariable("cardId") Long cardId) {
-        cardService.getCommentOnCard(cardId);
-        return null;
+        final GetCommentOnCardResponse response = cardService.getCommentOnCard(cardId);
+        return ResponseEntity.ok(response);
     }
+
 }
