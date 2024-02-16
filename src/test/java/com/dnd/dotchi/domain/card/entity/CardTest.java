@@ -12,7 +12,6 @@ class CardTest {
     void increaseCommentCountByOne() {
         // given
         final Card card = Card.builder()
-                .commentCount(0L)
                 .build();
 
         // when

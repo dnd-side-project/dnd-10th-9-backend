@@ -11,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -41,6 +42,10 @@ public class TodayCard extends BaseEntity {
     @Column(name = "today_comment_count", nullable = false)
     @ColumnDefault("0")
     private Long todayCommentCount;
+
+    @Version
+    @ColumnDefault("0")
+    private Long version;
 
     @Builder
     public TodayCard(final Card card) {

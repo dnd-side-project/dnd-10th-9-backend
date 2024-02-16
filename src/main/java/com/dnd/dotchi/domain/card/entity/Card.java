@@ -12,6 +12,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -61,6 +62,10 @@ public class Card extends BaseEntity {
     @ColumnDefault("0")
     private Long commentCount;
 
+    @Version
+    @ColumnDefault("0")
+    private Long version;
+
     @Builder
     public Card(
             final Member member,
@@ -68,8 +73,7 @@ public class Card extends BaseEntity {
             final String imageUrl,
             final String backName,
             final String backMood,
-            final String backContent,
-            final Long commentCount
+            final String backContent
     ) {
         this.member = member;
         this.theme = theme;

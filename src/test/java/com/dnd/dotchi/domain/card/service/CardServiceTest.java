@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.card.service;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -220,9 +222,10 @@ class CardServiceTest {
     void writeCommentOnCard() {
         // given
         // data.sql
-        final long cardId = 1L;
+        final long cardId = 2L;
 
         // when
+        final Long oldCommentCount = cardRepository.findById(cardId).get().getCommentCount();
         final WriteCommentOnCardResponse result = cardService.writeCommentOnCard(cardId);
         em.flush();
         em.clear();
@@ -233,7 +236,7 @@ class CardServiceTest {
         final CardsRequestResultType resultType = CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
         assertSoftly(softly -> {
-            softly.assertThat(card.getCommentCount()).isEqualTo(32L);
+            softly.assertThat(card.getCommentCount()).isEqualTo(oldCommentCount + 1L);
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());
             softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
             softly.assertThat(todayCard.getTodayCommentCount()).isOne();
@@ -251,6 +254,22 @@ class CardServiceTest {
         assertThatThrownBy(() -> cardService.writeCommentOnCard(cardId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
+    }
+
+    @Test
+    @DisplayName("여러 사용자가 동시에 같은 카드의 댓글을 작성할 경우, 동기화 처리가 정상 동작된다.")
+    void handleConcurrentCommentsOnCardSynchronously() {
+        // given
+        // data.sql
+        long cardId = 1L;
+
+        CompletableFuture<Void> futureA = CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(cardId));
+        CompletableFuture<Void> futureB = CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(cardId));
+
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(futureA, futureB);
+
+        // when, then
+        assertThatNoException().isThrownBy(combinedFuture::get);
     }
 
     private MultipartFile mockingMultipartFile(String fileName) {
