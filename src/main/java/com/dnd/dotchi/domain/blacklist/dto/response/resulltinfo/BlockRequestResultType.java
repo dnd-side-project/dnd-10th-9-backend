@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum BlockRequestResultType {
+
     BLOCK_SUCCESS(1200, "차단이 성공하였습니다.");
 
     private final int code;
