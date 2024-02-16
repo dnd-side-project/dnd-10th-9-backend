@@ -28,7 +28,7 @@ class TodayCardRepositoryTest {
     @DisplayName("카드 ID로 TodayCard 엔티티를 조회한다.")
     void findByCardId() {
         // given
-        final long cardId = 1L;
+        final long cardId = todayCardRepository.count() + 1L;
         final Card card = cardRepository.findById(cardId).get();
 
         final TodayCard todayCard = TodayCard.builder().card(card).build();

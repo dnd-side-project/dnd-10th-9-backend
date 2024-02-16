@@ -1,17 +1,30 @@
 package com.dnd.dotchi.domain.card.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
@@ -22,20 +35,10 @@ import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
 import com.dnd.dotchi.infra.image.ImageUploader;
+
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import java.io.IOException;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(CardController.class)
 class CardControllerTest {
@@ -222,30 +225,30 @@ class CardControllerTest {
     void getCardsAllReturn200Success() {
         // given
         final CardsAllRequest request = new CardsAllRequest(
-            CardSortType.HOT,
-            1L,
-            1L
+                CardSortType.HOT,
+                1L,
+                1L
         );
 
         final CardsAllResponse response = CardsAllResponse.of(
-            CardsRequestResultType.GET_CARDS_ALL_SUCCESS,
-            List.of()
+                CardsRequestResultType.GET_CARDS_ALL_SUCCESS,
+                List.of()
         );
 
         given(cardService.getCardAll(request)).willReturn(response);
 
         // when
         final CardsAllResponse result = RestAssuredMockMvc.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON)
-            .param("cardSortType", CardSortType.HOT)
-            .param("lastCardId", 1L)
-            .param("lastCardCommentCount", 1L)
-            .when().get("/cards/all")
-            .then().log().all()
-            .status(HttpStatus.OK)
-            .extract()
-            .as(new TypeRef<>() {
-            });
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("cardSortType", CardSortType.HOT)
+                .param("lastCardId", 1L)
+                .param("lastCardCommentCount", 1L)
+                .when().get("/cards/all")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract()
+                .as(new TypeRef<>() {
+                });
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(response);
@@ -258,16 +261,40 @@ class CardControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON)
-            .param("cardSortType", CardSortType.HOT)
-            .param("lastCardId", 0L)
-            .param("lastCardCommentCount", 0L)
-            .when().get("/cards/all")
-            .then().log().all()
-            .status(HttpStatus.BAD_REQUEST)
-            .body("code", equalTo(200))
-            .body("message", containsString("마지막으로 조회한 카드 ID는 양수만 가능합니다."))
-            .body("message", containsString("마지막으로 조회한 카드의 댓글 수는 양수만 가능합니다."));
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("cardSortType", CardSortType.HOT)
+                .param("lastCardId", 0L)
+                .param("lastCardCommentCount", 0L)
+                .when().get("/cards/all")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body("code", equalTo(200))
+                .body("message", containsString("마지막으로 조회한 카드 ID는 양수만 가능합니다."))
+                .body("message", containsString("마지막으로 조회한 카드의 댓글 수는 양수만 가능합니다."));
+    }
+
+    @Test
+    @DisplayName("카드 삭제에 성공하면 200 응답을 반환한다.")
+    void deleteCardReturn200Success() {
+        // given
+        final long cardId = 1L;
+        final DeleteCardResponse response = DeleteCardResponse.from(CardsRequestResultType.DELETE_CARD_SUCCESS);
+
+        given(cardService.delete(cardId)).willReturn(response);
+
+        // when
+        final DeleteCardResponse result = RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .pathParam("cardId", cardId)
+                .when().delete("/cards/{cardId}")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(result).usingRecursiveComparison().isEqualTo(response);
     }
 
     @Test

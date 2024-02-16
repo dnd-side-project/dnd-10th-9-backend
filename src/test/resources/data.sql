@@ -110,6 +110,8 @@ VALUES (2, 4, 'http://example.com/image.jpg', '따봉도치28', '행복해28', '
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치29', '행복해29', '뭐든 더 써봐29', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+
+-- 삭제 테스트 용도 카드
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치30', '행복해30', '뭐든 더 써봐30', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 

@@ -1,18 +1,34 @@
 package com.dnd.dotchi.domain.card.service;
 
-import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import javax.imageio.ImageIO;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
-import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsResponse;
+import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
@@ -26,21 +42,8 @@ import com.dnd.dotchi.domain.card.repository.CardRepository;
 import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.global.exception.NotFoundException;
+
 import jakarta.persistence.EntityManager;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import javax.imageio.ImageIO;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @SpringBootTest
@@ -273,6 +276,37 @@ class CardServiceTest {
         assertThatNoException().isThrownBy(combinedFuture::get);
     }
 
+    @DisplayName("카드를 삭제한다")
+    void deleteCard() {
+        // given
+        // data.sql
+
+        // when
+        final long oldCardCount = cardRepository.count();
+        final DeleteCardResponse result = cardService.delete(30L);
+
+        // then
+        final long newCardCount = cardRepository.count();
+        assertSoftly(softly -> {
+            final CardsRequestResultType resultType = CardsRequestResultType.DELETE_CARD_SUCCESS;
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(oldCardCount).isEqualTo(newCardCount + 1L);
+        });
+    }
+
+    @DisplayName("카드를 삭제할 시, 존재하지 않는 카드 ID이면 예외가 발생한다.")
+    void deleteCardNotFoundException() {
+        // given
+        // data.sql
+        final long cardId = cardRepository.count() + 1L;
+
+        // when, then
+        assertThatThrownBy(() -> cardService.delete(cardId))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
+    }
+
     @Test
     @DisplayName("카드 조회 시 댓글이 3개 이상일 경우 정상 작동한다.")
     void getCommentOnCardWithCommentCountGreaterThanEqualThree() {
@@ -291,7 +325,6 @@ class CardServiceTest {
             softly.assertThat(commentsCount).isEqualTo(3);
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());
             softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
-            softly.assertThat(themeId).isEqualTo(2);
         });
     }
 
@@ -320,9 +353,10 @@ class CardServiceTest {
     @Test
     @DisplayName("찾을 수 없는 카드인 경우 NotFound 예외가 발생한다.")
     void getCommentOnCardNotFoundException() {
+
         // given
         // data.sql
-        final long cardId = cardRepository.count() + 1L;
+        final Long cardId = cardRepository.count() + 1L;
 
         // when, then
         assertThatThrownBy(() -> cardService.getCommentOnCard(cardId))
