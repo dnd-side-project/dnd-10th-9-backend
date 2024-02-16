@@ -13,6 +13,7 @@ import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsResponse;
+import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
@@ -177,7 +178,7 @@ class CardServiceTest {
         // given
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
-                3L,
+                1000L,
                 2L,
                 mockingMultipartFile("test.jpg"),
                 "hihi",
@@ -201,7 +202,7 @@ class CardServiceTest {
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
                 2L,
-                5L,
+                10000L,
                 mockingMultipartFile("test.jpg"),
                 "hihi",
                 "happy",
@@ -270,6 +271,63 @@ class CardServiceTest {
 
         // when, then
         assertThatNoException().isThrownBy(combinedFuture::get);
+    }
+
+    @Test
+    @DisplayName("카드 조회 시 댓글이 3개 이상일 경우 정상 작동한다.")
+    void getCommentOnCardWithCommentCountGreaterThanEqualThree() {
+        // given
+        // data.sql
+        final Long cardId = 2L;
+
+        // when
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(cardId);
+        final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
+
+        // then
+        final Long commentsCount = result.result().comments().stream().count();
+        final Long themeId = result.result().card().themeId();
+        assertSoftly(softly -> {
+            softly.assertThat(commentsCount).isEqualTo(3);
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(themeId).isEqualTo(2);
+        });
+    }
+
+    @Test
+    @DisplayName("카드 조회 시 댓글이 2개 이하일 경우 정상 작동한다.")
+    void getCommentOnCardWithCommentCountLessThanEqualTwo() {
+        // given
+        // data.sql
+        final Long cardId = 1L;
+
+        // when
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(cardId);
+        final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
+
+        // then
+        final Long commentsCount = result.result().comments().stream().count();
+        final Long themeId = result.result().card().themeId();
+        assertSoftly(softly -> {
+            softly.assertThat(commentsCount).isEqualTo(2);
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(themeId).isEqualTo(1);
+        });
+    }
+
+    @Test
+    @DisplayName("찾을 수 없는 카드인 경우 NotFound 예외가 발생한다.")
+    void getCommentOnCardNotFoundException() {
+        // given
+        // data.sql
+        final long cardId = cardRepository.count() + 1L;
+
+        // when, then
+        assertThatThrownBy(() -> cardService.getCommentOnCard(cardId))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
     }
 
     private MultipartFile mockingMultipartFile(String fileName) {

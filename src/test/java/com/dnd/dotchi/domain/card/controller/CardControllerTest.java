@@ -12,10 +12,14 @@ import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
+import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.Theme;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
 import com.dnd.dotchi.infra.image.ImageUploader;
 import io.restassured.common.mapper.TypeRef;
@@ -137,7 +141,7 @@ class CardControllerTest {
     @DisplayName("카드 작성을 성공하면 200 응답을 반환한다.")
     void cardsWriteReturn200Success() {
         // given
-        final String contenBody = "image";
+        final String contentBody = "image";
 
         final CardsWriteResponse response = CardsWriteResponse.from(CardsRequestResultType.WRITE_CARDS_SUCCESS);
         given(cardService.write(any())).willReturn(response);
@@ -148,7 +152,7 @@ class CardControllerTest {
                 .contentType(ContentType.MULTIPART)
                 .param("memberId", 1L)
                 .param("themeId", 1L)
-                .multiPart("image", contenBody, MediaType.IMAGE_PNG_VALUE)
+                .multiPart("image", contentBody, MediaType.IMAGE_PNG_VALUE)
                 .param("backName", "따봉도치")
                 .param("backMood", "행복해")
                 .param("backContent", "아무거나")
@@ -167,14 +171,14 @@ class CardControllerTest {
     @DisplayName("잘못된 값으로 카드를 작성 하면 400 응답을 반환한다.")
     void cardsWriteReturn400BadRequestFromArgument() {
         // given
-        final String contenBody = "image";
+        final String contentBody = "image";
 
         // when, then
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.MULTIPART)
                 .param("memberId", 0L)
                 .param("themeId", "")
-                .multiPart("image", contenBody, MediaType.IMAGE_JPEG_VALUE)
+                .multiPart("image", contentBody, MediaType.IMAGE_JPEG_VALUE)
                 .param("backName", "제목 넘지마 따봉도치")
                 .param("backMood", "엄지가 절로 올라가지마 따봉도치")
                 .param("backContent", "따봉도치 20글자 절대로 넘지마 확인할거니까")
@@ -194,14 +198,14 @@ class CardControllerTest {
     @DisplayName("카드 작성시 이미지 파일이 아닐 경우 400 응답을 반환한다.")
     void cardsWriteReturn400BadRequestFromImage() throws IOException {
         // given
-        final String contenBody = "noImage";
+        final String contentBody = "noImage";
 
         // when, then
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.MULTIPART)
                 .param("memberId", 1L)
                 .param("themeId", 1L)
-                .multiPart("image", contenBody, MediaType.TEXT_PLAIN_VALUE)
+                .multiPart("image", contentBody, MediaType.TEXT_PLAIN_VALUE)
                 .param("backName", "따봉도치")
                 .param("backMood", "엄지가 절로 올라가")
                 .param("backContent", "따봉도치 20글자")
@@ -265,4 +269,52 @@ class CardControllerTest {
             .body("message", containsString("마지막으로 조회한 카드 ID는 양수만 가능합니다."))
             .body("message", containsString("마지막으로 조회한 카드의 댓글 수는 양수만 가능합니다."));
     }
+
+    @Test
+    @DisplayName("댓글 조회에 대해 성공하면 200을 반환한다.")
+    void getCommentsReturn400BadRequest() {
+        // given
+        final Member member = new Member(
+            1L,
+            "",
+            "test@mail.com",
+            "test",
+            "test.jpg"
+        );
+
+        final Theme theme = new Theme("test", "test");
+
+        final Card card = new Card(
+            member,
+            theme,
+            "test",
+            "test",
+            "test",
+            "test"
+        );
+
+        final GetCommentOnCardResponse response =
+            GetCommentOnCardResponse.of(
+                card,
+                List.of(),
+                CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
+            );
+
+        given(cardService.getCommentOnCard(anyLong())).willReturn(response);
+
+        // when
+        final GetCommentOnCardResponse result = RestAssuredMockMvc.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON)
+            .pathParam("cardId", 1L)
+            .when().get("/cards/{cardId}/comments")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>() {
+            });
+
+        // then
+        assertThat(result).usingRecursiveComparison().isEqualTo(response);
+    }
+
 }
