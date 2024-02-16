@@ -26,7 +26,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Table(
         name = "CARD",
         indexes = {
-                @Index(name = "idx_member_id", columnList = "member_id"),
+                @Index(name = "idx_member_id_id", columnList = "member_id, id"),
                 @Index(name = "idx_theme_id_id", columnList = "theme_id, id"),
                 @Index(name = "idx_theme_id_comment_count", columnList = "theme_id, comment_count")
         }

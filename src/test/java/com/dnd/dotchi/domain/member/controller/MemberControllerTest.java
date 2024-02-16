@@ -6,9 +6,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
-import com.dnd.dotchi.domain.member.dto.response.MemberInfoResultResponse;
-import com.dnd.dotchi.domain.member.dto.response.MemberResponse;
 import com.dnd.dotchi.domain.member.dto.response.resultinfo.MemberRequestResultType;
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
 import io.restassured.common.mapper.TypeRef;
@@ -47,25 +46,13 @@ class MemberControllerTest {
         final Long memberId = 1L;
         final Long lastCardId = 25L;
 
-        final MemberResponse memberResponse = MemberResponse.of(
-                1L,
-                "오뜨",
-                "/image.jpg",
-                "안녕하세요~!",
-                10L
-        );
-
-        final MemberInfoResultResponse memberInfoResultResponse = MemberInfoResultResponse.of(
-                memberResponse,
+        final MemberInfoResponse response = MemberInfoResponse.of(
+                MemberRequestResultType.GET_MEMBER_INFO_SUCCESS,
+                Member.builder().build(),
                 List.of()
         );
 
-        final MemberInfoResponse response = MemberInfoResponse.of(
-                MemberRequestResultType.GET_MEMBER_INFO_SUCCESS,
-                memberInfoResultResponse
-        );
-
-        given(memberService.getMemberInfo(memberId)).willReturn(response);
+        given(memberService.getMemberInfo(memberId, lastCardId)).willReturn(response);
 
         // when
         final MemberInfoResponse result = RestAssuredMockMvc.given().log().all()

@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.member.dto.response;
 
+import com.dnd.dotchi.domain.card.entity.Card;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "회원의 최신순 카드 응답")
@@ -22,4 +23,16 @@ public record RecentCardsByMemberResponse(
         @Schema(description = "카드 이름")
         String backName
 ) {
+
+        public static RecentCardsByMemberResponse from(final Card card) {
+                return new RecentCardsByMemberResponse(
+                        card.getId(),
+                        card.getMember().getId(),
+                        card.getMember().getNickname(),
+                        card.getImageUrl(),
+                        card.getTheme().getId(),
+                        card.getBackName()
+                );
+        }
+
 }

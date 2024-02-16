@@ -24,7 +24,7 @@ public class MemberController {
             @PathVariable("memberId") Long memberId,
             @Valid @ModelAttribute MemberInfoRequest request
     ) {
-        final MemberInfoResponse response = memberService.getMemberInfo(memberId);
+        final MemberInfoResponse response = memberService.getMemberInfo(memberId, request.lastCardId());
         return ResponseEntity.ok(response);
     }
 

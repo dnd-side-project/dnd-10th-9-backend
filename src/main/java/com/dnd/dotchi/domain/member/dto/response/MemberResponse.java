@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.member.dto.response;
 
+import com.dnd.dotchi.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "회원 정보")
@@ -20,14 +21,14 @@ public record MemberResponse(
         Long cardCount
 ) {
 
-        public static MemberResponse of(
-                final long id,
-                final String memberName,
-                final String memberImageUrl,
-                final String description,
-                final long cardCount
-        ) {
-                return new MemberResponse(id, memberName, memberImageUrl, description, cardCount);
+        public static MemberResponse from(final Member member) {
+                return new MemberResponse(
+                        member.getId(),
+                        member.getNickname(),
+                        member.getImageUrl(),
+                        member.getDescription(),
+                        member.getCardCount()
+                );
         }
 
 }

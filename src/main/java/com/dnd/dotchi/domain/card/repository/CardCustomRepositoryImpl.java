@@ -53,6 +53,20 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
                 .fetch();
     }
 
+    @Override
+    public List<Card> findCardsByMemberWithFilteringAndPaging(final Long memberId, final Long lastCardId) {
+        return jpaQueryFactory.selectFrom(card)
+                .join(card.member).fetchJoin()
+                .join(card.theme).fetchJoin()
+                .where(
+                        card.member.id.eq(memberId),
+                        card.id.lt(lastCardId)
+                )
+                .orderBy(card.id.desc())
+                .limit(BASIC_PAGE_SIZE)
+                .fetch();
+    }
+
     private Predicate defineCriteriaForSortedCards(
             final CardSortType cardSortType,
             final Long lastCardId,

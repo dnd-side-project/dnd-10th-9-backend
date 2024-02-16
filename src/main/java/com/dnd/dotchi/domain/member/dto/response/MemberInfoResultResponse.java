@@ -1,5 +1,7 @@
 package com.dnd.dotchi.domain.member.dto.response;
 
+import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
@@ -12,11 +14,11 @@ public record MemberInfoResultResponse(
         List<RecentCardsByMemberResponse> recentCards
 ) {
 
-        public static MemberInfoResultResponse of(
-                final MemberResponse memberResponse,
-                final List<RecentCardsByMemberResponse> recentCards
-        ) {
-                return new MemberInfoResultResponse(memberResponse, recentCards);
+        public static MemberInfoResultResponse of(final Member member, final List<Card> recentCardsByMember) {
+                final List<RecentCardsByMemberResponse> recentCards = recentCardsByMember.stream()
+                        .map(RecentCardsByMemberResponse::from)
+                        .toList();
+                return new MemberInfoResultResponse(MemberResponse.from(member), recentCards);
         }
 
 }
