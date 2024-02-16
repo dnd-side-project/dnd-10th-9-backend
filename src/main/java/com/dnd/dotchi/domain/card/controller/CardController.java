@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.card.controller;
 
+import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import java.util.List;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
@@ -17,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,4 +64,11 @@ public class CardController implements CardControllerDocs {
         final CardsAllResponse response = cardService.getCardAll(request);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("{cardId}")
+    public ResponseEntity<DeleteCardResponse> delete(@PathVariable("cardId") final Long cardId) {
+        final DeleteCardResponse response = cardService.delete(cardId);
+        return ResponseEntity.ok(response);
+    }
+
 }
