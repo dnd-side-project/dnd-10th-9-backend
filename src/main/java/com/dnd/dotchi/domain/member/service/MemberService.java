@@ -2,6 +2,8 @@ package com.dnd.dotchi.domain.member.service;
 
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
+import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
+import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.resultinfo.MemberRequestResultType;
 import com.dnd.dotchi.domain.member.entity.Member;
@@ -30,6 +32,10 @@ public class MemberService {
                 cardRepository.findCardsByMemberWithFilteringAndPaging(memberId, lastCardId);
 
         return MemberInfoResponse.of(MemberRequestResultType.GET_MEMBER_INFO_SUCCESS, member, recentCardsByMember);
+    }
+
+    public MemberAuthorizationResponse login(final MemberAuthorizationRequest request) {
+        return null;
     }
 
 }

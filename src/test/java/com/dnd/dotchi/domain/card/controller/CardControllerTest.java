@@ -309,7 +309,7 @@ class CardControllerTest {
             "test.jpg"
         );
 
-        final Theme theme = new Theme("test", "test");
+        final Theme theme = new Theme("test");
 
         final Card card = new Card(
             member,

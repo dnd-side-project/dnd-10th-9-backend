@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 
+import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
+import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.resultinfo.MemberRequestResultType;
 import com.dnd.dotchi.domain.member.entity.Member;
@@ -20,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -87,6 +90,58 @@ class MemberControllerTest {
                 .status(HttpStatus.BAD_REQUEST)
                 .body("code", equalTo(200))
                 .body("message", containsString("마지막 조회 가드 ID는 양수만 가능합니다."));
+    }
+
+    @Test
+    @DisplayName("로그인에 성공하면 200 응답을 반환한다.")
+    void loginReturn200Success() {
+        // given
+        final long memberId = 1L;
+        final MemberAuthorizationRequest request = new MemberAuthorizationRequest(memberId);
+        final Member member = Member.builder()
+                .nickname("오뜨")
+                .imageUrl("/image.jpg")
+                .build();
+        ReflectionTestUtils.setField(member, "id", memberId);
+
+        final MemberAuthorizationResponse response = MemberAuthorizationResponse.of(
+                MemberRequestResultType.LOGIN_SUCCESS,
+                member,
+                "access_token"
+        );
+
+        given(memberService.login(request)).willReturn(response);
+
+        // when
+        final MemberAuthorizationResponse result = RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("memberId", memberId)
+                .when().post("/members/login")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(result).usingRecursiveComparison().isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("로그인에 실패하면 400 응답을 반환한다.")
+    void loginReturn400BadRequest() {
+        // given
+        final long memberId = 0L;
+
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("memberId", memberId)
+                .when().post("/members/login")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body("code", equalTo(200))
+                .body("message", containsString("멤버 ID는 양수만 가능합니다."));
     }
 
 }

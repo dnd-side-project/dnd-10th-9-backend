@@ -25,6 +25,11 @@ spring:
       enabled: ${H2_CONSOLE_ENABLE}
       path: /h2-console
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 35MB
+
 springdoc:
   swagger-ui:
     enabled: ${SWAGGER_UI_ENABLE}

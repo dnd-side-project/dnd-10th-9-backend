@@ -14,14 +14,14 @@ INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, up
 VALUES (5, '회원이다5', 'abc5@email.com', '회원5', 'http://example.com/image5.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
-INSERT INTO THEME (theme_concept, card_back_last_content, created_at, updated_at)
-VALUES ('건강운', '너는 건강해 질거야~', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO THEME (theme_concept, card_back_last_content, created_at, updated_at)
-VALUES ('행운', '너에게 행운을 줄거야~', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO THEME (theme_concept, card_back_last_content, created_at, updated_at)
-VALUES ('재물운', '너는 부자가 될거야~', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO THEME (theme_concept, card_back_last_content, created_at, updated_at)
-VALUES ('애정운', '너에게 사랑을 줄거야~', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO THEME (theme_concept, created_at, updated_at)
+VALUES ('건강운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO THEME (theme_concept, created_at, updated_at)
+VALUES ('행운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO THEME (theme_concept, created_at, updated_at)
+VALUES ('재물운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO THEME (theme_concept, created_at, updated_at)
+VALUES ('애정운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치1', '행복해1', '뭐든 더 써봐1', 31, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
