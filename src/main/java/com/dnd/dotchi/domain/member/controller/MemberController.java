@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
-public class MemberController {
+public class MemberController implements MemberControllerDocs {
 
     private final MemberService memberService;
 
