@@ -12,6 +12,7 @@ import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
@@ -270,6 +271,26 @@ class CardServiceTest {
 
         // when, then
         assertThatNoException().isThrownBy(combinedFuture::get);
+    }
+
+    @Test
+    @DisplayName("카드를 삭제한다")
+    void deleteCard() {
+        // given
+        // data.sql
+
+        // when
+        final long oldCardCount = cardRepository.count();
+        final DeleteCardResponse result = cardService.delete(30L);
+
+        // then
+        final long newCardCount = cardRepository.count();
+        assertSoftly(softly -> {
+            final CardsRequestResultType resultType = CardsRequestResultType.DELETE_CARD_SUCCESS;
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(oldCardCount).isEqualTo(newCardCount + 1L);
+        });
     }
 
     private MultipartFile mockingMultipartFile(String fileName) {

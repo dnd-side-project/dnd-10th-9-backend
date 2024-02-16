@@ -131,11 +131,6 @@ public class CardService {
         throw e;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void deleteAllTodayCardTableAtMidnight() {
-        todayCardRepository.deleteAll();
-    }
-
     @Transactional(readOnly = true)
     public CardsAllResponse getCardAll(final CardsAllRequest request) {
         final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
@@ -148,7 +143,13 @@ public class CardService {
     }
 
     public DeleteCardResponse delete(final Long cardId) {
-        return null;
+        cardRepository.deleteById(cardId);
+        return DeleteCardResponse.from(CardsRequestResultType.DELETE_CARD_SUCCESS);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteAllTodayCardTableAtMidnight() {
+        todayCardRepository.deleteAll();
     }
 
 }
