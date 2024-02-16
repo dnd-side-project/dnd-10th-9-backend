@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/reports")
 @RequiredArgsConstructor
-public class ReportController {
+public class ReportController implements ReportControllerDocs {
 
     private final ReportService reportService;
 
     @PostMapping("{reportedId}")
     public ResponseEntity<ReportResponse> report(
-            @PathVariable("reportedId") Long reportedId,
-            @Valid @ModelAttribute ReportRequest request
+            @PathVariable("reportedId") final Long reportedId,
+            @Valid @ModelAttribute final ReportRequest request
     ) {
         final ReportResponse response = reportService.report(reportedId, request);
         return ResponseEntity.ok(response);
