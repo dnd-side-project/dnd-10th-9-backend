@@ -6,17 +6,17 @@ import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestRes
 
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
-import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
+import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.Theme;
 import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
-import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.domain.card.exception.ThemeExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
 import com.dnd.dotchi.domain.card.repository.ThemeRepository;
@@ -25,6 +25,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
+import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.infra.image.ImageUploader;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -130,20 +131,29 @@ public class CardService {
         throw e;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void deleteAllTodayCardTableAtMidnight() {
-        todayCardRepository.deleteAll();
-    }
-
     @Transactional(readOnly = true)
     public CardsAllResponse getCardAll(final CardsAllRequest request) {
         final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
-            request.cardSortType(),
-            request.lastCardId(),
-            request.lastCardCommentCount()
+                request.cardSortType(),
+                request.lastCardId(),
+                request.lastCardCommentCount()
         );
 
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
+    }
+
+    public DeleteCardResponse delete(final Long cardId) {
+        if (cardRepository.findById(cardId).isEmpty()) {
+            throw new NotFoundException(CardExceptionType.NOT_FOUND_CARD);
+        }
+
+        cardRepository.deleteById(cardId);
+        return DeleteCardResponse.from(CardsRequestResultType.DELETE_CARD_SUCCESS);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteAllTodayCardTableAtMidnight() {
+        todayCardRepository.deleteAll();
     }
 
 }
