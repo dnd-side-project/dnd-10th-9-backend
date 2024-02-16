@@ -46,3 +46,8 @@ logging:
 image:
   upload_url: ${user.dir}
   upload_directory: static/images
+
+jwt:
+  token:
+    secret-key: abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabc
+    access-expiration-time: 100000

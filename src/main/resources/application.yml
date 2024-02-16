@@ -45,3 +45,8 @@ logging:
 image:
   upload_url: ${IMAGE_UPLOAD_URL}
   upload_directory: ${IMAGE_UPLOAD_DIRECTORY}
+
+jwt:
+  token:
+    secret-key: ${SECRET_KEY}
+    access-expiration-time: ${ACCESS_EXPIRATION_TIME}

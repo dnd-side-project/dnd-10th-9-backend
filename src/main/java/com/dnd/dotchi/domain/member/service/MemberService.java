@@ -10,6 +10,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
+import com.dnd.dotchi.global.jwt.TokenProcessor;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final CardRepository cardRepository;
+    private final TokenProcessor tokenProcessor;
 
     @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfo(final Long memberId, final Long lastCardId) {
@@ -34,8 +36,13 @@ public class MemberService {
         return MemberInfoResponse.of(MemberRequestResultType.GET_MEMBER_INFO_SUCCESS, member, recentCardsByMember);
     }
 
+    @Transactional(readOnly = true)
     public MemberAuthorizationResponse login(final MemberAuthorizationRequest request) {
-        return null;
+        final Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+        final String accessToken = tokenProcessor.generateAccessToken(member.getId());
+
+        return MemberAuthorizationResponse.of(MemberRequestResultType.LOGIN_SUCCESS, member, accessToken);
     }
 
 }
