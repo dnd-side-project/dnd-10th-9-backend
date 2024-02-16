@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/blacklists")
 @RequiredArgsConstructor
-public class BlacklistController {
+public class BlacklistController implements BlacklistControllerDocs {
 
     private final BlacklistService blacklistService;
 
