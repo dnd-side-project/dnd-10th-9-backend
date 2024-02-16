@@ -21,8 +21,8 @@ public class MemberController implements MemberControllerDocs {
 
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberInfoResponse> getMemberInfo(
-            @PathVariable("memberId") Long memberId,
-            @Valid @ModelAttribute MemberInfoRequest request
+            @PathVariable("memberId") final Long memberId,
+            @Valid @ModelAttribute final MemberInfoRequest request
     ) {
         final MemberInfoResponse response = memberService.getMemberInfo(memberId, request.lastCardId());
         return ResponseEntity.ok(response);

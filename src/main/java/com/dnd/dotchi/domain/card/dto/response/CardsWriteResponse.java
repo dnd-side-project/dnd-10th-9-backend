@@ -13,7 +13,7 @@ public record CardsWriteResponse(
 	String message
 ) {
 
-	public static CardsWriteResponse of(final CardsRequestResultType resultType) {
+	public static CardsWriteResponse from(final CardsRequestResultType resultType) {
 		return new CardsWriteResponse(
 			resultType.getCode(),
 			resultType.getMessage()
