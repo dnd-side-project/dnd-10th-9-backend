@@ -293,6 +293,19 @@ class CardServiceTest {
         });
     }
 
+    @Test
+    @DisplayName("카드를 삭제할 시, 존재하지 않는 카드 ID이면 예외가 발생한다.")
+    void deleteCardNotFoundException() {
+        // given
+        // data.sql
+        final long cardId = cardRepository.count() + 1L;
+
+        // when, then
+        assertThatThrownBy(() -> cardService.delete(cardId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
+    }
+
     private MultipartFile mockingMultipartFile(String fileName) {
         return new MockMultipartFile(
                 "images",

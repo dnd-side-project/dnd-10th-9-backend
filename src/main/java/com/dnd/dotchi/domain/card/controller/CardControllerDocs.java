@@ -6,6 +6,7 @@ import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
 import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "카드", description = "카드 API")
 public interface CardControllerDocs {
@@ -90,5 +92,19 @@ public interface CardControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<CardsAllResponse> getCardsAll(final CardsAllRequest request);
+
+    @Operation(summary = "카드 삭제", description = "카드를 삭제한다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "카드 삭제 성공"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "존재하지 않는 카드 ID인 경우",
+            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    ResponseEntity<DeleteCardResponse> delete(
+            @Parameter(description = "카드 ID", example = "1") final Long cardId
+    );
 
 }

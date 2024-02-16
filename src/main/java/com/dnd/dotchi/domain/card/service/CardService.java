@@ -134,15 +134,19 @@ public class CardService {
     @Transactional(readOnly = true)
     public CardsAllResponse getCardAll(final CardsAllRequest request) {
         final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
-            request.cardSortType(),
-            request.lastCardId(),
-            request.lastCardCommentCount()
+                request.cardSortType(),
+                request.lastCardId(),
+                request.lastCardCommentCount()
         );
 
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
     }
 
     public DeleteCardResponse delete(final Long cardId) {
+        if (cardRepository.findById(cardId).isEmpty()) {
+            throw new NotFoundException(CardExceptionType.NOT_FOUND_CARD);
+        }
+
         cardRepository.deleteById(cardId);
         return DeleteCardResponse.from(CardsRequestResultType.DELETE_CARD_SUCCESS);
     }
