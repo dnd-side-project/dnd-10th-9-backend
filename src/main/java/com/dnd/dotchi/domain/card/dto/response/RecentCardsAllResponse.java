@@ -19,13 +19,13 @@ public record RecentCardsAllResponse(
         @Schema(description = "카드의 테마 ID")
         Long themeId,
 
-        @Schema(description = "따봉도치")
+        @Schema(description = "카드 이름")
         String backName,
 
-        @Schema(description = "행복해")
+        @Schema(description = "카드 기분")
         String backMood,
 
-        @Schema(description = "적어도 뭐는 쓰게")
+        @Schema(description = "카드 중간 문장")
         String backContent,
 
         @Schema(description = "카드의 댓글 수")

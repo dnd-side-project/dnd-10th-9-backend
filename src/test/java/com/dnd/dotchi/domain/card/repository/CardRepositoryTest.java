@@ -1,9 +1,12 @@
 package com.dnd.dotchi.domain.card.repository;
 
-import static org.assertj.core.api.SoftAssertions.*;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
+import com.dnd.dotchi.global.config.JpaConfig;
+import com.dnd.dotchi.global.config.QuerydslConfig;
 import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +14,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.dnd.dotchi.domain.card.entity.Card;
-import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
-import com.dnd.dotchi.global.config.JpaConfig;
-import com.dnd.dotchi.global.config.QuerydslConfig;
-
 @Import({JpaConfig.class, QuerydslConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class CardRepositoryTest {
+class CardRepositoryTest {
 
 	@Autowired
 	private CardRepository cardRepository;
@@ -119,6 +117,33 @@ public class CardRepositoryTest {
 			softly.assertThat(result.get(2).getId()).isEqualTo(15);
 			softly.assertThat(result.get(3).getId()).isEqualTo(16);
 			softly.assertThat(result.get(4).getId()).isEqualTo(17);
+		});
+	}
+
+	@Test
+	@DisplayName("특정 회원이 작성한 카드를 최신순으로 가져온다.")
+	void getCardsByMemberWithLatestSortType() {
+		// given
+		// data.sql
+		final long memberId = 1L;
+		final long lastCardId = 25L;
+
+		// when
+		final List<Card> recent = cardRepository.findCardsByMemberWithFilteringAndPaging(memberId, lastCardId);
+
+		// then
+		assertSoftly(softly -> {
+			softly.assertThat(recent).hasSize(10);
+			softly.assertThat(recent.get(0).getId()).isEqualTo(23);
+			softly.assertThat(recent.get(1).getId()).isEqualTo(21);
+			softly.assertThat(recent.get(2).getId()).isEqualTo(19);
+			softly.assertThat(recent.get(3).getId()).isEqualTo(17);
+			softly.assertThat(recent.get(4).getId()).isEqualTo(15);
+			softly.assertThat(recent.get(5).getId()).isEqualTo(13);
+			softly.assertThat(recent.get(6).getId()).isEqualTo(11);
+			softly.assertThat(recent.get(7).getId()).isEqualTo(9);
+			softly.assertThat(recent.get(8).getId()).isEqualTo(7);
+			softly.assertThat(recent.get(9).getId()).isEqualTo(5);
 		});
 	}
 

@@ -1,16 +1,18 @@
 package com.dnd.dotchi.domain.card.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
+import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.RecentCardsAllResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
@@ -23,14 +25,12 @@ import com.dnd.dotchi.domain.card.repository.CardRepository;
 import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.global.exception.NotFoundException;
-import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import jakarta.persistence.EntityManager;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,6 +109,41 @@ class CardServiceTest {
             softly.assertThat(responses.get(2).cardId()).isEqualTo(10);
             softly.assertThat(responses.get(3).cardId()).isEqualTo(6);
             softly.assertThat(responses.get(4).cardId()).isEqualTo(2);
+        });
+    }
+
+    @Test
+    @DisplayName("전체 카드를 인기순으로 가져온다.")
+    void getCardsAllWithHotSortType() {
+        // given
+        // data.sql
+        final CardsAllRequest request = new CardsAllRequest(
+                CardSortType.HOT,
+                20L,
+                20L
+        );
+
+        // when
+
+        final CardsAllResponse result = cardService.getCardAll(request);
+
+        // then
+        final List<RecentCardsAllResponse> responses = result.result().recentCards();
+        final CardsRequestResultType resultType = CardsRequestResultType.GET_CARDS_ALL_SUCCESS;
+        assertSoftly(softly -> {
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(responses).hasSize(10);
+            softly.assertThat(responses.get(0).cardId()).isEqualTo(13);
+            softly.assertThat(responses.get(1).cardId()).isEqualTo(14);
+            softly.assertThat(responses.get(2).cardId()).isEqualTo(15);
+            softly.assertThat(responses.get(3).cardId()).isEqualTo(16);
+            softly.assertThat(responses.get(4).cardId()).isEqualTo(17);
+            softly.assertThat(responses.get(5).cardId()).isEqualTo(18);
+            softly.assertThat(responses.get(6).cardId()).isEqualTo(19);
+            softly.assertThat(responses.get(7).cardId()).isEqualTo(20);
+            softly.assertThat(responses.get(8).cardId()).isEqualTo(21);
+            softly.assertThat(responses.get(9).cardId()).isEqualTo(22);
         });
     }
 
@@ -236,7 +271,6 @@ class CardServiceTest {
         // when, then
         assertThatNoException().isThrownBy(combinedFuture::get);
     }
-
 
     private MultipartFile mockingMultipartFile(String fileName) {
         return new MockMultipartFile(

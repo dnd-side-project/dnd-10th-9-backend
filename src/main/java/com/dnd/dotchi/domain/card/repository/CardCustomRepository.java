@@ -7,16 +7,21 @@ import java.util.List;
 public interface CardCustomRepository {
 
     List<Card> findCardsByThemeWithFilteringAndPaging(
-            Long themeId,
-            CardSortType cardSortType,
-            Long lastCardId,
-            Long lastCardCommentCount
+            final Long themeId,
+            final CardSortType cardSortType,
+            final Long lastCardId,
+            final Long lastCardCommentCount
     );
 
     List<Card> findCardsAllWithFilteringAndPaging(
-            CardSortType cardSortType,
-            Long lastCardId,
-            Long lastCardCommentCount
+            final CardSortType cardSortType,
+            final Long lastCardId,
+            final Long lastCardCommentCount
+    );
+
+    List<Card> findCardsByMemberWithFilteringAndPaging(
+            final Long memberId,
+            final Long lastCardId
     );
 
 }
