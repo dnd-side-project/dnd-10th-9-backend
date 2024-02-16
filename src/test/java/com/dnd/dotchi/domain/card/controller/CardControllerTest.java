@@ -139,7 +139,7 @@ class CardControllerTest {
         // given
         final String contenBody = "image";
 
-        final CardsWriteResponse response = CardsWriteResponse.of(CardsRequestResultType.WRITE_CARDS_SUCCESS);
+        final CardsWriteResponse response = CardsWriteResponse.from(CardsRequestResultType.WRITE_CARDS_SUCCESS);
         given(cardService.write(any())).willReturn(response);
 
         // when
