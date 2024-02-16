@@ -31,7 +31,7 @@ class BlacklistServiceTest {
 
     @Test
     @DisplayName("유저를 차단한다.")
-    void report() {
+    void block() {
         // given
         final long blacklisterId = 1L;
         final long blacklistedId = 2L;
@@ -55,7 +55,7 @@ class BlacklistServiceTest {
 
     @Test
     @DisplayName("차단할 시, blacklister ID가 존재하지 않을 때 예외가 발생한다.")
-    void reportNotFoundReporterError() {
+    void blockNotFoundBlacklisterError() {
         // given
         final long blacklisterId = 0L;
         final long blacklistedId = 2L;
@@ -69,7 +69,7 @@ class BlacklistServiceTest {
 
     @Test
     @DisplayName("차단할 시, blacklisted ID가 존재하지 않을 때 예외가 발생한다.")
-    void reportNotFoundReportedError() {
+    void blockNotFoundBlacklistedError() {
         // given
         final long blacklisterId = 1L;
         final long blacklistedId = 0L;
