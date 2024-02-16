@@ -11,6 +11,7 @@ import com.dnd.dotchi.domain.report.repository.ReportRepository;
 import com.dnd.dotchi.domain.report.request.ReportRequest;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,6 @@ class ReportServiceTest {
             softly.assertThat(response.code()).isEqualTo(resultType.getCode());
             softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
         });
-        reportRepository.deleteAll();
     }
 
     @Test
@@ -83,4 +83,8 @@ class ReportServiceTest {
                 .hasMessage(MemberExceptionType.NOT_FOUND_MEMBER.getMessage());
     }
 
+    @AfterEach
+    void tearDown() {
+        reportRepository.deleteAll();
+    }
 }
