@@ -4,6 +4,15 @@ VALUES (1, '회원이다1', 'abc1@email.com', '회원1', 'http://example.com/ima
 INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
 VALUES (2, '회원이다2', 'abc2@email.com', '회원2', 'http://example.com/image2.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+VALUES (3, '회원이다3', 'abc3@email.com', '회원3', 'http://example.com/image3.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+VALUES (4, '회원이다4', 'abc4@email.com', '회원4', 'http://example.com/image4.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+VALUES (5, '회원이다5', 'abc5@email.com', '회원5', 'http://example.com/image5.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
 
 INSERT INTO THEME (theme_concept, card_back_last_content, created_at, updated_at)
 VALUES ('건강운', '너는 건강해 질거야~', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -105,3 +114,20 @@ VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치29', '행복해29', '
 -- 삭제 테스트 용도 카드
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치30', '행복해30', '뭐든 더 써봐30', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
+VALUES (2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
+VALUES (5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
+VALUES (4, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
+VALUES (3, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
+VALUES (5, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
+VALUES (1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+

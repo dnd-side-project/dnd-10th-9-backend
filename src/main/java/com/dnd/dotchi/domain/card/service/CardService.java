@@ -1,36 +1,10 @@
 package com.dnd.dotchi.domain.card.service;
 
-import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS;
-import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_CARDS_SUCCESS;
-import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
+import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.*;
 
-import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
-import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
-import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
-import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
-import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
-import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
-import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
-import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
-import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
-import com.dnd.dotchi.domain.card.entity.Card;
-import com.dnd.dotchi.domain.card.entity.Theme;
-import com.dnd.dotchi.domain.card.entity.TodayCard;
-import com.dnd.dotchi.domain.card.exception.CardExceptionType;
-import com.dnd.dotchi.domain.card.exception.ThemeExceptionType;
-import com.dnd.dotchi.domain.card.repository.CardRepository;
-import com.dnd.dotchi.domain.card.repository.ThemeRepository;
-import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
-import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
-import com.dnd.dotchi.domain.member.repository.MemberRepository;
-import com.dnd.dotchi.global.exception.NotFoundException;
-import com.dnd.dotchi.global.exception.RetryLimitExceededException;
-import com.dnd.dotchi.infra.image.ImageUploader;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
@@ -39,6 +13,36 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
+import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
+import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
+import com.dnd.dotchi.domain.card.dto.response.CardsAllResponse;
+import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
+import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
+import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
+import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.Comment;
+import com.dnd.dotchi.domain.card.entity.Theme;
+import com.dnd.dotchi.domain.card.entity.TodayCard;
+import com.dnd.dotchi.domain.card.exception.CardExceptionType;
+import com.dnd.dotchi.domain.card.exception.ThemeExceptionType;
+import com.dnd.dotchi.domain.card.repository.CardRepository;
+import com.dnd.dotchi.domain.card.repository.CommentRepository;
+import com.dnd.dotchi.domain.card.repository.ThemeRepository;
+import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
+import com.dnd.dotchi.domain.member.entity.Member;
+import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
+import com.dnd.dotchi.domain.member.repository.MemberRepository;
+import com.dnd.dotchi.global.exception.NotFoundException;
+import com.dnd.dotchi.global.exception.RetryLimitExceededException;
+import com.dnd.dotchi.infra.image.ImageUploader;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Transactional
@@ -50,6 +54,7 @@ public class CardService {
     private final ThemeRepository themeJpaRepository;
     private final MemberRepository memberJpaRepository;
     private final ImageUploader imageUploader;
+    private final CommentRepository commentRepository;
 
     public CardsWriteResponse write(final CardsWriteRequest request) {
         final String fileFullPath = imageUploader.upload(request.image());
@@ -156,4 +161,20 @@ public class CardService {
         todayCardRepository.deleteAll();
     }
 
+    @Transactional(readOnly = true)
+    public GetCommentOnCardResponse getCommentOnCard(final Long cardId) {
+        final Card card = cardRepository.findById(cardId)
+            .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
+
+        final List<Member> authors
+            = commentRepository.findTop3ByCardIdOrderByIdDesc(cardId).stream()
+            .map(Comment::getMember)
+            .toList();
+
+        return GetCommentOnCardResponse.of(
+            card,
+            authors,
+            CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
+        );
+    }
 }

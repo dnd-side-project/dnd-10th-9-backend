@@ -9,15 +9,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "전체 카드 최신순/인기순 응답")
 public record CadsAllResultResponse(
 	@Schema(description = "전체 카드 최신순/인기순 응답")
-	List<RecentCardsAllResponse> recentCards
+	List<CardsResponse> recentCards
 ) {
 	public static CadsAllResultResponse from(final List<Card> cards) {
 		return new CadsAllResultResponse(parseRecentCardsAllResponse(cards));
 	}
 
-	private static List<RecentCardsAllResponse> parseRecentCardsAllResponse(final List<Card> cards) {
+	private static List<CardsResponse> parseRecentCardsAllResponse(final List<Card> cards) {
 		return cards.stream()
-			.map(RecentCardsAllResponse::from)
+			.map(CardsResponse::from)
 			.toList();
 	}
 }
