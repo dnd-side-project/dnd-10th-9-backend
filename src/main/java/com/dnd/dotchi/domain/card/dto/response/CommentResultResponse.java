@@ -6,6 +6,7 @@ import com.dnd.dotchi.domain.card.entity.Card;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "카드 정보 및 댓글에 대한 응답")
 public record CommentResultResponse(
 	@Schema(description = "카드 상세 정보")
 	CardsResponse card,

@@ -123,6 +123,11 @@ public interface CardControllerDocs {
 	)
 	ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(final Long cardId);
 
+	@Operation(summary = "메인 홈 조회", description = "메인 홈을 조회한다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "메인 홈 조회 성공"
+	)
 	ResponseEntity<HomePageResponse> home();
 
 }
