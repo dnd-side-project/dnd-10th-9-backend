@@ -48,9 +48,10 @@ class ReportControllerTest {
     void reportReturn200Success() {
         // given
         // data.sql
+        final long reporterId = 1L;
         final long reportedId = 2L;
         final String reason = "이상한 글을 씁니다.";
-        final ReportRequest request = new ReportRequest(reason);
+        final ReportRequest request = new ReportRequest(reporterId, reason);
         final ReportResponse response = ReportResponse.from(ReportRequestResultType.REPORT_SUCCESS);
 
         given(reportService.report(reportedId, request)).willReturn(response);
@@ -59,6 +60,7 @@ class ReportControllerTest {
         final ReportResponse result = RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("reportedId", reportedId)
+                .param("reporterId", reporterId)
                 .param("reason", reason)
                 .when().post("/reports/{reportedId}")
                 .then().log().all()
@@ -76,6 +78,7 @@ class ReportControllerTest {
     void reportReturn400BadRequest() {
         // given
         // data.sql
+        final long reporterId = 1L;
         final long reportedId = 2L;
         final String reason = "가".repeat(51);
 
@@ -83,6 +86,7 @@ class ReportControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("reportedId", reportedId)
+                .param("reporterId", reporterId)
                 .param("reason", reason)
                 .when().post("/reports/{reportedId}")
                 .then().log().all()
