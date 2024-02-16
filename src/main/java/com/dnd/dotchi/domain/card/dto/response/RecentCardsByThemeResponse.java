@@ -17,13 +17,13 @@ public record RecentCardsByThemeResponse(
         @Schema(description = "카드 이미지 URL")
         String cardImageUrl,
 
-        @Schema(description = "1")
+        @Schema(description = "테마 ID")
         Long themeId,
 
-        @Schema(description = "따봉도치")
+        @Schema(description = "카드 이름")
         String backName,
 
-        @Schema(description = "30")
+        @Schema(description = "카드 댓글 개수")
         Long commentCount
 ) {
 

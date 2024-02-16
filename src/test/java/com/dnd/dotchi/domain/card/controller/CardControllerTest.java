@@ -14,7 +14,6 @@ import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
-import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
@@ -27,20 +26,15 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(CardController.class)
 class CardControllerTest {
-
-    @Autowired
-    MockMvc mockMvc;
 
     @MockBean
     CardService cardService;
@@ -98,19 +92,6 @@ class CardControllerTest {
     @DisplayName("테마별 카드 조회에 잘못된 값으로 요청하면 400 응답을 반환한다.")
     void getCardsByThemeReturn400BadRequest() {
         // given
-        final CardsByThemeRequest request = new CardsByThemeRequest(
-                1L,
-                CardSortType.HOT,
-                1L,
-                1L
-        );
-
-        final CardsByThemeResponse response = CardsByThemeResponse.of(
-                CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS,
-                List.of()
-        );
-
-        given(cardService.getCardsByTheme(request)).willReturn(response);
 
         // when, then
         RestAssuredMockMvc.given().log().all()
@@ -158,7 +139,7 @@ class CardControllerTest {
         // given
         final String contenBody = "image";
 
-        final CardsWriteResponse response = CardsWriteResponse.of(CardsRequestResultType.WRITE_CARDS_SUCCESS);
+        final CardsWriteResponse response = CardsWriteResponse.from(CardsRequestResultType.WRITE_CARDS_SUCCESS);
         given(cardService.write(any())).willReturn(response);
 
         // when
@@ -270,18 +251,7 @@ class CardControllerTest {
     @DisplayName("전체 카드 조회에 잘못된 값으로 요청하면 400 응답을 반환한다.")
     void getCardsAllReturn400BadRequest() {
         // given
-        final CardsAllRequest request = new CardsAllRequest(
-            CardSortType.HOT,
-            1L,
-            1L
-        );
 
-        final CardsAllResponse response = CardsAllResponse.of(
-            CardsRequestResultType.GET_CARDS_ALL_SUCCESS,
-            List.of()
-        );
-
-        given(cardService.getCardAll(request)).willReturn(response);
         // when, then
         RestAssuredMockMvc.given().log().all()
             .contentType(MediaType.APPLICATION_JSON)

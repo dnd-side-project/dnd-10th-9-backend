@@ -63,7 +63,7 @@ public class CardService {
                 .build();
         cardRepository.save(cardEntity);
 
-        return CardsWriteResponse.of(WRITE_CARDS_SUCCESS);
+        return CardsWriteResponse.from(WRITE_CARDS_SUCCESS);
     }
 
     private Member getMember(CardsWriteRequest cardsWriteRequest) {
