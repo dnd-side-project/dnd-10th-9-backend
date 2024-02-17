@@ -3,7 +3,9 @@ package com.dnd.dotchi.domain.report.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
+import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.domain.report.dto.response.ReportResponse;
 import com.dnd.dotchi.domain.report.dto.response.resultinfo.ReportRequestResultType;
 import com.dnd.dotchi.domain.report.entity.Report;
@@ -28,6 +30,9 @@ class ReportServiceTest {
     @Autowired
     ReportRepository reportRepository;
 
+    @Autowired
+    MemberRepository memberRepository;
+
     @Test
     @DisplayName("유저를 신고한다.")
     void report() {
@@ -35,10 +40,11 @@ class ReportServiceTest {
         final long reporterId = 1L;
         final long reportedId = 2L;
         final String reason = "이상한 글을 씁니다.";
-        final ReportRequest request = new ReportRequest(reporterId, reason);
+        final ReportRequest request = new ReportRequest(reason);
+        final Member member = memberRepository.findById(reporterId).get();
 
         // when
-        final ReportResponse response = reportService.report(reportedId, request);
+        final ReportResponse response = reportService.report(reportedId, request, member);
 
         // then
         final List<Report> reports = reportRepository.findAll();
@@ -54,31 +60,17 @@ class ReportServiceTest {
     }
 
     @Test
-    @DisplayName("신고할 시, 신고자 ID가 존재하지 않을 때 예외가 발생한다.")
-    void reportNotFoundReporterError() {
-        // given
-        final long reporterId = 0L;
-        final long reportedId = 2L;
-        final String reason = "이상한 글을 씁니다.";
-        final ReportRequest request = new ReportRequest(reporterId, reason);
-
-        // when, then
-        assertThatThrownBy(() -> reportService.report(reportedId, request))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage(MemberExceptionType.NOT_FOUND_MEMBER.getMessage());
-    }
-
-    @Test
     @DisplayName("신고할 시, 신고 당한 유저 ID가 존재하지 않을 때 예외가 발생한다.")
     void reportNotFoundReportedError() {
         // given
         final long reporterId = 1L;
         final long reportedId = 0L;
         final String reason = "이상한 글을 씁니다.";
-        final ReportRequest request = new ReportRequest(reporterId, reason);
+        final ReportRequest request = new ReportRequest(reason);
+        final Member member = memberRepository.findById(reporterId).get();
 
         // when, then
-        assertThatThrownBy(() -> reportService.report(reportedId, request))
+        assertThatThrownBy(() -> reportService.report(reportedId, request, member))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(MemberExceptionType.NOT_FOUND_MEMBER.getMessage());
     }

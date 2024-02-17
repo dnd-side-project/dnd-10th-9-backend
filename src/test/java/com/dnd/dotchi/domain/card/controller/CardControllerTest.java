@@ -1,23 +1,11 @@
 package com.dnd.dotchi.domain.card.controller;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
@@ -37,13 +25,24 @@ import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
 import com.dnd.dotchi.infra.image.ImageUploader;
-
+import com.dnd.dotchi.test.ControllerTest;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import java.io.IOException;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(CardController.class)
-class CardControllerTest {
+class CardControllerTest extends ControllerTest {
 
     @MockBean
     CardService cardService;
@@ -52,13 +51,14 @@ class CardControllerTest {
     ImageUploader imageUploader;
 
     @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) {
+    void setUp(WebApplicationContext webApplicationContext) throws Exception {
         RestAssuredMockMvc.standaloneSetup(
                 MockMvcBuilders
                         .standaloneSetup(new CardController(cardService))
                         .setControllerAdvice(GlobalExceptionHandler.class)
         );
         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        mockingAuthArgumentResolver();
     }
 
     @Test
@@ -81,11 +81,11 @@ class CardControllerTest {
 
         // when
         final CardsByThemeResponse result = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("themeId", 1L)
-                .param("cardSortType", CardSortType.HOT)
-                .param("lastCardId", 1L)
-                .param("lastCardCommentCount", 1L)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .queryParam("themeId", 1L)
+                .queryParam("cardSortType", CardSortType.HOT)
+                .queryParam("lastCardId", 1L)
+                .queryParam("lastCardCommentCount", 1L)
                 .when().get("/cards/theme")
                 .then().log().all()
                 .status(HttpStatus.OK)
@@ -104,11 +104,11 @@ class CardControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("themeId", 0L)
-                .param("cardSortType", CardSortType.HOT)
-                .param("lastCardId", 0L)
-                .param("lastCardCommentCount", 0L)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .queryParam("themeId", 0L)
+                .queryParam("cardSortType", CardSortType.HOT)
+                .queryParam("lastCardId", 0L)
+                .queryParam("lastCardCommentCount", 0L)
                 .when().get("/cards/theme")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
@@ -125,11 +125,11 @@ class CardControllerTest {
         // data.sql
         final WriteCommentOnCardResponse response =
                 WriteCommentOnCardResponse.from(CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS);
-        given(cardService.writeCommentOnCard(anyLong())).willReturn(response);
+        given(cardService.writeCommentOnCard(any(), anyLong())).willReturn(response);
 
         // when
         final WriteCommentOnCardResponse result = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .pathParam("cardId", 1L)
                 .when().post("/cards/{cardId}/comments")
                 .then().log().all()
@@ -149,18 +149,18 @@ class CardControllerTest {
         final String contentBody = "image";
 
         final CardsWriteResponse response = CardsWriteResponse.from(CardsRequestResultType.WRITE_CARDS_SUCCESS);
-        given(cardService.write(any())).willReturn(response);
+        given(cardService.write(any(), any())).willReturn(response);
 
         // when
 
         final CardsWriteResponse result = RestAssuredMockMvc.given().log().all()
-                .contentType(ContentType.MULTIPART)
-                .param("memberId", 1L)
-                .param("themeId", 1L)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .formParam("themeId", 1L)
                 .multiPart("image", contentBody, MediaType.IMAGE_PNG_VALUE)
-                .param("backName", "따봉도치")
-                .param("backMood", "행복해")
-                .param("backContent", "아무거나")
+                .formParam("backName", "따봉도치")
+                .formParam("backMood", "행복해")
+                .formParam("backContent", "아무거나")
                 .when().post("/cards")
                 .then().log().all()
                 .status(HttpStatus.OK)
@@ -180,18 +180,17 @@ class CardControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
-                .contentType(ContentType.MULTIPART)
-                .param("memberId", 0L)
-                .param("themeId", "")
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .formParam("themeId", "")
                 .multiPart("image", contentBody, MediaType.IMAGE_JPEG_VALUE)
-                .param("backName", "제목 넘지마 따봉도치")
-                .param("backMood", "엄지가 절로 올라가지마 따봉도치")
-                .param("backContent", "따봉도치 20글자 절대로 넘지마 확인할거니까")
+                .formParam("backName", "제목 넘지마 따봉도치")
+                .formParam("backMood", "엄지가 절로 올라가지마 따봉도치")
+                .formParam("backContent", "따봉도치 20글자 절대로 넘지마 확인할거니까")
                 .when().post("/cards")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body("code", equalTo(200))
-                .body("message", containsString("멤버 ID는 양수만 가능합니다."))
                 .body("message", containsString("테마 ID는 빈 값일 수 없습니다."))
                 .body("message", containsString("따봉네임은 7자를 넘을 수 없습니다."))
                 .body("message", containsString("오늘의 기분은 15자를 넘을 수 없습니다."))
@@ -207,13 +206,13 @@ class CardControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
-                .contentType(ContentType.MULTIPART)
-                .param("memberId", 1L)
-                .param("themeId", 1L)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .formParam("themeId", 1L)
                 .multiPart("image", contentBody, MediaType.TEXT_PLAIN_VALUE)
-                .param("backName", "따봉도치")
-                .param("backMood", "엄지가 절로 올라가")
-                .param("backContent", "따봉도치 20글자")
+                .formParam("backName", "따봉도치")
+                .formParam("backMood", "엄지가 절로 올라가")
+                .formParam("backContent", "따봉도치 20글자")
                 .when().post("/cards")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
@@ -241,10 +240,10 @@ class CardControllerTest {
 
         // when
         final CardsAllResponse result = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("cardSortType", CardSortType.HOT)
-                .param("lastCardId", 1L)
-                .param("lastCardCommentCount", 1L)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .queryParam("cardSortType", CardSortType.HOT)
+                .queryParam("lastCardId", 1L)
+                .queryParam("lastCardCommentCount", 1L)
                 .when().get("/cards/all")
                 .then().log().all()
                 .status(HttpStatus.OK)
@@ -263,10 +262,10 @@ class CardControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("cardSortType", CardSortType.HOT)
-                .param("lastCardId", 0L)
-                .param("lastCardCommentCount", 0L)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .queryParam("cardSortType", CardSortType.HOT)
+                .queryParam("lastCardId", 0L)
+                .queryParam("lastCardCommentCount", 0L)
                 .when().get("/cards/all")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
@@ -282,11 +281,11 @@ class CardControllerTest {
         final long cardId = 1L;
         final DeleteCardResponse response = DeleteCardResponse.from(CardsRequestResultType.DELETE_CARD_SUCCESS);
 
-        given(cardService.delete(cardId)).willReturn(response);
+        given(cardService.delete(any(), anyLong())).willReturn(response);
 
         // when
         final DeleteCardResponse result = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .pathParam("cardId", cardId)
                 .when().delete("/cards/{cardId}")
                 .then().log().all()
@@ -304,43 +303,43 @@ class CardControllerTest {
     void getCommentsReturn400BadRequest() {
         // given
         final Member member = new Member(
-            1L,
-            "",
-            "test@mail.com",
-            "test",
-            "test.jpg"
+                1L,
+                "",
+                "test@mail.com",
+                "test",
+                "test.jpg"
         );
 
-        final Theme theme = new Theme("test", "test");
+        final Theme theme = new Theme("test");
 
         final Card card = new Card(
-            member,
-            theme,
-            "test",
-            "test",
-            "test",
-            "test"
+                member,
+                theme,
+                "test",
+                "test",
+                "test",
+                "test"
         );
 
         final GetCommentOnCardResponse response =
-            GetCommentOnCardResponse.of(
-                card,
-                List.of(),
-                CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
-            );
+                GetCommentOnCardResponse.of(
+                        card,
+                        List.of(),
+                        CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
+                );
 
         given(cardService.getCommentOnCard(anyLong())).willReturn(response);
 
         // when
         final GetCommentOnCardResponse result = RestAssuredMockMvc.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON)
-            .pathParam("cardId", 1L)
-            .when().get("/cards/{cardId}/comments")
-            .then().log().all()
-            .status(HttpStatus.OK)
-            .extract()
-            .as(new TypeRef<>() {
-            });
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .pathParam("cardId", 1L)
+                .when().get("/cards/{cardId}/comments")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract()
+                .as(new TypeRef<>() {
+                });
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(response);

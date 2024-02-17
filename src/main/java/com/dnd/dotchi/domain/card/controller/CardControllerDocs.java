@@ -1,7 +1,5 @@
 package com.dnd.dotchi.domain.card.controller;
 
-import org.springframework.http.ResponseEntity;
-
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
@@ -12,14 +10,15 @@ import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 
 @Tag(name = "카드", description = "카드 API")
 public interface CardControllerDocs {
@@ -45,7 +44,7 @@ public interface CardControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<CardsWriteResponse> write(final CardsWriteRequest request);
+    ResponseEntity<CardsWriteResponse> write(final Member member, final CardsWriteRequest request);
 
     @Operation(summary = "테마별 카드 조회", description = "테마별 카드를 조회한다.")
     @ApiResponse(
@@ -65,7 +64,10 @@ public interface CardControllerDocs {
             description = "존재하지 않는 테마 ID인 경우",
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<CardsByThemeResponse> getCardsByTheme(final CardsByThemeRequest request);
+    ResponseEntity<CardsByThemeResponse> getCardsByTheme(
+            final Member member,
+            final CardsByThemeRequest request
+    );
 
     @Operation(summary = "댓글 작성", description = "카드에 댓글을 작성한다.")
     @ApiResponse(
@@ -78,6 +80,7 @@ public interface CardControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<WriteCommentOnCardResponse> writeCommentOnCard(
+            final Member member,
             @Parameter(description = "카드 ID", example = "1") final Long cardId
     );
 
@@ -94,34 +97,41 @@ public interface CardControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<CardsAllResponse> getCardsAll(final CardsAllRequest request);
+    ResponseEntity<CardsAllResponse> getCardsAll(
+            final Member member,
+            final CardsAllRequest request
+    );
 
 
-	@Operation(summary = "카드 삭제", description = "카드를 삭제한다.")
-	@ApiResponse(
-		responseCode = "200",
-		description = "카드 삭제 성공"
-	)
-	@ApiResponse(
-		responseCode = "404",
-		description = "존재하지 않는 카드 ID인 경우",
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
-	ResponseEntity<DeleteCardResponse> delete(
-		@Parameter(description = "카드 ID", example = "1") final Long cardId
-	);
+    @Operation(summary = "카드 삭제", description = "카드를 삭제한다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "카드 삭제 성공"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "존재하지 않는 카드 ID인 경우",
+            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    ResponseEntity<DeleteCardResponse> delete(
+            final Member member,
+            @Parameter(description = "카드 ID", example = "1") final Long cardId
+    );
 
-	@Operation(summary = "댓글 조회", description = "카드의 댓글을 조회한다.")
-	@ApiResponse(
-			responseCode = "200",
-			description = "댓글 조회 성공"
-	)
-	@ApiResponse(
-			responseCode = "404",
-			description = "존재하지 않는 카드인 경우",
-			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
-	ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(final Long cardId);
+    @Operation(summary = "댓글 조회", description = "카드의 댓글을 조회한다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "댓글 조회 성공"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "존재하지 않는 카드인 경우",
+            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(
+            final Member member,
+            final Long cardId
+    );
 
 	@Operation(summary = "메인 홈 조회", description = "메인 홈을 조회한다.")
 	@ApiResponse(
