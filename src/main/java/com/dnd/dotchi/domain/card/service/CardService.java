@@ -1,18 +1,8 @@
 package com.dnd.dotchi.domain.card.service;
 
-import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.*;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS;
+import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_CARDS_SUCCESS;
+import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
@@ -35,14 +25,22 @@ import com.dnd.dotchi.domain.card.repository.CommentRepository;
 import com.dnd.dotchi.domain.card.repository.ThemeRepository;
 import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.infra.image.ImageUploader;
-
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Transactional
@@ -56,11 +54,11 @@ public class CardService {
     private final ImageUploader imageUploader;
     private final CommentRepository commentRepository;
 
-    public CardsWriteResponse write(final CardsWriteRequest request) {
+    public CardsWriteResponse write(final CardsWriteRequest request, final Member member) {
         final String fileFullPath = imageUploader.upload(request.image());
 
         final Card cardEntity = Card.builder()
-                .member(getMember(request))
+                .member(member)
                 .theme(getTheme(request))
                 .imageUrl(fileFullPath)
                 .backName(request.backName())
@@ -70,11 +68,6 @@ public class CardService {
         cardRepository.save(cardEntity);
 
         return CardsWriteResponse.from(WRITE_CARDS_SUCCESS);
-    }
-
-    private Member getMember(CardsWriteRequest cardsWriteRequest) {
-        return memberJpaRepository.findById(cardsWriteRequest.memberId())
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     private Theme getTheme(CardsWriteRequest cardsWriteRequest) {

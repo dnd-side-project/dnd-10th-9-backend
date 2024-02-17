@@ -10,11 +10,6 @@ import jakarta.validation.constraints.Size;
 
 @Schema(description = "카드 작성시 요청")
 public record CardsWriteRequest(
-	@Schema(description = "멤버 ID", example = "1")
-	@NotNull(message = "멤버 ID는 빈 값일 수 없습니다.")
-	@Positive(message = "멤버 ID는 양수만 가능합니다.")
-	Long memberId,
-
 	@Schema(description = "테마 ID", example = "1")
 	@NotNull(message = "테마 ID는 빈 값일 수 없습니다.")
 	@Positive(message = "테마 ID는 양수만 가능합니다.")

@@ -45,4 +45,10 @@ public class MemberService {
         return MemberAuthorizationResponse.of(MemberRequestResultType.LOGIN_SUCCESS, member, accessToken);
     }
 
+    @Transactional(readOnly = true)
+    public Member findById(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    }
+
 }

@@ -12,6 +12,7 @@ import com.dnd.dotchi.domain.member.dto.response.resultinfo.MemberRequestResultT
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
+import com.dnd.dotchi.test.ControllerTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -27,19 +29,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(MemberController.class)
-class MemberControllerTest {
-
-    @MockBean
-    MemberService memberService;
+class MemberControllerTest extends ControllerTest {
 
     @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) {
+    void setUp(WebApplicationContext webApplicationContext) throws Exception {
         RestAssuredMockMvc.standaloneSetup(
                 MockMvcBuilders
                         .standaloneSetup(new MemberController(memberService))
                         .setControllerAdvice(GlobalExceptionHandler.class)
         );
         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        mockingAuthArgumentResolver();
     }
 
     @Test
@@ -59,6 +59,7 @@ class MemberControllerTest {
 
         // when
         final MemberInfoResponse result = RestAssuredMockMvc.given().log().all()
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .pathParam("memberId", memberId)
                 .queryParam("lastCardId", lastCardId)
                 .when().get("/members/{memberId}")
@@ -81,6 +82,7 @@ class MemberControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
+                .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .pathParam("memberId", memberId)
                 .param("lastCardId", lastCardId)
                 .when().get("/members/{memberId}")

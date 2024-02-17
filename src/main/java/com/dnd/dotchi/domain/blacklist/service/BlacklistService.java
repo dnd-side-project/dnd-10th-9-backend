@@ -1,6 +1,5 @@
 package com.dnd.dotchi.domain.blacklist.service;
 
-import com.dnd.dotchi.domain.blacklist.dto.request.BlockRequest;
 import com.dnd.dotchi.domain.blacklist.dto.response.BlockResponse;
 import com.dnd.dotchi.domain.blacklist.dto.response.resulltinfo.BlockRequestResultType;
 import com.dnd.dotchi.domain.blacklist.entity.BlackList;
@@ -21,9 +20,7 @@ public class BlacklistService {
     private final BlackListRepository blackListRepository;
     private final MemberRepository memberRepository;
 
-    public BlockResponse block(final Long blacklistedId, final BlockRequest request) {
-        final Member blacklister = memberRepository.findById(request.blacklisterId())
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public BlockResponse block(final Long blacklistedId, final Member blacklister) {
         final Member blacklisted = memberRepository.findById(blacklistedId)
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
         final BlackList blackList = BlackList.builder()

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dnd.dotchi.domain.member.entity.Member;
+import com.dnd.dotchi.domain.member.service.MemberService;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,6 +56,9 @@ class CardServiceTest {
 
     @Autowired
     CardRepository cardRepository;
+
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     TodayCardRepository todayCardRepository;
@@ -158,15 +163,16 @@ class CardServiceTest {
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
                 2L,
-                2L,
                 mockingMultipartFile("test.jpg"),
                 "hihi",
                 "happy",
                 "good"
         );
 
+        final Member member = memberService.findById(1L);
+
         // when
-        final CardsWriteResponse result = cardService.write(request);
+        final CardsWriteResponse result = cardService.write(request, member);
 
         // then
         assertSoftly(softly -> {
@@ -176,35 +182,11 @@ class CardServiceTest {
     }
 
     @Test
-    @DisplayName("카드 작성 시 멤버 ID가 존재하지 않을 경우를 테스트한다.")
-    void writeResponseNotFoundErrorMember() {
-        // given
-        // data.sql
-        final CardsWriteRequest request = new CardsWriteRequest(
-                1000L,
-                2L,
-                mockingMultipartFile("test.jpg"),
-                "hihi",
-                "happy",
-                "good"
-        );
-
-        // when
-        final NotFoundException exception
-                = assertThrows(NotFoundException.class, () -> cardService.write(request));
-
-        // then
-        assertEquals(MemberExceptionType.NOT_FOUND_MEMBER.getCode(), exception.getExceptionType().getCode());
-        assertEquals(MemberExceptionType.NOT_FOUND_MEMBER.getMessage(), exception.getExceptionType().getMessage());
-    }
-
-    @Test
     @DisplayName("카드 작성 시 테마 ID가 존재하지 않을 경우를 테스트한다.")
     void writeResponseNotFoundErrorTheme() {
         // given
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
-                2L,
                 10000L,
                 mockingMultipartFile("test.jpg"),
                 "hihi",
@@ -212,9 +194,11 @@ class CardServiceTest {
                 "good"
         );
 
+        final Member member = memberService.findById(1L);
+
         // when
         final NotFoundException exception
-                = assertThrows(NotFoundException.class, () -> cardService.write(request));
+                = assertThrows(NotFoundException.class, () -> cardService.write(request, member));
 
         // then
         assertEquals(ThemeExceptionType.NOT_FOUND_THEME.getCode(), exception.getExceptionType().getCode());
