@@ -1,7 +1,9 @@
 package com.dnd.dotchi.domain.member.controller;
 
 import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
+import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
+import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,7 +11,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Tag(name = "회원", description = "회원 API")
 public interface MemberControllerDocs {
@@ -39,4 +44,7 @@ public interface MemberControllerDocs {
             final MemberInfoRequest request
     );
 
+    public ResponseEntity<MemberModifyResponse> patchMemberInfo(
+        @Valid @ModelAttribute final MemberModifyRequest request
+    );
 }

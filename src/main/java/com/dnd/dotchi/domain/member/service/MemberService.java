@@ -2,7 +2,9 @@ package com.dnd.dotchi.domain.member.service;
 
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
+import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
+import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
 import com.dnd.dotchi.domain.member.dto.response.resultinfo.MemberRequestResultType;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
@@ -32,4 +34,8 @@ public class MemberService {
         return MemberInfoResponse.of(MemberRequestResultType.GET_MEMBER_INFO_SUCCESS, member, recentCardsByMember);
     }
 
+    @Transactional
+    public MemberModifyResponse patchMemberInfo(MemberModifyRequest request) {
+        return null;
+    }
 }
