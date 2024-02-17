@@ -8,6 +8,7 @@ import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
@@ -131,5 +132,12 @@ public interface CardControllerDocs {
             final Member member,
             final Long cardId
     );
+
+	@Operation(summary = "메인 홈 조회", description = "메인 홈을 조회한다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "메인 홈 조회 성공"
+	)
+	ResponseEntity<HomePageResponse> home();
 
 }

@@ -14,10 +14,12 @@ import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.Theme;
+import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.domain.member.entity.Member;
@@ -338,6 +340,33 @@ class CardControllerTest extends ControllerTest {
                 .extract()
                 .as(new TypeRef<>() {
                 });
+
+        // then
+        assertThat(result).usingRecursiveComparison().isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("메인 홈 조회를 성공하면 200을 반환한다.")
+    void getHomeReturn400BadRequest() {
+        // given
+        final HomePageResponse response =
+            HomePageResponse.of(
+                CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS,
+                List.of(),
+                List.of(),
+                List.of()
+            );
+
+        given(cardService.home()).willReturn(response);
+
+        // when
+        final HomePageResponse result = RestAssuredMockMvc.given().log().all()
+            .when().get("/cards/main")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>() {
+            });
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(response);

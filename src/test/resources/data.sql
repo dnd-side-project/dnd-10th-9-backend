@@ -131,3 +131,10 @@ VALUES (5, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
 VALUES (1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+
+INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
+VALUES (10, 22, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
+VALUES (2, 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
+VALUES (3, 29, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

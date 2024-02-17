@@ -32,7 +32,9 @@ import com.dnd.dotchi.domain.card.dto.response.CardsResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.RecentCardsByThemeResponse;
+import com.dnd.dotchi.domain.card.dto.response.TodayCardsOnHomeResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
@@ -210,7 +212,7 @@ class CardServiceTest {
     void writeCommentOnCard() {
         // given
         // data.sql
-        final long cardId = 2L;
+        final long cardId = 5L;
 
         // when
         final Long oldCommentCount = cardRepository.findById(cardId).get().getCommentCount();
@@ -337,7 +339,6 @@ class CardServiceTest {
     @Test
     @DisplayName("찾을 수 없는 카드인 경우 NotFound 예외가 발생한다.")
     void getCommentOnCardNotFoundException() {
-
         // given
         // data.sql
         final Long cardId = cardRepository.count() + 1L;
@@ -346,6 +347,32 @@ class CardServiceTest {
         assertThatThrownBy(() -> cardService.getCommentOnCard(cardId))
             .isInstanceOf(NotFoundException.class)
             .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
+    }
+    @Test
+    @DisplayName("메인 조회 시 정상 작동한다.")
+    void getMainHome() {
+        // given
+        // data.sql
+
+        // when
+        final HomePageResponse result = cardService.home();
+        final CardsRequestResultType resultType = CardsRequestResultType.GET_MAIN_HOME_SUCCESS;
+
+        // then
+        final List<TodayCardsOnHomeResponse> todayCards = result.result().todayCards();
+        final int recentCardsCount = result.result().recentCards().size();
+        final int recentThemeInfoCount = result.result().themes().size();
+
+        assertSoftly(softly -> {
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(todayCards.size()).isEqualTo(3);
+            softly.assertThat(recentCardsCount).isEqualTo(5);
+            softly.assertThat(recentThemeInfoCount).isEqualTo(4);
+            softly.assertThat(todayCards.get(0).cardId()).isEqualTo(2);
+            softly.assertThat(todayCards.get(1).cardId()).isEqualTo(3);
+            softly.assertThat(todayCards.get(2).cardId()).isEqualTo(10);
+        });
     }
 
     private MultipartFile mockingMultipartFile(String fileName) {
