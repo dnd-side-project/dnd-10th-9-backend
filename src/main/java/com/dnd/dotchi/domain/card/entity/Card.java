@@ -88,19 +88,4 @@ public class Card extends BaseEntity {
         this.commentCount += 1;
     }
 
-    @Override
-    public String toString() {
-        return "Card{" +
-            "id=" + id +
-            ", member=" + member +
-            ", theme=" + theme +
-            ", imageUrl='" + imageUrl + '\'' +
-            ", backName='" + backName + '\'' +
-            ", backMood='" + backMood + '\'' +
-            ", backContent='" + backContent + '\'' +
-            ", commentCount=" + commentCount +
-            ", version=" + version +
-            '}';
-    }
-
 }

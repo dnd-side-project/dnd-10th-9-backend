@@ -183,7 +183,7 @@ public class CardService {
     public HomePageResponse home() {
         final List<TodayCard> todayCards = todayCardRepository.findTop3ByOrderByTodayCommentCountDesc();
         final List<Card> recentCards = cardRepository.findTop5ByOrderByIdDesc();
-        final List<Card> recentCardsByThemes = cardRepository.findOneCardByThemes();
+        final List<Card> recentCardsByThemes = cardRepository.findRecentCardByThemes();
 
         return HomePageResponse.of(
             CardsRequestResultType.GET_MAIN_HOME_SUCCESS,
