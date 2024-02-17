@@ -147,4 +147,27 @@ class CardRepositoryTest {
 		});
 	}
 
+	@Test
+	@DisplayName("테마별 최신 카드를 가져온다.")
+	void getRecentCardByThemes() {
+		// given
+		// data.sql
+
+		// when
+		final List<Card> recent = cardRepository.findRecentCardByThemes();
+
+		// then
+		assertSoftly(softly -> {
+			softly.assertThat(recent).hasSize(4);
+			softly.assertThat(recent.get(0).getId()).isEqualTo(29);
+			softly.assertThat(recent.get(1).getId()).isEqualTo(30);
+			softly.assertThat(recent.get(2).getId()).isEqualTo(27);
+			softly.assertThat(recent.get(3).getId()).isEqualTo(28);
+			softly.assertThat(recent.get(0).getTheme().getId()).isEqualTo(1);
+			softly.assertThat(recent.get(1).getTheme().getId()).isEqualTo(2);
+			softly.assertThat(recent.get(2).getTheme().getId()).isEqualTo(3);
+			softly.assertThat(recent.get(3).getTheme().getId()).isEqualTo(4);
+		});
+	}
+
 }
