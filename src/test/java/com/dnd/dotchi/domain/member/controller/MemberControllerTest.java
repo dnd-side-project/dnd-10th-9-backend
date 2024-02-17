@@ -59,9 +59,8 @@ class MemberControllerTest {
 
         // when
         final MemberInfoResponse result = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
                 .pathParam("memberId", memberId)
-                .param("lastCardId", lastCardId)
+                .queryParam("lastCardId", lastCardId)
                 .when().get("/members/{memberId}")
                 .then().log().all()
                 .status(HttpStatus.OK)
@@ -82,7 +81,6 @@ class MemberControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
                 .pathParam("memberId", memberId)
                 .param("lastCardId", lastCardId)
                 .when().get("/members/{memberId}")
@@ -115,7 +113,7 @@ class MemberControllerTest {
         // when
         final MemberAuthorizationResponse result = RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("memberId", memberId)
+                .body(request)
                 .when().post("/members/login")
                 .then().log().all()
                 .status(HttpStatus.OK)
@@ -132,11 +130,12 @@ class MemberControllerTest {
     void loginReturn400BadRequest() {
         // given
         final long memberId = 0L;
+        final MemberAuthorizationRequest request = new MemberAuthorizationRequest(memberId);
 
         // when, then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("memberId", memberId)
+                .body(request)
                 .when().post("/members/login")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)

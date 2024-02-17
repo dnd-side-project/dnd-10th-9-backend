@@ -58,10 +58,9 @@ class ReportControllerTest {
 
         // when
         final ReportResponse result = RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .pathParam("reportedId", reportedId)
-                .param("reporterId", reporterId)
-                .param("reason", reason)
+                .body(request)
                 .when().post("/reports/{reportedId}")
                 .then().log().all()
                 .status(HttpStatus.OK)
@@ -81,13 +80,13 @@ class ReportControllerTest {
         final long reporterId = 1L;
         final long reportedId = 2L;
         final String reason = "가".repeat(51);
+        final ReportRequest request = new ReportRequest(reporterId, reason);
 
         // when, then
         RestAssuredMockMvc.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON)
                 .pathParam("reportedId", reportedId)
-                .param("reporterId", reporterId)
-                .param("reason", reason)
+                .body(request)
                 .when().post("/reports/{reportedId}")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)

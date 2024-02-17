@@ -6,9 +6,9 @@ import com.dnd.dotchi.domain.blacklist.service.BlacklistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,10 +19,10 @@ public class BlacklistController implements BlacklistControllerDocs {
 
     private final BlacklistService blacklistService;
 
-    @PostMapping("{blacklistedId}")
+    @PostMapping(value = "{blacklistedId}")
     public ResponseEntity<BlockResponse> block(
             @PathVariable("blacklistedId") final Long blacklistedId,
-            @Valid @ModelAttribute final BlockRequest request
+            @Valid @RequestBody final BlockRequest request
     ) {
         final BlockResponse response = blacklistService.block(blacklistedId, request);
         return ResponseEntity.ok(response);

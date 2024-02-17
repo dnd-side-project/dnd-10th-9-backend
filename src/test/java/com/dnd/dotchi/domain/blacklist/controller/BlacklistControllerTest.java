@@ -15,6 +15,7 @@ import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,7 @@ class BlacklistControllerTest {
         final BlockResponse result = RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .pathParam("blacklistedId", blacklistedId)
-                .param("blacklisterId", blacklisterId)
+                .body(request)
                 .when().post("/blacklists/{blacklistedId}")
                 .then().log().all()
                 .status(HttpStatus.OK)
