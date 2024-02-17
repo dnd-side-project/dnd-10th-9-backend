@@ -11,6 +11,6 @@ public record HomePageResponse(
 	String message,
 
 	@Schema(description = "응답 결과")
-	CommentResultResponse result
+	HomePageResultResponse result
 ){
 }
