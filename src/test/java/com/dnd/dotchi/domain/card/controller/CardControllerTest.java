@@ -362,7 +362,6 @@ class CardControllerTest {
 
         // when
         final HomePageResponse result = RestAssuredMockMvc.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON)
             .when().get("/cards/main")
             .then().log().all()
             .status(HttpStatus.OK)
