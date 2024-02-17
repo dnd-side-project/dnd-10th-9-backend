@@ -57,4 +57,13 @@ public class TodayCard extends BaseEntity {
         this.todayCommentCount += 1L;
     }
 
+    @Override
+    public String toString() {
+        return "TodayCard{" +
+            "id=" + id +
+            ", card=" + card +
+            ", todayCommentCount=" + todayCommentCount +
+            ", version=" + version +
+            '}';
+    }
 }

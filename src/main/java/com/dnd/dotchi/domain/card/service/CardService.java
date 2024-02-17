@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -180,10 +179,18 @@ public class CardService {
         );
     }
 
+    @Transactional(readOnly = true)
     public HomePageResponse home() {
-        final List<TodayCard> todayCards = null;
-        final List<Card> recentCards = null;
-        final List<Card> recentCardsByThemes = null;
-        return null;
+        final List<TodayCard> todayCards = todayCardRepository.findTop3ByOrderByTodayCommentCountDesc();
+        final List<Card> recentCards = cardRepository.findTop5ByOrderByIdDesc();
+        final List<Card> recentCardsByThemes = cardRepository.findOneCardByThemes();
+
+        return HomePageResponse.of(
+            CardsRequestResultType.GET_MAIN_HOME_SUCCESS,
+            todayCards,
+            recentCards,
+            recentCardsByThemes
+        );
     }
+
 }

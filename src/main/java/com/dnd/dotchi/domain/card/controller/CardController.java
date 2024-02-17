@@ -80,8 +80,8 @@ public class CardController implements CardControllerDocs {
 
     @GetMapping("/main")
     public ResponseEntity<HomePageResponse> home() {
-        cardService.home();
-        return null;
+        final HomePageResponse response = cardService.home();
+        return ResponseEntity.ok(response);
     }
 
 }
