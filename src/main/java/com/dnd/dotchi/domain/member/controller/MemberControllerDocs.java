@@ -44,6 +44,25 @@ public interface MemberControllerDocs {
             final MemberInfoRequest request
     );
 
+    @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정하는 기능")
+    @ApiResponse(
+        responseCode = "200",
+        description = "회원 정보 수정 성공"
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = """
+                    1. 회원 프로필 사진이 이미지 파일이 아닌 경우
+                    2. 변수타입이 올바르지 않은 경우
+                    3. 변수값이 올바르지 않은 경우
+                    """,
+        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "존재하지 않는 멤버 ID인 경우",
+        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
     public ResponseEntity<MemberModifyResponse> patchMemberInfo(
         @Valid @ModelAttribute final MemberModifyRequest request
     );

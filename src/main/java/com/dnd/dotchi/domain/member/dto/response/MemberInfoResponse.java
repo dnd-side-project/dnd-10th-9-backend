@@ -8,7 +8,7 @@ import java.util.List;
 
 @Schema(description = "회원 정보 조회 응답")
 public record MemberInfoResponse(
-        @Schema(description = "응답 코드", example = "1010")
+        @Schema(description = "응답 코드", example = "1110")
         Integer code,
 
         @Schema(description = "응답 상태 메시지", example = "회원 정보 요청에 성공하였습니다.")
