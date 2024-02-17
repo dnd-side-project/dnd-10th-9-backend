@@ -26,12 +26,13 @@ import com.dnd.dotchi.domain.card.repository.CommentRepository;
 import com.dnd.dotchi.domain.card.repository.ThemeRepository;
 import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.repository.MemberRepository;
+import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.infra.image.ImageUploader;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -51,9 +52,8 @@ public class CardService {
     private final CardRepository cardRepository;
     private final TodayCardRepository todayCardRepository;
     private final ThemeRepository themeJpaRepository;
-    private final MemberRepository memberJpaRepository;
-    private final ImageUploader imageUploader;
     private final CommentRepository commentRepository;
+    private final ImageUploader imageUploader;
 
     public CardsWriteResponse write(final CardsWriteRequest request, final Member member) {
         final String fileFullPath = imageUploader.upload(request.image());
@@ -92,14 +92,25 @@ public class CardService {
             retryFor = ObjectOptimisticLockingFailureException.class,
             backoff = @Backoff(delay = 100)
     )
-    public WriteCommentOnCardResponse writeCommentOnCard(final Long cardId) {
+    public WriteCommentOnCardResponse writeCommentOnCard(final Member member, final Long cardId) {
+        commentRepository.findByMemberIdAndCardId(member.getId(), cardId)
+                .ifPresent(comment -> {throw new BadRequestException(CardExceptionType.MY_COMMENT_ALREADY_EXIST);});
         final Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
 
         card.increaseCommentCountByOne();
         todayCardIncreaseCommentCount(card);
+        saveComment(member, card);
 
         return WriteCommentOnCardResponse.from(WRITE_COMMENT_ON_CARD_SUCCESS);
+    }
+
+    private void saveComment(final Member member, final Card card) {
+        final Comment comment = Comment.builder()
+                .member(member)
+                .card(card)
+                .build();
+        commentRepository.save(comment);
     }
 
     private void todayCardIncreaseCommentCount(final Card card) {
@@ -117,6 +128,7 @@ public class CardService {
     @Recover
     public WriteCommentOnCardResponse recoverWriteCommentOnCard(
             final OptimisticLockingFailureException e,
+            final Member member,
             final Long cardId
     ) {
         throw new RetryLimitExceededException(CardExceptionType.WRITE_COMMENT_ON_CARD_FAILURE);
@@ -125,6 +137,16 @@ public class CardService {
     @Recover
     public WriteCommentOnCardResponse recoverWriteCommentOnCard(
             final NotFoundException e,
+            final Member member,
+            final Long cardId
+    ) {
+        throw e;
+    }
+
+    @Recover
+    public WriteCommentOnCardResponse recoverWriteCommentOnCard(
+            final BadRequestException e,
+            final Member member,
             final Long cardId
     ) {
         throw e;
@@ -141,9 +163,12 @@ public class CardService {
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
     }
 
-    public DeleteCardResponse delete(final Long cardId) {
-        if (cardRepository.findById(cardId).isEmpty()) {
-            throw new NotFoundException(CardExceptionType.NOT_FOUND_CARD);
+    public DeleteCardResponse delete(final Member member, final Long cardId) {
+        final Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
+
+        if (!Objects.equals(member.getId(), card.getMember().getId())) {
+            throw new BadRequestException(CardExceptionType.NOT_CARD_WRITER);
         }
 
         cardRepository.deleteById(cardId);

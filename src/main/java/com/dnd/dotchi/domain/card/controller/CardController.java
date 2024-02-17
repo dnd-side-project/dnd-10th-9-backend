@@ -54,7 +54,7 @@ public class CardController implements CardControllerDocs {
             @Auth final Member member,
             @PathVariable("cardId") Long cardId
     ) {
-        final WriteCommentOnCardResponse writeCommentOnCardResponse = cardService.writeCommentOnCard(cardId);
+        final WriteCommentOnCardResponse writeCommentOnCardResponse = cardService.writeCommentOnCard(member, cardId);
         return ResponseEntity.ok(writeCommentOnCardResponse);
     }
 
@@ -81,7 +81,7 @@ public class CardController implements CardControllerDocs {
             @Auth final Member member,
             @PathVariable("cardId") final Long cardId
     ) {
-        final DeleteCardResponse response = cardService.delete(cardId);
+        final DeleteCardResponse response = cardService.delete(member, cardId);
         return ResponseEntity.ok(response);
     }
 

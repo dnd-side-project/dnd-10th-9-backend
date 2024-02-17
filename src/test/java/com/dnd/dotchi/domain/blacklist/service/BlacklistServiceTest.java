@@ -2,9 +2,7 @@ package com.dnd.dotchi.domain.blacklist.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.*;
 
-import com.dnd.dotchi.domain.blacklist.dto.request.BlockRequest;
 import com.dnd.dotchi.domain.blacklist.dto.response.BlockResponse;
 import com.dnd.dotchi.domain.blacklist.dto.response.resulltinfo.BlockRequestResultType;
 import com.dnd.dotchi.domain.blacklist.entity.BlackList;
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional

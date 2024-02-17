@@ -125,7 +125,7 @@ class CardControllerTest extends ControllerTest {
         // data.sql
         final WriteCommentOnCardResponse response =
                 WriteCommentOnCardResponse.from(CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS);
-        given(cardService.writeCommentOnCard(anyLong())).willReturn(response);
+        given(cardService.writeCommentOnCard(any(), anyLong())).willReturn(response);
 
         // when
         final WriteCommentOnCardResponse result = RestAssuredMockMvc.given().log().all()
@@ -281,7 +281,7 @@ class CardControllerTest extends ControllerTest {
         final long cardId = 1L;
         final DeleteCardResponse response = DeleteCardResponse.from(CardsRequestResultType.DELETE_CARD_SUCCESS);
 
-        given(cardService.delete(cardId)).willReturn(response);
+        given(cardService.delete(any(), anyLong())).willReturn(response);
 
         // when
         final DeleteCardResponse result = RestAssuredMockMvc.given().log().all()

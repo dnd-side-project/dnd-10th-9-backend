@@ -1,6 +1,5 @@
 package com.dnd.dotchi.domain.blacklist.controller;
 
-import com.dnd.dotchi.domain.blacklist.dto.request.BlockRequest;
 import com.dnd.dotchi.domain.blacklist.dto.response.BlockResponse;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
