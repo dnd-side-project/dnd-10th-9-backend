@@ -20,7 +20,7 @@ public record TodayCardsOnHomeResponse(
 
 	public static TodayCardsOnHomeResponse from(final TodayCard todayCard) {
 		return new TodayCardsOnHomeResponse(
-			todayCard.getId(),
+			todayCard.getCard().getId(),
 			todayCard.getCard().getImageUrl(),
 			todayCard.getCard().getBackName()
 		);
