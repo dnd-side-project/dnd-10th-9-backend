@@ -18,6 +18,7 @@ import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.card.service.CardService;
@@ -77,5 +78,10 @@ public class CardController implements CardControllerDocs {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/main")
+    public ResponseEntity<HomePageResponse> home() {
+        final HomePageResponse response = cardService.home();
+        return ResponseEntity.ok(response);
+    }
 
 }

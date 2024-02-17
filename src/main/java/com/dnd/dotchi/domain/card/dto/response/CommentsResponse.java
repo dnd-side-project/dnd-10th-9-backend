@@ -5,6 +5,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "카드 상세 정보 및 댓글 페이지에 대한 응답")
 public record CommentsResponse(
 
 	@Schema(description = "댓글 작성한 회원 ID")

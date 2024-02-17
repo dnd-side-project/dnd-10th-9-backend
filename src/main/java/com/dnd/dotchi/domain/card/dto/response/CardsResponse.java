@@ -3,6 +3,8 @@ package com.dnd.dotchi.domain.card.dto.response;
 import com.dnd.dotchi.domain.card.entity.Card;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+
+@Schema(description = "카드 정보에 대한 응답")
 public record CardsResponse(
         @Schema(description = "카드 ID")
         Long cardId,

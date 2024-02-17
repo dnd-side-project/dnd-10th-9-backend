@@ -22,6 +22,7 @@ import com.dnd.dotchi.domain.card.dto.response.CardsByThemeResponse;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.DeleteCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.GetCommentOnCardResponse;
+import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
@@ -177,4 +178,19 @@ public class CardService {
             CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
         );
     }
+
+    @Transactional(readOnly = true)
+    public HomePageResponse home() {
+        final List<TodayCard> todayCards = todayCardRepository.findTop3ByOrderByTodayCommentCountDesc();
+        final List<Card> recentCards = cardRepository.findTop5ByOrderByIdDesc();
+        final List<Card> recentCardsByThemes = cardRepository.findRecentCardByThemes();
+
+        return HomePageResponse.of(
+            CardsRequestResultType.GET_MAIN_HOME_SUCCESS,
+            todayCards,
+            recentCards,
+            recentCardsByThemes
+        );
+    }
+
 }
