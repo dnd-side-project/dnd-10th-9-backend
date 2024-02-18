@@ -61,4 +61,15 @@ public class Member extends BaseEntity {
         this.cardCount = 0L;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

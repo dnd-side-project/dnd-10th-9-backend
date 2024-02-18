@@ -1,10 +1,15 @@
 package com.dnd.dotchi.domain.member.controller;
 
+import java.util.Optional;
+
+import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
 import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
 import com.dnd.dotchi.domain.member.service.MemberService;
+import com.dnd.dotchi.global.exception.BadRequestException;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -41,8 +46,19 @@ public class MemberController implements MemberControllerDocs {
     public ResponseEntity<MemberModifyResponse> patchMemberInfo(
         @Valid @ModelAttribute final MemberModifyRequest request
     ) {
+        validMultiPartFileisImage(request.memberImage());
+
         final MemberModifyResponse response = memberService.patchMemberInfo(request);
-        return null;
+        return ResponseEntity.ok(response);
+    }
+
+    private void validMultiPartFileisImage(final Optional<MultipartFile> imageOpt) {
+        if(imageOpt.isPresent()) {
+            final MultipartFile image = imageOpt.get();
+            if (!image.getContentType().startsWith("image")) {
+                throw new BadRequestException(CardExceptionType.NOT_IMAGE);
+            }
+        }
     }
 
 }
