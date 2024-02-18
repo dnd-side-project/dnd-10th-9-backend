@@ -3,6 +3,7 @@ package com.dnd.dotchi.domain.card.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ public record CardsWriteRequest(
 
         @Schema(description = "따봉네임", example = "따봉냥이")
         @NotBlank(message = "따봉네임은 빈 값일 수 없습니다.")
+        @Pattern(regexp = "^\\S*$", message = "따봉네임은 공백을 포함할 수 없습니다.")
         @Size(max = 7, message = "따봉네임은 7자를 넘을 수 없습니다.")
         String backName,
 
