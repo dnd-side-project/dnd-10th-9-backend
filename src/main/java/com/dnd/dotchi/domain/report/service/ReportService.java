@@ -21,13 +21,15 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final MemberRepository memberRepository;
 
-    public ReportResponse report(final Long reportedId, final ReportRequest request) {
-        final Member reporter = memberRepository.findById(request.reporterId())
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public ReportResponse report(
+            final Long reportedId,
+            final ReportRequest request,
+            final Member member
+    ) {
         final Member reported = memberRepository.findById(reportedId)
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
         final Report report = Report.builder()
-                .reporter(reporter)
+                .reporter(member)
                 .reported(reported)
                 .reason(request.reason())
                 .build();

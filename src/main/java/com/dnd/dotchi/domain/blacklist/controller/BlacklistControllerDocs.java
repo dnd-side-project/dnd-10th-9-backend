@@ -1,7 +1,7 @@
 package com.dnd.dotchi.domain.blacklist.controller;
 
-import com.dnd.dotchi.domain.blacklist.dto.request.BlockRequest;
 import com.dnd.dotchi.domain.blacklist.dto.response.BlockResponse;
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,8 +28,8 @@ public interface BlacklistControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<BlockResponse> block(
-            @Parameter(description = "차단 당한 유저 ID", example = "1") final Long blacklistedId,
-            final BlockRequest request
+            final Member member,
+            @Parameter(description = "차단 당한 유저 ID", example = "1") final Long blacklistedId
     );
 
 }

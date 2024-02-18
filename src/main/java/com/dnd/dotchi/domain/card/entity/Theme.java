@@ -27,13 +27,9 @@ public class Theme extends BaseEntity {
     @Column(name = "theme_concept", nullable = false, length = 20)
     private String themeConcept;
 
-    @Column(name = "card_back_last_content", nullable = false)
-    private String cardBackLastContent;
-
     @Builder
-    public Theme(final String themeConcept, final String cardBackLastContent) {
+    public Theme(final String themeConcept) {
         this.themeConcept = themeConcept;
-        this.cardBackLastContent = cardBackLastContent;
     }
 
 }

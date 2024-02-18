@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.report.controller;
 
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.report.dto.response.ReportResponse;
 import com.dnd.dotchi.domain.report.request.ReportRequest;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
@@ -36,6 +37,7 @@ public interface ReportControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<ReportResponse> report(
+            final Member member,
             @Parameter(description = "신고 당한 유저 ID", example = "1") final Long reportedId,
             final ReportRequest request
     );

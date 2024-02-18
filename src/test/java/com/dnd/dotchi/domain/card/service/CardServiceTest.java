@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.dnd.dotchi.domain.member.entity.Member;
+import com.dnd.dotchi.domain.member.service.MemberService;
+import com.dnd.dotchi.global.exception.BadRequestException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,6 +59,9 @@ class CardServiceTest {
 
     @Autowired
     CardRepository cardRepository;
+
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     TodayCardRepository todayCardRepository;
@@ -160,15 +166,16 @@ class CardServiceTest {
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
                 2L,
-                2L,
                 mockingMultipartFile("test.jpg"),
                 "hihi",
                 "happy",
                 "good"
         );
 
+        final Member member = memberService.findById(1L);
+
         // when
-        final CardsWriteResponse result = cardService.write(request);
+        final CardsWriteResponse result = cardService.write(request, member);
 
         // then
         assertSoftly(softly -> {
@@ -178,35 +185,11 @@ class CardServiceTest {
     }
 
     @Test
-    @DisplayName("카드 작성 시 멤버 ID가 존재하지 않을 경우를 테스트한다.")
-    void writeResponseNotFoundErrorMember() {
-        // given
-        // data.sql
-        final CardsWriteRequest request = new CardsWriteRequest(
-                1000L,
-                2L,
-                mockingMultipartFile("test.jpg"),
-                "hihi",
-                "happy",
-                "good"
-        );
-
-        // when
-        final NotFoundException exception
-                = assertThrows(NotFoundException.class, () -> cardService.write(request));
-
-        // then
-        assertEquals(MemberExceptionType.NOT_FOUND_MEMBER.getCode(), exception.getExceptionType().getCode());
-        assertEquals(MemberExceptionType.NOT_FOUND_MEMBER.getMessage(), exception.getExceptionType().getMessage());
-    }
-
-    @Test
     @DisplayName("카드 작성 시 테마 ID가 존재하지 않을 경우를 테스트한다.")
     void writeResponseNotFoundErrorTheme() {
         // given
         // data.sql
         final CardsWriteRequest request = new CardsWriteRequest(
-                2L,
                 10000L,
                 mockingMultipartFile("test.jpg"),
                 "hihi",
@@ -214,9 +197,11 @@ class CardServiceTest {
                 "good"
         );
 
+        final Member member = memberService.findById(1L);
+
         // when
         final NotFoundException exception
-                = assertThrows(NotFoundException.class, () -> cardService.write(request));
+                = assertThrows(NotFoundException.class, () -> cardService.write(request, member));
 
         // then
         assertEquals(ThemeExceptionType.NOT_FOUND_THEME.getCode(), exception.getExceptionType().getCode());
@@ -229,10 +214,11 @@ class CardServiceTest {
         // given
         // data.sql
         final long cardId = 5L;
+        final Member member = memberService.findById(2L);
 
         // when
         final Long oldCommentCount = cardRepository.findById(cardId).get().getCommentCount();
-        final WriteCommentOnCardResponse result = cardService.writeCommentOnCard(cardId);
+        final WriteCommentOnCardResponse result = cardService.writeCommentOnCard(member, cardId);
         em.flush();
         em.clear();
 
@@ -255,11 +241,26 @@ class CardServiceTest {
         // given
         // data.sql
         final long cardId = cardRepository.count() + 1L;
+        final Member member = memberService.findById(1L);
 
         // when, then
-        assertThatThrownBy(() -> cardService.writeCommentOnCard(cardId))
+        assertThatThrownBy(() -> cardService.writeCommentOnCard(member, cardId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
+    }
+
+    @Test
+    @DisplayName("카드에 댓글 작성시, 이미 자신이 댓글 작성한 카드면 예외가 발생한다.")
+    void writeCommentOnCardAlreadyExistException() {
+        // given
+        // data.sql
+        final Member member = memberService.findById(1L);
+        final long cardId = 2L;
+
+        // when, then
+        assertThatThrownBy(() -> cardService.writeCommentOnCard(member, cardId))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(CardExceptionType.MY_COMMENT_ALREADY_EXIST.getMessage());
     }
 
     @Test
@@ -267,10 +268,15 @@ class CardServiceTest {
     void handleConcurrentCommentsOnCardSynchronously() {
         // given
         // data.sql
-        long cardId = 1L;
+        final Member memberA = memberService.findById(1L);
+        final Member memberB = memberService.findById(2L);
+        long cardIdA = 1L;
+        long cardIdB = 2L;
 
-        CompletableFuture<Void> futureA = CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(cardId));
-        CompletableFuture<Void> futureB = CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(cardId));
+        CompletableFuture<Void> futureA =
+                CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(memberA, cardIdA));
+        CompletableFuture<Void> futureB =
+                CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(memberB, cardIdB));
 
         CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(futureA, futureB);
 
@@ -278,14 +284,16 @@ class CardServiceTest {
         assertThatNoException().isThrownBy(combinedFuture::get);
     }
 
+    @Test
     @DisplayName("카드를 삭제한다")
     void deleteCard() {
         // given
         // data.sql
+        final Member member = memberService.findById(2L);
 
         // when
         final long oldCardCount = cardRepository.count();
-        final DeleteCardResponse result = cardService.delete(30L);
+        final DeleteCardResponse result = cardService.delete(member, 30L);
 
         // then
         final long newCardCount = cardRepository.count();
@@ -297,16 +305,32 @@ class CardServiceTest {
         });
     }
 
+    @Test
     @DisplayName("카드를 삭제할 시, 존재하지 않는 카드 ID이면 예외가 발생한다.")
     void deleteCardNotFoundException() {
         // given
         // data.sql
         final long cardId = cardRepository.count() + 1L;
+        final Member member = memberService.findById(2L);
 
         // when, then
-        assertThatThrownBy(() -> cardService.delete(cardId))
+        assertThatThrownBy(() -> cardService.delete(member, cardId))
             .isInstanceOf(NotFoundException.class)
             .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
+    }
+
+    @Test
+    @DisplayName("카드를 삭제할 시, 자신이 쓴 카드가 아니면 예외가 발생한다.")
+    void deleteNotCardWriterException() {
+        // given
+        // data.sql
+        final long cardId = cardRepository.count();
+        final Member member = memberService.findById(1L);
+
+        // when, then
+        assertThatThrownBy(() -> cardService.delete(member, cardId))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(CardExceptionType.NOT_CARD_WRITER.getMessage());
     }
 
     @Test

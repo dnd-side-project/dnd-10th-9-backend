@@ -1,5 +1,7 @@
 package com.dnd.dotchi.domain.card.controller;
 
+import com.dnd.dotchi.domain.member.entity.Member;
+import com.dnd.dotchi.global.jwt.Auth;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,23 +37,30 @@ public class CardController implements CardControllerDocs {
     private final CardService cardService;
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<CardsWriteResponse> write(@Valid @ModelAttribute final CardsWriteRequest request) {
+    public ResponseEntity<CardsWriteResponse> write(
+            @Auth final Member member,
+            @Valid @ModelAttribute final CardsWriteRequest request
+    ) {
         if (!request.image().getContentType().startsWith("image")) {
             throw new BadRequestException(CardExceptionType.NOT_IMAGE);
         }
 
-        final CardsWriteResponse response = cardService.write(request);
+        final CardsWriteResponse response = cardService.write(request, member);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{cardId}/comments")
-    public ResponseEntity<WriteCommentOnCardResponse> writeCommentOnCard(@PathVariable("cardId") Long cardId) {
-        final WriteCommentOnCardResponse writeCommentOnCardResponse = cardService.writeCommentOnCard(cardId);
+    public ResponseEntity<WriteCommentOnCardResponse> writeCommentOnCard(
+            @Auth final Member member,
+            @PathVariable("cardId") Long cardId
+    ) {
+        final WriteCommentOnCardResponse writeCommentOnCardResponse = cardService.writeCommentOnCard(member, cardId);
         return ResponseEntity.ok(writeCommentOnCardResponse);
     }
 
     @GetMapping("/theme")
     public ResponseEntity<CardsByThemeResponse> getCardsByTheme(
+            @Auth final Member member,
             @Valid @ModelAttribute final CardsByThemeRequest request
     ) {
         final CardsByThemeResponse response = cardService.getCardsByTheme(request);
@@ -60,6 +69,7 @@ public class CardController implements CardControllerDocs {
 
     @GetMapping("/all")
     public ResponseEntity<CardsAllResponse> getCardsAll(
+            @Auth final Member member,
             @Valid @ModelAttribute CardsAllRequest request
     ) {
         final CardsAllResponse response = cardService.getCardAll(request);
@@ -67,13 +77,19 @@ public class CardController implements CardControllerDocs {
     }
 
     @DeleteMapping("{cardId}")
-    public ResponseEntity<DeleteCardResponse> delete(@PathVariable("cardId") final Long cardId) {
-        final DeleteCardResponse response = cardService.delete(cardId);
+    public ResponseEntity<DeleteCardResponse> delete(
+            @Auth final Member member,
+            @PathVariable("cardId") final Long cardId
+    ) {
+        final DeleteCardResponse response = cardService.delete(member, cardId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{cardId}/comments")
-    public ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(@PathVariable("cardId") Long cardId) {
+    public ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(
+            @Auth final Member member,
+            @PathVariable("cardId") Long cardId
+    ) {
         final GetCommentOnCardResponse response = cardService.getCommentOnCard(cardId);
         return ResponseEntity.ok(response);
     }
