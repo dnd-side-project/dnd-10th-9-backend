@@ -40,7 +40,7 @@ class MemberServiceTest {
     @DisplayName("회원 정보 조회")
     void getMemberInfo() {
         // given
-        // data.sql
+        // data-test.sql
         final long memberId = 1L;
         final long lastCardId = 25L;
 
@@ -73,7 +73,7 @@ class MemberServiceTest {
     @DisplayName("회원 정보 조회 시, 없는 회원 ID이면 예외가 발생한다.")
     void getMemberInfoNotFoundException() {
         // given
-        // data.sql
+        // data-test.sql
         final long memberId = memberRepository.count() + 1L;
         final long lastCardId = 25L;
 
@@ -87,7 +87,7 @@ class MemberServiceTest {
     @DisplayName("로그인 한다.")
     void login() throws JsonProcessingException {
         // given
-        // data.sql
+        // data-test.sql
         final long memberId = 1L;
         final MemberAuthorizationRequest request = new MemberAuthorizationRequest(memberId);
 
@@ -115,7 +115,7 @@ class MemberServiceTest {
     @DisplayName("로그인 시, 존재하지 않는 회원 ID이면 예외가 발생한다.")
     void loginNotFoundException() {
         // given
-        // data.sql
+        // data-test.sql
         final long memberId = 0L;
         final MemberAuthorizationRequest request = new MemberAuthorizationRequest(memberId);
 

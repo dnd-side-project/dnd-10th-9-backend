@@ -73,7 +73,7 @@ class CardServiceTest {
     @DisplayName("테마별 카드를 인기순으로 가져온다.")
     void getCardsByThemeWithHotSortType() {
         // given
-        // data.sql
+        // data-test.sql
         final CardsByThemeRequest request = new CardsByThemeRequest(
                 2L,
                 CardSortType.HOT,
@@ -101,7 +101,7 @@ class CardServiceTest {
     @DisplayName("테마별 카드를 최신순으로 가져온다.")
     void getCardsByThemeWithLatestSortType() {
         // given
-        // data.sql
+        // data-test.sql
         final CardsByThemeRequest request = new CardsByThemeRequest(
                 2L,
                 CardSortType.LATEST,
@@ -128,7 +128,7 @@ class CardServiceTest {
     @DisplayName("전체 카드를 인기순으로 가져온다.")
     void getCardsAllWithHotSortType() {
         // given
-        // data.sql
+        // data-test.sql
         final CardsAllRequest request = new CardsAllRequest(
                 CardSortType.HOT,
                 20L,
@@ -163,7 +163,7 @@ class CardServiceTest {
     @DisplayName("카드 작성에 대한 응답을 확인한다.")
     void writeResponseSuccess() {
         // given
-        // data.sql
+        // data-test.sql
         final CardsWriteRequest request = new CardsWriteRequest(
                 2L,
                 mockingMultipartFile("test.jpg"),
@@ -188,7 +188,7 @@ class CardServiceTest {
     @DisplayName("카드 작성 시 테마 ID가 존재하지 않을 경우를 테스트한다.")
     void writeResponseNotFoundErrorTheme() {
         // given
-        // data.sql
+        // data-test.sql
         final CardsWriteRequest request = new CardsWriteRequest(
                 10000L,
                 mockingMultipartFile("test.jpg"),
@@ -212,7 +212,7 @@ class CardServiceTest {
     @DisplayName("카드에 댓글을 작성한다.")
     void writeCommentOnCard() {
         // given
-        // data.sql
+        // data-test.sql
         final long cardId = 5L;
         final Member member = memberService.findById(2L);
 
@@ -239,7 +239,7 @@ class CardServiceTest {
     @DisplayName("카드에 댓글 작성시, 존재하지 않는 카드 ID를 전달할 때 NotFound 예외가 발생한다.")
     void writeCommentOnCardNotFoundException() {
         // given
-        // data.sql
+        // data-test.sql
         final long cardId = cardRepository.count() + 1L;
         final Member member = memberService.findById(1L);
 
@@ -253,7 +253,7 @@ class CardServiceTest {
     @DisplayName("카드에 댓글 작성시, 이미 자신이 댓글 작성한 카드면 예외가 발생한다.")
     void writeCommentOnCardAlreadyExistException() {
         // given
-        // data.sql
+        // data-test.sql
         final Member member = memberService.findById(1L);
         final long cardId = 2L;
 
@@ -267,7 +267,7 @@ class CardServiceTest {
     @DisplayName("여러 사용자가 동시에 같은 카드의 댓글을 작성할 경우, 동기화 처리가 정상 동작된다.")
     void handleConcurrentCommentsOnCardSynchronously() {
         // given
-        // data.sql
+        // data-test.sql
         final Member memberA = memberService.findById(1L);
         final Member memberB = memberService.findById(2L);
         long cardIdA = 1L;
@@ -288,7 +288,7 @@ class CardServiceTest {
     @DisplayName("카드를 삭제한다")
     void deleteCard() {
         // given
-        // data.sql
+        // data-test.sql
         final Member member = memberService.findById(2L);
 
         // when
@@ -309,7 +309,7 @@ class CardServiceTest {
     @DisplayName("카드를 삭제할 시, 존재하지 않는 카드 ID이면 예외가 발생한다.")
     void deleteCardNotFoundException() {
         // given
-        // data.sql
+        // data-test.sql
         final long cardId = cardRepository.count() + 1L;
         final Member member = memberService.findById(2L);
 
@@ -323,7 +323,7 @@ class CardServiceTest {
     @DisplayName("카드를 삭제할 시, 자신이 쓴 카드가 아니면 예외가 발생한다.")
     void deleteNotCardWriterException() {
         // given
-        // data.sql
+        // data-test.sql
         final long cardId = cardRepository.count();
         final Member member = memberService.findById(1L);
 
@@ -337,7 +337,7 @@ class CardServiceTest {
     @DisplayName("카드 조회 시 댓글이 3개 이상일 경우 정상 작동한다.")
     void getCommentOnCardWithCommentCountGreaterThanEqualThree() {
         // given
-        // data.sql
+        // data-test.sql
         final Long cardId = 2L;
 
         // when
@@ -358,7 +358,7 @@ class CardServiceTest {
     @DisplayName("카드 조회 시 댓글이 2개 이하일 경우 정상 작동한다.")
     void getCommentOnCardWithCommentCountLessThanEqualTwo() {
         // given
-        // data.sql
+        // data-test.sql
         final Long cardId = 1L;
 
         // when
@@ -380,7 +380,7 @@ class CardServiceTest {
     @DisplayName("찾을 수 없는 카드인 경우 NotFound 예외가 발생한다.")
     void getCommentOnCardNotFoundException() {
         // given
-        // data.sql
+        // data-test.sql
         final Long cardId = cardRepository.count() + 1L;
 
         // when, then
@@ -392,7 +392,7 @@ class CardServiceTest {
     @DisplayName("메인 조회 시 정상 작동한다.")
     void getMainHome() {
         // given
-        // data.sql
+        // data-test.sql
 
         // when
         final HomePageResponse result = cardService.home();

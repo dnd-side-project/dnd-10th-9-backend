@@ -26,7 +26,7 @@ class CardRepositoryTest {
 	@DisplayName("테마별 카드를 인기순으로 가져온다.")
 	void getCardsByThemeWithHotSortType() {
 		// given
-		// data.sql
+		// data-test.sql
 
 		// when
 		final List<Card> result = cardRepository.findCardsByThemeWithFilteringAndPaging(
@@ -51,7 +51,7 @@ class CardRepositoryTest {
 	@DisplayName("테마별 카드를 최신순으로 가져온다.")
 	void getCardsByThemeWithLatestSortType() {
 		// given
-		// data.sql
+		// data-test.sql
 
 		// when
 		final List<Card> result = cardRepository.findCardsByThemeWithFilteringAndPaging(
@@ -76,7 +76,7 @@ class CardRepositoryTest {
 	@DisplayName("전체 카드를 최신순으로 가져온다.")
 	void getCardsAllWithLatestSortType() {
 		// given
-		// data.sql
+		// data-test.sql
 
 		// when
 		final List<Card> result = cardRepository.findCardsAllWithFilteringAndPaging(
@@ -100,7 +100,7 @@ class CardRepositoryTest {
 	@DisplayName("전체 카드를 인기순으로 가져온다.")
 	void getCardsAllWithHotSortType() {
 		// given
-		// data.sql
+		// data-test.sql
 
 		// when
 		final List<Card> result = cardRepository.findCardsAllWithFilteringAndPaging(
@@ -124,7 +124,7 @@ class CardRepositoryTest {
 	@DisplayName("특정 회원이 작성한 카드를 최신순으로 가져온다.")
 	void getCardsByMemberWithLatestSortType() {
 		// given
-		// data.sql
+		// data-test.sql
 		final long memberId = 1L;
 		final long lastCardId = 25L;
 
@@ -151,7 +151,7 @@ class CardRepositoryTest {
 	@DisplayName("테마별 최신 카드를 가져온다.")
 	void getRecentCardByThemes() {
 		// given
-		// data.sql
+		// data-test.sql
 
 		// when
 		final List<Card> recent = cardRepository.findRecentCardByThemes();
