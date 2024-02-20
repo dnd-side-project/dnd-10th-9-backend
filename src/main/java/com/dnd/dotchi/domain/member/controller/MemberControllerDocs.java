@@ -45,8 +45,8 @@ public interface MemberControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<MemberInfoResponse> getMemberInfo(
-        @Auth final Member member,
-            final MemberInfoRequest request
+        final Member member,
+        final MemberInfoRequest request
     );
 
     @Operation(summary = "로그인", description = "로그인하는 기능")
@@ -91,8 +91,8 @@ public interface MemberControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<MemberModifyResponse> patchMemberInfo(
-        @Auth final Member member,
-        @Valid @ModelAttribute final MemberModifyRequest request
+        final Member member,
+        final MemberModifyRequest request
     );
 
 }
