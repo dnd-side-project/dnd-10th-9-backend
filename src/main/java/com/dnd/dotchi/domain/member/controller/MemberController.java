@@ -36,7 +36,7 @@ public class MemberController implements MemberControllerDocs {
 
     private final MemberService memberService;
 
-    @GetMapping("/{memberId}")
+    @GetMapping
     public ResponseEntity<MemberInfoResponse> getMemberInfo(
             @Auth final Member member,
             @Valid @ModelAttribute final MemberInfoRequest request

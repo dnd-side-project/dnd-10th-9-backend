@@ -64,7 +64,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean matchesGuestRequest(final HttpServletRequest request) {
         return ALLOWED_END_URIS.stream()
                 .anyMatch(url -> request.getRequestURI().endsWith(url));
-//                        && Objects.equals(request.getMethod(), HttpMethod.GET.name()));
     }
 
 }

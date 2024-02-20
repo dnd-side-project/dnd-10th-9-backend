@@ -19,12 +19,11 @@ import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.Theme;
-import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
-import com.dnd.dotchi.infra.image.ImageUploader;
+import com.dnd.dotchi.infra.image.S3FileUploader;
 import com.dnd.dotchi.test.ControllerTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -48,7 +47,7 @@ class CardControllerTest extends ControllerTest {
     CardService cardService;
 
     @MockBean
-    ImageUploader imageUploader;
+    S3FileUploader s3FileUploader;
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext) throws Exception {
