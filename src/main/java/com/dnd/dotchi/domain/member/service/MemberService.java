@@ -57,7 +57,6 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    @Transactional
     public MemberModifyResponse patchMemberInfo(final Member member, final MemberModifyRequest request) {
         if(request.memberImage().isPresent()) {
             final MultipartFile image = request.memberImage().get();

@@ -1,11 +1,14 @@
 package com.dnd.dotchi.domain.card.repository;
 
+import static com.dnd.dotchi.domain.blacklist.entity.QBlackList.*;
 import static com.dnd.dotchi.domain.card.entity.QCard.card;
 
+import com.dnd.dotchi.domain.blacklist.entity.QBlackList;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +27,15 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
             final Long themeId,
             final CardSortType cardSortType,
             final Long lastCardId,
-            final Long lastCardCommentCount
+            final Long lastCardCommentCount,
+            final Long myId
     ) {
-        return jpaQueryFactory.selectFrom(card)
-                .join(card.member).fetchJoin()
-                .join(card.theme).fetchJoin()
+        return blacklistFilter(myId)
                 .where(
                         card.theme.id.eq(themeId),
-                        defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount)
+                        defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount),
+                        blackList.blacklister.id.isNull(),
+                        blackList.blacklisted.id.isNull()
                 )
                 .orderBy(orderBy(cardSortType))
                 .limit(BASIC_PAGE_SIZE)
@@ -42,12 +46,15 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
     public List<Card> findCardsAllWithFilteringAndPaging(
             final CardSortType cardSortType,
             final Long lastCardId,
-            final Long lastCardCommentCount
+            final Long lastCardCommentCount,
+            final Long myId
     ) {
-        return jpaQueryFactory.selectFrom(card)
-                .join(card.member).fetchJoin()
-                .join(card.theme).fetchJoin()
-                .where(defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount))
+        return blacklistFilter(myId)
+                .where(
+                    defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount),
+                    blackList.blacklister.id.isNull(),
+                    blackList.blacklisted.id.isNull()
+                )
                 .orderBy(orderBy(cardSortType))
                 .limit(BASIC_PAGE_SIZE)
                 .fetch();
@@ -83,6 +90,19 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
             case LATEST -> card.id.desc();
             case HOT -> card.commentCount.desc();
         };
+    }
+
+    private JPAQuery<Card> blacklistFilter(final Long myId) {
+        return jpaQueryFactory.selectFrom(card)
+            .join(card.member).fetchJoin()
+            .join(card.theme).fetchJoin()
+            .leftJoin(blackList)
+            .on(
+                card.member.id.eq(blackList.blacklisted.id)
+                    .and(blackList.blacklister.id.eq(myId))
+                .or(card.member.id.eq(blackList.blacklister.id)
+                    .and(blackList.blacklisted.id.eq(myId)))
+            );
     }
 
 }

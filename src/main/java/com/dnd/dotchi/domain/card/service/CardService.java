@@ -29,6 +29,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
+import com.dnd.dotchi.global.jwt.Auth;
 import com.dnd.dotchi.infra.image.ImageUploader;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -77,12 +78,13 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public CardsByThemeResponse getCardsByTheme(final @Valid CardsByThemeRequest request) {
+    public CardsByThemeResponse getCardsByTheme(final Member member, final CardsByThemeRequest request) {
         final List<Card> cardsByTheme = cardRepository.findCardsByThemeWithFilteringAndPaging(
                 request.themeId(),
                 request.cardSortType(),
                 request.lastCardId(),
-                request.lastCardCommentCount()
+                request.lastCardCommentCount(),
+                member.getId()
         );
 
         return CardsByThemeResponse.of(GET_CARDS_BY_THEME_SUCCESS, cardsByTheme);
@@ -153,11 +155,12 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public CardsAllResponse getCardAll(final CardsAllRequest request) {
+    public CardsAllResponse getCardAll(final Member member, final CardsAllRequest request) {
         final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
                 request.cardSortType(),
                 request.lastCardId(),
-                request.lastCardCommentCount()
+                request.lastCardCommentCount(),
+                member.getId()
         );
 
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);

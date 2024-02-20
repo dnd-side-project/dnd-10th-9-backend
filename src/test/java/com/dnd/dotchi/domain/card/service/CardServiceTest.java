@@ -80,20 +80,17 @@ class CardServiceTest {
                 20L,
                 20L
         );
+        final Member member = memberService.findById(1L);
 
         // when
 
-        final CardsByThemeResponse result = cardService.getCardsByTheme(request);
+        final CardsByThemeResponse result = cardService.getCardsByTheme(member, request);
 
         // then
         final List<RecentCardsByThemeResponse> responses = result.result().recentCards();
         assertSoftly(softly -> {
-            softly.assertThat(responses).hasSize(5);
-            softly.assertThat(responses.get(0).cardId()).isEqualTo(14);
-            softly.assertThat(responses.get(1).cardId()).isEqualTo(18);
-            softly.assertThat(responses.get(2).cardId()).isEqualTo(22);
-            softly.assertThat(responses.get(3).cardId()).isEqualTo(26);
-            softly.assertThat(responses.get(4).cardId()).isEqualTo(30);
+            softly.assertThat(responses).hasSize(1);
+            softly.assertThat(responses.get(0).cardId()).isEqualTo(22);
         });
     }
 
@@ -108,19 +105,17 @@ class CardServiceTest {
                 20L,
                 20L
         );
+        final Member member = memberService.findById(1L);
 
         // when
-        final CardsByThemeResponse result = cardService.getCardsByTheme(request);
+        final CardsByThemeResponse result = cardService.getCardsByTheme(member, request);
 
         // then
         final List<RecentCardsByThemeResponse> responses = result.result().recentCards();
         assertSoftly(softly -> {
-            softly.assertThat(responses).hasSize(5);
-            softly.assertThat(responses.get(0).cardId()).isEqualTo(18);
-            softly.assertThat(responses.get(1).cardId()).isEqualTo(14);
-            softly.assertThat(responses.get(2).cardId()).isEqualTo(10);
-            softly.assertThat(responses.get(3).cardId()).isEqualTo(6);
-            softly.assertThat(responses.get(4).cardId()).isEqualTo(2);
+            softly.assertThat(responses).hasSize(2);
+            softly.assertThat(responses.get(0).cardId()).isEqualTo(10);
+            softly.assertThat(responses.get(1).cardId()).isEqualTo(6);
         });
     }
 
@@ -130,14 +125,15 @@ class CardServiceTest {
         // given
         // data-test.sql
         final CardsAllRequest request = new CardsAllRequest(
-                CardSortType.HOT,
-                20L,
-                20L
+            CardSortType.HOT,
+            20L,
+            15L
         );
+        final Member member = memberService.findById(1L);
 
         // when
 
-        final CardsAllResponse result = cardService.getCardAll(request);
+        final CardsAllResponse result = cardService.getCardAll(member, request);
 
         // then
         final List<CardsResponse> responses = result.result().recentCards();
@@ -145,17 +141,44 @@ class CardServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());
             softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
-            softly.assertThat(responses).hasSize(10);
-            softly.assertThat(responses.get(0).cardId()).isEqualTo(13);
-            softly.assertThat(responses.get(1).cardId()).isEqualTo(14);
-            softly.assertThat(responses.get(2).cardId()).isEqualTo(15);
-            softly.assertThat(responses.get(3).cardId()).isEqualTo(16);
-            softly.assertThat(responses.get(4).cardId()).isEqualTo(17);
-            softly.assertThat(responses.get(5).cardId()).isEqualTo(18);
-            softly.assertThat(responses.get(6).cardId()).isEqualTo(19);
-            softly.assertThat(responses.get(7).cardId()).isEqualTo(20);
-            softly.assertThat(responses.get(8).cardId()).isEqualTo(21);
-            softly.assertThat(responses.get(9).cardId()).isEqualTo(22);
+            softly.assertThat(responses).hasSize(8);
+            softly.assertThat(responses.get(0).cardId()).isEqualTo(19);
+            softly.assertThat(responses.get(1).cardId()).isEqualTo(20);
+            softly.assertThat(responses.get(2).cardId()).isEqualTo(21);
+            softly.assertThat(responses.get(3).cardId()).isEqualTo(22);
+            softly.assertThat(responses.get(4).cardId()).isEqualTo(23);
+            softly.assertThat(responses.get(5).cardId()).isEqualTo(25);
+            softly.assertThat(responses.get(6).cardId()).isEqualTo(27);
+            softly.assertThat(responses.get(7).cardId()).isEqualTo(29);
+        });
+    }
+
+    @Test
+    @DisplayName("전체 카드를 최신순으로 가져온다.")
+    void getCardsAllWithLatestSortType() {
+        // given
+        // data-test.sql
+        final CardsAllRequest request = new CardsAllRequest(
+            CardSortType.LATEST,
+            5L,
+            15L
+        );
+        final Member member = memberService.findById(2L);
+
+        // when
+
+        final CardsAllResponse result = cardService.getCardAll(member, request);
+
+        // then
+        final List<CardsResponse> responses = result.result().recentCards();
+        final CardsRequestResultType resultType = CardsRequestResultType.GET_CARDS_ALL_SUCCESS;
+        assertSoftly(softly -> {
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+            softly.assertThat(responses).hasSize(3);
+            softly.assertThat(responses.get(0).cardId()).isEqualTo(4);
+            softly.assertThat(responses.get(1).cardId()).isEqualTo(3);
+            softly.assertThat(responses.get(2).cardId()).isEqualTo(2);
         });
     }
 

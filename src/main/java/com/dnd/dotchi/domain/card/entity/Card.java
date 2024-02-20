@@ -84,6 +84,21 @@ public class Card extends BaseEntity {
         this.commentCount = 0L;
     }
 
+    @Override
+    public String toString() {
+        return "Card{" +
+            "id=" + id +
+            ", member=" + member +
+            ", theme=" + theme +
+            ", imageUrl='" + imageUrl + '\'' +
+            ", backName='" + backName + '\'' +
+            ", backMood='" + backMood + '\'' +
+            ", backContent='" + backContent + '\'' +
+            ", commentCount=" + commentCount +
+            ", version=" + version +
+            '}';
+    }
+
     public void increaseCommentCountByOne() {
         this.commentCount += 1;
     }

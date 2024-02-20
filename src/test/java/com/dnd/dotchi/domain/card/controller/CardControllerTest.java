@@ -23,6 +23,7 @@ import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.domain.member.entity.Member;
+import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
 import com.dnd.dotchi.infra.image.ImageUploader;
 import com.dnd.dotchi.test.ControllerTest;
@@ -65,6 +66,7 @@ class CardControllerTest extends ControllerTest {
     @DisplayName("테마별 카드 조회에 성공하면 200 응답을 반환한다.")
     void getCardsByThemeReturn200Success() {
         // given
+        // data-test.sql
         final CardsByThemeRequest request = new CardsByThemeRequest(
                 1L,
                 CardSortType.HOT,
@@ -77,7 +79,9 @@ class CardControllerTest extends ControllerTest {
                 List.of()
         );
 
-        given(cardService.getCardsByTheme(request)).willReturn(response);
+        final Member member = memberService.findById(1L);
+
+        given(cardService.getCardsByTheme(member, request)).willReturn(response);
 
         // when
         final CardsByThemeResponse result = RestAssuredMockMvc.given().log().all()
@@ -225,6 +229,7 @@ class CardControllerTest extends ControllerTest {
     @DisplayName("전체 카드 조회에 성공하면 200 응답을 반환한다.")
     void getCardsAllReturn200Success() {
         // given
+        // data.sql
         final CardsAllRequest request = new CardsAllRequest(
                 CardSortType.HOT,
                 1L,
@@ -236,7 +241,8 @@ class CardControllerTest extends ControllerTest {
                 List.of()
         );
 
-        given(cardService.getCardAll(request)).willReturn(response);
+        final Member member = memberService.findById(1L);
+        given(cardService.getCardAll(member, request)).willReturn(response);
 
         // when
         final CardsAllResponse result = RestAssuredMockMvc.given().log().all()
