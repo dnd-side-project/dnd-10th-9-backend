@@ -69,9 +69,8 @@ class MemberControllerTest extends ControllerTest {
         // when
         final MemberInfoResponse result = RestAssuredMockMvc.given().log().all()
                 .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .pathParam("memberId", member)
                 .param("lastCardId", lastCardId)
-                .when().get("/members/{memberId}")
+                .when().get("/members")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()
@@ -92,9 +91,8 @@ class MemberControllerTest extends ControllerTest {
         // when, then
         RestAssuredMockMvc.given().log().all()
                 .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .pathParam("memberId", member)
                 .param("lastCardId", lastCardId)
-                .when().get("/members/{memberId}")
+                .when().get("/members")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body("code", equalTo(200))

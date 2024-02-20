@@ -44,11 +44,20 @@ logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
 
-image:
-  upload_url: ${user.dir}
-  upload_directory: static/images
-
 jwt:
   token:
     secret-key: abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabc
     access-expiration-time: 100000
+
+cloud:
+  aws:
+    s3:
+      bucket: asdasdasd
+    credentials:
+      access-key: asdasd
+      secret-key: asdasdasdasd
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false

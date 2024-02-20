@@ -19,7 +19,7 @@ import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.jwt.TokenProcessor;
-import com.dnd.dotchi.infra.image.ImageUploader;
+import com.dnd.dotchi.infra.image.S3FileUploader;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +31,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final CardRepository cardRepository;
     private final TokenProcessor tokenProcessor;
-    private final ImageUploader imageUploader;
+    private final S3FileUploader s3FileUploader;
 
     @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfo(final Member member, final Long lastCardId) {
@@ -60,7 +60,7 @@ public class MemberService {
     public MemberModifyResponse patchMemberInfo(final Member member, final MemberModifyRequest request) {
         if(request.memberImage().isPresent()) {
             final MultipartFile image = request.memberImage().get();
-            final String fileFullPath = imageUploader.upload(image);
+            final String fileFullPath = s3FileUploader.upload(image);
             member.setImageUrl(fileFullPath);
         }
         member.setNickname(request.memberName());

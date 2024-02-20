@@ -1,29 +1,14 @@
 package com.dnd.dotchi.domain.card.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.SoftAssertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
-import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.service.MemberService;
-import com.dnd.dotchi.global.exception.BadRequestException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
-import javax.imageio.ImageIO;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.amazonaws.services.s3.AmazonS3;
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
@@ -45,10 +30,30 @@ import com.dnd.dotchi.domain.card.exception.CardExceptionType;
 import com.dnd.dotchi.domain.card.exception.ThemeExceptionType;
 import com.dnd.dotchi.domain.card.repository.CardRepository;
 import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
-import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
+import com.dnd.dotchi.domain.member.entity.Member;
+import com.dnd.dotchi.domain.member.service.MemberService;
+import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
-
 import jakarta.persistence.EntityManager;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import javax.imageio.ImageIO;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @SpringBootTest
@@ -66,8 +71,17 @@ class CardServiceTest {
     @Autowired
     TodayCardRepository todayCardRepository;
 
+    @MockBean
+    private AmazonS3 amazonS3Mock;
+
     @Autowired
     EntityManager em;
+
+    @BeforeEach
+    void setUp() throws MalformedURLException, URISyntaxException {
+        URI uri = new URI("http://example.com/uploaded/image.jpg");
+        given(amazonS3Mock.getUrl(anyString(), anyString())).willReturn(uri.toURL());
+    }
 
     @Test
     @DisplayName("테마별 카드를 인기순으로 가져온다.")
