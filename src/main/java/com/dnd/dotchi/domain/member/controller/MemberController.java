@@ -21,8 +21,10 @@ import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.BadRequestException;
+import com.dnd.dotchi.global.jwt.Auth;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +38,10 @@ public class MemberController implements MemberControllerDocs {
 
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberInfoResponse> getMemberInfo(
-            @PathVariable("memberId") final Long memberId,
+            @Auth final Member member,
             @Valid @ModelAttribute final MemberInfoRequest request
     ) {
-        final MemberInfoResponse response = memberService.getMemberInfo(memberId, request.lastCardId());
+        final MemberInfoResponse response = memberService.getMemberInfo(member, request.lastCardId());
         return ResponseEntity.ok(response);
     }
 
@@ -56,11 +58,12 @@ public class MemberController implements MemberControllerDocs {
         value = "/me"
     )
     public ResponseEntity<MemberModifyResponse> patchMemberInfo(
+        @Auth final Member member,
         @Valid @ModelAttribute final MemberModifyRequest request
     ) {
         validMultiPartFileisImage(request.memberImage());
 
-        final MemberModifyResponse response = memberService.patchMemberInfo(request);
+        final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
         return ResponseEntity.ok(response);
     }
 

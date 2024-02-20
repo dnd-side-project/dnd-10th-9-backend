@@ -14,8 +14,6 @@ import jakarta.validation.constraints.Size;
 
 @Schema(description = "멤버 수정시 요청 데이터")
 public record MemberModifyRequest(
-	@Schema(description = "임시적인 멤버 ID", example = "1")
-	Long id,
 
 	@Schema(description = "반려생물 이미지", example = "image.jpg")
 	Optional<MultipartFile> memberImage,

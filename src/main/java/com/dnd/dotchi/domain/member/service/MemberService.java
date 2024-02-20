@@ -34,12 +34,10 @@ public class MemberService {
     private final ImageUploader imageUploader;
 
     @Transactional(readOnly = true)
-    public MemberInfoResponse getMemberInfo(final Long memberId, final Long lastCardId) {
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public MemberInfoResponse getMemberInfo(final Member member, final Long lastCardId) {
 
         final List<Card> recentCardsByMember =
-                cardRepository.findCardsByMemberWithFilteringAndPaging(memberId, lastCardId);
+                cardRepository.findCardsByMemberWithFilteringAndPaging(member.getId(), lastCardId);
 
         return MemberInfoResponse.of(MemberRequestResultType.GET_MEMBER_INFO_SUCCESS, member, recentCardsByMember);
     }
@@ -60,10 +58,7 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberModifyResponse patchMemberInfo(final MemberModifyRequest request) {
-        final Member member = memberRepository.findById(request.id())
-            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
-
+    public MemberModifyResponse patchMemberInfo(final Member member, final MemberModifyRequest request) {
         if(request.memberImage().isPresent()) {
             final MultipartFile image = request.memberImage().get();
             final String fileFullPath = imageUploader.upload(image);

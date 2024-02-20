@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.given;
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
 import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
+import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
@@ -20,6 +21,8 @@ import com.dnd.dotchi.test.ControllerTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,9 +31,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(MemberController.class)
 class MemberControllerTest extends ControllerTest {
@@ -50,7 +55,7 @@ class MemberControllerTest extends ControllerTest {
     @DisplayName("회원 정보 조회에 성공하면 200 응답을 반환한다.")
     void getMemberInfoReturn200Success() {
         // given
-        final Long memberId = 1L;
+        // data.sql
         final Long lastCardId = 25L;
 
         final MemberInfoResponse response = MemberInfoResponse.of(
@@ -58,14 +63,14 @@ class MemberControllerTest extends ControllerTest {
                 Member.builder().build(),
                 List.of()
         );
-
-        given(memberService.getMemberInfo(memberId, lastCardId)).willReturn(response);
+        final Member member = memberService.findById(1L);
+        given(memberService.getMemberInfo(member, lastCardId)).willReturn(response);
 
         // when
         final MemberInfoResponse result = RestAssuredMockMvc.given().log().all()
                 .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .pathParam("memberId", memberId)
-                .queryParam("lastCardId", lastCardId)
+                .pathParam("memberId", member)
+                .param("lastCardId", lastCardId)
                 .when().get("/members/{memberId}")
                 .then().log().all()
                 .status(HttpStatus.OK)
@@ -81,19 +86,19 @@ class MemberControllerTest extends ControllerTest {
     @DisplayName("회원 정보 조회에 실패하면 400 응답을 반환한다.")
     void getMemberInfoReturn400BadRequest() {
         // given
-        final Long memberId = 1L;
         final Long lastCardId = 0L;
+        final Member member = memberService.findById(1L);
 
         // when, then
         RestAssuredMockMvc.given().log().all()
                 .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .pathParam("memberId", memberId)
+                .pathParam("memberId", member)
                 .param("lastCardId", lastCardId)
                 .when().get("/members/{memberId}")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body("code", equalTo(200))
-                .body("message", containsString("마지막 조회 가드 ID는 양수만 가능합니다."));
+                .body("message", containsString("마지막 조회 카드 ID는 양수만 가능합니다."));
     }
 
     @Test
@@ -154,29 +159,32 @@ class MemberControllerTest extends ControllerTest {
     void MemberModifiedReturn200Success() {
         // given
         final String contentBody = "image";
+
         final MemberModifyResponse response
             = MemberModifyResponse.of(MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS);
-        given(memberService.patchMemberInfo(any())).willReturn(response);
+
+        given(memberService.patchMemberInfo(any(), any())).willReturn(response);
 
         // when
         final CardsWriteResponse resultHasImage = RestAssuredMockMvc.given().log().all()
+            .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             .contentType(MediaType.MULTIPART_FORM_DATA)
-            .formParam("id", 1L)
             .multiPart("memberImage", contentBody, MediaType.IMAGE_PNG_VALUE)
             .formParam("memberName", "안능")
-            .formParam("memberDecription", "행복해")
+            .formParam("memberDescription", "행복해")
             .when().patch("/members/me")
             .then().log().all()
             .status(HttpStatus.OK)
             .extract()
             .as(new TypeRef<>() {
             });
+
         final CardsWriteResponse resultHasNotImage = RestAssuredMockMvc.given().log().all()
+            .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             .contentType(MediaType.MULTIPART_FORM_DATA)
-            .formParam("id", 1L)
             .multiPart("memberImage", contentBody, MediaType.IMAGE_PNG_VALUE)
             .formParam("memberName", "안능")
-            .formParam("memberDecription", "행복해")
+            .formParam("memberDescription", "행복해")
             .when().patch("/members/me")
             .then().log().all()
             .status(HttpStatus.OK)
@@ -197,6 +205,7 @@ class MemberControllerTest extends ControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
+            .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .formParam("id", 1L)
             .formParam("memberName", "안 능")
@@ -216,6 +225,7 @@ class MemberControllerTest extends ControllerTest {
 
         // when, then
         RestAssuredMockMvc.given().log().all()
+            .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .formParam("id", 1L)
             .multiPart("memberImage", contentBody, MediaType.TEXT_PLAIN_VALUE)

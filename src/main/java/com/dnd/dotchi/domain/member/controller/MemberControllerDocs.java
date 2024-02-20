@@ -9,7 +9,9 @@ import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
+import com.dnd.dotchi.global.jwt.Auth;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,7 +45,7 @@ public interface MemberControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<MemberInfoResponse> getMemberInfo(
-            @Parameter(description = "회원 ID", example = "1") final Long memberId,
+        @Auth final Member member,
             final MemberInfoRequest request
     );
 
@@ -89,6 +91,7 @@ public interface MemberControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<MemberModifyResponse> patchMemberInfo(
+        @Auth final Member member,
         @Valid @ModelAttribute final MemberModifyRequest request
     );
 
