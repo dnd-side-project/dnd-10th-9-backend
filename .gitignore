@@ -39,3 +39,4 @@ out/
 ### local environment test files ###
 src/main/generated
 /static/
+.env
