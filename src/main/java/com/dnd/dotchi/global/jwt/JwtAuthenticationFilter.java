@@ -17,7 +17,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final List<String> ALLOWED_URIS = List.of(
             "/swagger-ui.html",
-            "/favicon.ico"
+            "/favicon.ico",
+            "/health-check"
     );
 
     private static final List<String> ALLOWED_START_URIS = List.of(

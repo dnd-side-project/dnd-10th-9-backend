@@ -4,12 +4,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
+import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
+import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResultResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResultResponse;
+import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
 import com.dnd.dotchi.domain.member.dto.response.RecentCardsByMemberResponse;
 import com.dnd.dotchi.domain.member.dto.response.resultinfo.MemberRequestResultType;
+import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
@@ -17,10 +21,13 @@ import com.dnd.dotchi.global.jwt.TokenPayload;
 import com.dnd.dotchi.global.jwt.TokenProcessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -41,11 +48,11 @@ class MemberServiceTest {
     void getMemberInfo() {
         // given
         // data-test.sql
-        final long memberId = 1L;
+        final Member member = memberService.findById(1L);
         final long lastCardId = 25L;
 
         // when
-        final MemberInfoResponse response = memberService.getMemberInfo(memberId, lastCardId);
+        final MemberInfoResponse response = memberService.getMemberInfo(member, lastCardId);
 
         // then
         final MemberRequestResultType resultType = MemberRequestResultType.GET_MEMBER_INFO_SUCCESS;
@@ -54,7 +61,7 @@ class MemberServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(response.code()).isEqualTo(resultType.getCode());
             softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
-            softly.assertThat(resultResponse.member().id()).isEqualTo(memberId);
+            softly.assertThat(resultResponse.member().id()).isEqualTo(member.getId());
             softly.assertThat(recentCards).hasSize(10);
             softly.assertThat(recentCards.get(0).cardId()).isEqualTo(23);
             softly.assertThat(recentCards.get(1).cardId()).isEqualTo(21);
@@ -67,20 +74,6 @@ class MemberServiceTest {
             softly.assertThat(recentCards.get(8).cardId()).isEqualTo(7);
             softly.assertThat(recentCards.get(9).cardId()).isEqualTo(5);
         });
-    }
-
-    @Test
-    @DisplayName("회원 정보 조회 시, 없는 회원 ID이면 예외가 발생한다.")
-    void getMemberInfoNotFoundException() {
-        // given
-        // data-test.sql
-        final long memberId = memberRepository.count() + 1L;
-        final long lastCardId = 25L;
-
-        // when, then
-        assertThatThrownBy(() -> memberService.getMemberInfo(memberId, lastCardId))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage(MemberExceptionType.NOT_FOUND_MEMBER.getMessage());
     }
 
     @Test
@@ -125,4 +118,45 @@ class MemberServiceTest {
                 .hasMessage(MemberExceptionType.NOT_FOUND_MEMBER.getMessage());
     }
 
+    @Test
+    @DisplayName("회원 정보 수정 성공, 이미지 포함")
+    void patchMemberInfoHasImage() {
+        // given
+        // data.sql
+        final Member member = memberService.findById(1L);
+        final MockMultipartFile image
+            = new MockMultipartFile("img", "img", "image/png", "img".getBytes());
+        final MemberModifyRequest request
+            = new MemberModifyRequest(Optional.of(image),"오뜨","멍청이");
+
+        // when
+        final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
+
+        // then
+        final MemberRequestResultType resultType = MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS;
+        assertSoftly(softly -> {
+            softly.assertThat(response.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
+        });
+    }
+
+    @Test
+    @DisplayName("회원 정보 수정 성공, 이미지 미포함")
+    void patchMemberInfoNoImage() {
+        // given
+        // data.sql
+        final Member member = memberService.findById(1L);
+        final MemberModifyRequest request
+            = new MemberModifyRequest(Optional.empty(),"오뜨","멍청이");
+
+        // when
+        final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
+
+        // then
+        final MemberRequestResultType resultType = MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS;
+        assertSoftly(softly -> {
+            softly.assertThat(response.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
+        });
+    }
 }
