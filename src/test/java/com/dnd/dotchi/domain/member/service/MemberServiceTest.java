@@ -2,7 +2,10 @@ package com.dnd.dotchi.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
 import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
 import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
@@ -20,13 +23,18 @@ import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.jwt.TokenPayload;
 import com.dnd.dotchi.global.jwt.TokenProcessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +50,15 @@ class MemberServiceTest {
 
     @Autowired
     TokenProcessor tokenProcessor;
+
+    @MockBean
+    private AmazonS3 amazonS3Mock;
+
+    @BeforeEach
+    void setUp() throws MalformedURLException, URISyntaxException {
+        URI uri = new URI("http://example.com/uploaded/image.jpg");
+        given(amazonS3Mock.getUrl(anyString(), anyString())).willReturn(uri.toURL());
+    }
 
     @Test
     @DisplayName("회원 정보 조회")

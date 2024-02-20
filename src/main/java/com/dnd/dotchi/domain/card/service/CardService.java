@@ -29,7 +29,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
-import com.dnd.dotchi.infra.image.ImageUploader;
+import com.dnd.dotchi.infra.image.S3FileUploader;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
@@ -53,10 +53,10 @@ public class CardService {
     private final TodayCardRepository todayCardRepository;
     private final ThemeRepository themeJpaRepository;
     private final CommentRepository commentRepository;
-    private final ImageUploader imageUploader;
+    private final S3FileUploader s3FileUploader;
 
     public CardsWriteResponse write(final CardsWriteRequest request, final Member member) {
-        final String fileFullPath = imageUploader.upload(request.image());
+        final String fileFullPath = s3FileUploader.upload(request.image());
 
         final Card cardEntity = Card.builder()
                 .member(member)
