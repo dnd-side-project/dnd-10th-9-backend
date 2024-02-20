@@ -1,17 +1,20 @@
 INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (1, '회원이다1', 'abc1@email.com', '회원1', 'http://example.com/image1.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (1, '회원이다1', 'abc1@email.com', '회원1', 'https://example.com/image1.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (2, '회원이다2', 'abc2@email.com', '회원2', 'http://example.com/image2.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (2, '회원이다2', 'abc2@email.com', '회원2', 'https://example.com/image2.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
--- VALUES (3, '회원이다3', 'abc3@email.com', '회원3', 'http://example.com/image3.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
---
--- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
--- VALUES (4, '회원이다4', 'abc4@email.com', '회원4', 'http://example.com/image4.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
---
--- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
--- VALUES (5, '회원이다5', 'abc5@email.com', '회원5', 'http://example.com/image5.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+VALUES (3, '회원이다3', 'abc3@email.com', '회원3', 'https://example.com/image3.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+VALUES (4, '회원이다4', 'abc4@email.com', '회원4', 'https://example.com/image4.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+VALUES (5, '회원이다5', 'abc5@email.com', '회원5', 'https://example.com/image5.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+VALUES (6, '회원이다6', 'abc6@email.com', '회원6', 'https://example.com/image6.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 --
 --
 INSERT INTO THEME (theme_concept, created_at, updated_at)
