@@ -1,6 +1,7 @@
 package com.dnd.dotchi.domain.card.repository;
 
 import static com.dnd.dotchi.domain.card.entity.QCard.card;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
@@ -64,6 +65,19 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
                 )
                 .orderBy(card.id.desc())
                 .limit(BASIC_PAGE_SIZE)
+                .fetch();
+    }
+
+    @Override
+    public List<Card> findRecentCardByThemes() {
+        return jpaQueryFactory
+                .selectFrom(card)
+                .where(card.id.in(
+                        select(card.id.max())
+                                .from(card)
+                                .groupBy(card.theme.id)
+                ))
+                .orderBy(card.theme.id.asc())
                 .fetch();
     }
 

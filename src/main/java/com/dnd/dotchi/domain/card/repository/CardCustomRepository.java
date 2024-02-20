@@ -24,4 +24,6 @@ public interface CardCustomRepository {
             final Long lastCardId
     );
 
+    List<Card> findRecentCardByThemes();
+
 }
