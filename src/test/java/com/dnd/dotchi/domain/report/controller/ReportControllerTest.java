@@ -47,7 +47,7 @@ class ReportControllerTest extends ControllerTest {
     @DisplayName("신고가 성공하면 200 응답을 반환한다.")
     void reportReturn200Success() {
         // given
-        // data.sql
+        // data-test.sql
         final long reportedId = 2L;
         final String reason = "이상한 글을 씁니다.";
         final ReportRequest request = new ReportRequest(reason);
@@ -76,7 +76,7 @@ class ReportControllerTest extends ControllerTest {
     @DisplayName("신고가 실패하면 400 응답을 반환한다.")
     void reportReturn400BadRequest() {
         // given
-        // data.sql
+        // data-test.sql
         final long reportedId = 2L;
         final String reason = "가".repeat(51);
         final ReportRequest request = new ReportRequest(reason);

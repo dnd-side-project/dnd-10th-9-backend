@@ -122,7 +122,7 @@ class CardControllerTest extends ControllerTest {
     @DisplayName("댓글 작성에 성공하면 200 응답을 반환한다.")
     void writeCommentOnCardReturn200Success() {
         // given
-        // data.sql
+        // data-test.sql
         final WriteCommentOnCardResponse response =
                 WriteCommentOnCardResponse.from(CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS);
         given(cardService.writeCommentOnCard(any(), anyLong())).willReturn(response);
