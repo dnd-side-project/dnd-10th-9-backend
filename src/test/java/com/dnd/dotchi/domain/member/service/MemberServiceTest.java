@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
-import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
 import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResultResponse;
@@ -28,7 +27,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -139,9 +137,9 @@ class MemberServiceTest {
         // data.sql
         final Member member = memberService.findById(1L);
         final MockMultipartFile image
-            = new MockMultipartFile("img", "img", "image/png", "img".getBytes());
+                = new MockMultipartFile("img", "img", "image/png", "img".getBytes());
         final MemberModifyRequest request
-            = new MemberModifyRequest(Optional.of(image),"오뜨","멍청이");
+                = new MemberModifyRequest(Optional.of(image), "오뜨", "멍청이");
 
         // when
         final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
@@ -161,7 +159,7 @@ class MemberServiceTest {
         // data.sql
         final Member member = memberService.findById(1L);
         final MemberModifyRequest request
-            = new MemberModifyRequest(Optional.empty(),"오뜨","멍청이");
+                = new MemberModifyRequest(Optional.empty(), "오뜨", "멍청이");
 
         // when
         final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
@@ -173,4 +171,28 @@ class MemberServiceTest {
             softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
         });
     }
+
+    @Test
+    @DisplayName("회원 정보 수정 성공, 이미지 미포함을 나타내는 파일 이름")
+    void patchMemberInfoNoImageFileName() {
+        // given
+        // data.sql
+        final String emptyFileStartName = "34f2743d-a9463.png";
+        final Member member = memberService.findById(1L);
+        final MockMultipartFile image
+                = new MockMultipartFile("img", emptyFileStartName, "image/png", "img".getBytes());
+        final MemberModifyRequest request
+                = new MemberModifyRequest(Optional.of(image), "오뜨", "멍청이");
+
+        // when
+        final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
+
+        // then
+        final MemberRequestResultType resultType = MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS;
+        assertSoftly(softly -> {
+            softly.assertThat(response.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
+        });
+    }
+
 }

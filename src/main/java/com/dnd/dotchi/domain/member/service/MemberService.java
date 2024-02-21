@@ -2,6 +2,8 @@ package com.dnd.dotchi.domain.member.service;
 
 import java.util.List;
 
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @Service
 public class MemberService {
+
+    private static final String EMPTY_FILE_START_NAME = "34f2743d-a9";
 
     private final MemberRepository memberRepository;
     private final CardRepository cardRepository;
@@ -58,8 +62,9 @@ public class MemberService {
     }
 
     public MemberModifyResponse patchMemberInfo(final Member member, final MemberModifyRequest request) {
-        if(request.memberImage().isPresent()) {
-            final MultipartFile image = request.memberImage().get();
+        final Optional<MultipartFile> multipartFile = request.memberImage();
+        if(isModifyProfileImage(multipartFile)) {
+            final MultipartFile image = multipartFile.get();
             final String fileFullPath = s3FileUploader.upload(image);
             member.setImageUrl(fileFullPath);
         }
@@ -67,6 +72,11 @@ public class MemberService {
         member.setDescription(request.memberDescription());
 
         return MemberModifyResponse.of(MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS);
+    }
+
+    private boolean isModifyProfileImage(final Optional<MultipartFile> multipartFile) {
+        return multipartFile.isPresent()
+                && !Objects.requireNonNull(multipartFile.get().getOriginalFilename()).startsWith(EMPTY_FILE_START_NAME);
     }
 
 }
