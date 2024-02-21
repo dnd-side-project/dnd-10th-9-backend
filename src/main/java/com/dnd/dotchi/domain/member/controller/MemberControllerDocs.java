@@ -46,6 +46,7 @@ public interface MemberControllerDocs {
     )
     ResponseEntity<MemberInfoResponse> getMemberInfo(
         final Member member,
+        @Parameter(description = "조회할 회원 ID", example = "1") final Long memberId,
         final MemberInfoRequest request
     );
 
