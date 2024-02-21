@@ -376,9 +376,10 @@ class CardServiceTest {
         // given
         // data-test.sql
         final Long cardId = 2L;
+        final Member member = memberService.findById(1L);
 
         // when
-        final GetCommentOnCardResponse result = cardService.getCommentOnCard(cardId);
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(member, cardId);
         final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
 
         // then
@@ -397,31 +398,31 @@ class CardServiceTest {
         // given
         // data-test.sql
         final Long cardId = 1L;
+        final Member member = memberService.findById(1L);
 
         // when
-        final GetCommentOnCardResponse result = cardService.getCommentOnCard(cardId);
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(member, cardId);
         final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
 
         // then
         final Long commentsCount = result.result().comments().stream().count();
-        final Long themeId = result.result().card().themeId();
         assertSoftly(softly -> {
-            softly.assertThat(commentsCount).isEqualTo(2);
+            softly.assertThat(commentsCount).isEqualTo(1);
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());
             softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
-            softly.assertThat(themeId).isEqualTo(1);
         });
     }
 
     @Test
-    @DisplayName("찾을 수 없는 카드인 경우 NotFound 예외가 발생한다.")
+    @DisplayName("댓글 조회 시 찾을 수 없는 카드인 경우 NotFound 예외가 발생한다.")
     void getCommentOnCardNotFoundException() {
         // given
         // data-test.sql
         final Long cardId = cardRepository.count() + 1L;
+        final Member member = memberService.findById(1L);
 
         // when, then
-        assertThatThrownBy(() -> cardService.getCommentOnCard(cardId))
+        assertThatThrownBy(() -> cardService.getCommentOnCard(member, cardId))
             .isInstanceOf(NotFoundException.class)
             .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
     }

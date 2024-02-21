@@ -307,23 +307,10 @@ class CardControllerTest extends ControllerTest {
     @DisplayName("댓글 조회에 대해 성공하면 200을 반환한다.")
     void getCommentsReturn400BadRequest() {
         // given
-        final Member member = new Member(
-                1L,
-                "",
-                "test@mail.com",
-                "test",
-                "test.jpg"
-        );
-
+        final Member member = memberService.findById(1L);
         final Theme theme = new Theme("test");
-
         final Card card = new Card(
-                member,
-                theme,
-                "test",
-                "test",
-                "test",
-                "test"
+                member, theme, "test", "test", "test", "test"
         );
 
         final GetCommentOnCardResponse response =
@@ -333,7 +320,7 @@ class CardControllerTest extends ControllerTest {
                         CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
                 );
 
-        given(cardService.getCommentOnCard(anyLong())).willReturn(response);
+        given(cardService.getCommentOnCard(any(), anyLong())).willReturn(response);
 
         // when
         final GetCommentOnCardResponse result = RestAssuredMockMvc.given().log().all()

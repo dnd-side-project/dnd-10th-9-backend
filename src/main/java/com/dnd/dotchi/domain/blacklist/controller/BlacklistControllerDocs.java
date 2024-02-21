@@ -16,8 +16,12 @@ public interface BlacklistControllerDocs {
 
     @Operation(summary = "차단하기", description = "타 유저를 차단한다.")
     @ApiResponse(
-            responseCode = "200",
-            description = "차단 성공"
+        responseCode = "200",
+        description = "차단 성공"
+    )
+    @ApiResponse(
+        responseCode = "201",
+        description = "이미 차단한 유저"
     )
     @ApiResponse(
             responseCode = "404",

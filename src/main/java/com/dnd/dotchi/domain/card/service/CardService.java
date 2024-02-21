@@ -4,6 +4,8 @@ import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestRes
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_CARDS_SUCCESS;
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
+import com.dnd.dotchi.domain.blacklist.entity.BlackList;
+import com.dnd.dotchi.domain.blacklist.repository.BlackListRepository;
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
@@ -182,12 +184,11 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public GetCommentOnCardResponse getCommentOnCard(final Long cardId) {
-        final Card card = cardRepository.findById(cardId)
-            .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
+    public GetCommentOnCardResponse getCommentOnCard(final Member member, final Long cardId) {
+        final Card card = findById(cardId);
 
         final List<Member> authors
-            = commentRepository.findTop3ByCardIdOrderByIdDesc(cardId).stream()
+            = commentRepository.findTop3LatestCommentsFilter(member.getId(), cardId).stream()
             .map(Comment::getMember)
             .toList();
 
@@ -196,6 +197,11 @@ public class CardService {
             authors,
             CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
         );
+    }
+
+    public Card findById(final Long cardId) {
+        return cardRepository.findById(cardId)
+            .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
     }
 
     @Transactional(readOnly = true)

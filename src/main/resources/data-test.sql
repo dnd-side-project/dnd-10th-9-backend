@@ -115,6 +115,8 @@ VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치29', '행복해29', '
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치30', '행복해30', '뭐든 더 써봐30', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+INSERT INTO BLACKLIST (blacklister_id, blacklisted_id, created_at, updated_at)
+VALUES (1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
 VALUES (2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -138,6 +140,3 @@ INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
 VALUES (2, 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
 VALUES (3, 29, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-INSERT INTO BLACKLIST (blacklister_id, blacklisted_id, created_at, updated_at)
-VALUES (1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

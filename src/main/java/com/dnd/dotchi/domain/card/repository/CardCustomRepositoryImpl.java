@@ -106,16 +106,16 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
         };
     }
 
-    private JPAQuery<Card> blacklistFilter(final Long myId) {
+    private JPAQuery<Card> blacklistFilter(final Long viewerId) {
         return jpaQueryFactory.selectFrom(card)
             .join(card.member).fetchJoin()
             .join(card.theme).fetchJoin()
             .leftJoin(blackList)
             .on(
                 card.member.id.eq(blackList.blacklisted.id)
-                    .and(blackList.blacklister.id.eq(myId))
+                    .and(blackList.blacklister.id.eq(viewerId))
                 .or(card.member.id.eq(blackList.blacklister.id)
-                    .and(blackList.blacklisted.id.eq(myId)))
+                    .and(blackList.blacklisted.id.eq(viewerId)))
             );
     }
 
