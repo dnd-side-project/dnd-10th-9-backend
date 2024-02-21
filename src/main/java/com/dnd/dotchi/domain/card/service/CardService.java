@@ -59,7 +59,7 @@ public class CardService {
     public CardsWriteResponse write(final CardsWriteRequest request, final Member member) {
         final String fileFullPath = s3FileUploader.upload(request.image());
 
-        final Card cardEntity = Card.builder()
+        final Card card = Card.builder()
                 .member(member)
                 .theme(getTheme(request))
                 .imageUrl(fileFullPath)
@@ -67,7 +67,8 @@ public class CardService {
                 .backMood(request.backMood())
                 .backContent(request.backContent())
                 .build();
-        cardRepository.save(cardEntity);
+        member.increaseCardCountByOne();
+        cardRepository.save(card);
 
         return CardsWriteResponse.from(WRITE_CARDS_SUCCESS);
     }

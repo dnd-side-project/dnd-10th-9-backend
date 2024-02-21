@@ -72,4 +72,8 @@ public class Member extends BaseEntity {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public void increaseCardCountByOne() {
+        this.cardCount += 1L;
+    }
 }
