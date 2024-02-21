@@ -24,24 +24,27 @@ public record GetCommentOnCardResponse(
         public static GetCommentOnCardResponse of(
             final Card card,
             final List<Member> authors,
+            final Boolean hasComment,
             final CardsRequestResultType resultType
         ) {
                 return new GetCommentOnCardResponse(
                     resultType.getCode(),
                     resultType.getMessage(),
-                    parseCommentsResponse(card, authors)
+                    parseCommentsResponse(card, authors, hasComment)
                 );
         }
 
         private static CommentResultResponse parseCommentsResponse(
             final Card card,
-            final List<Member> authors
+            final List<Member> authors,
+            final Boolean hasComment
         ) {
                 return new CommentResultResponse(
                     CardsResponse.from(card),
                     authors.stream()
                         .map(CommentsResponse::from)
-                        .toList()
+                        .toList(),
+                    hasComment
                 );
         }
 

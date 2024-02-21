@@ -305,7 +305,7 @@ class CardControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("댓글 조회에 대해 성공하면 200을 반환한다.")
-    void getCommentsReturn400BadRequest() {
+    void getCommentsReturn200SuccessRequest() {
         // given
         final Member member = memberService.findById(1L);
         final Theme theme = new Theme("test");
@@ -317,6 +317,7 @@ class CardControllerTest extends ControllerTest {
                 GetCommentOnCardResponse.of(
                         card,
                         List.of(),
+                        null,
                         CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
                 );
 

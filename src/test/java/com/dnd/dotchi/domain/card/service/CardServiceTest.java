@@ -371,7 +371,7 @@ class CardServiceTest {
     }
 
     @Test
-    @DisplayName("카드 조회 시 댓글이 3개 이상일 경우 정상 작동한다.")
+    @DisplayName("카드 조회 시 정상 작동한다.")
     void getCommentOnCardWithCommentCountGreaterThanEqualThree() {
         // given
         // data-test.sql
@@ -384,9 +384,33 @@ class CardServiceTest {
 
         // then
         final Long commentsCount = result.result().comments().stream().count();
-        final Long themeId = result.result().card().themeId();
+        final Boolean hasComment = result.result().hasComment();
         assertSoftly(softly -> {
             softly.assertThat(commentsCount).isEqualTo(3);
+            softly.assertThat(hasComment).isEqualTo(true);
+            softly.assertThat(result.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
+        });
+    }
+
+    @Test
+    @DisplayName("카드에 댓글을 작성하지 않았을 경우 false를 반환한다.")
+    void hasCommentOnCard() {
+        // given
+        // data-test.sql
+        final Long cardId = 2L;
+        final Member member = memberService.findById(2L);
+
+        // when
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(member, cardId);
+        final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
+
+        // then
+        final Long commentsCount = result.result().comments().stream().count();
+        final Boolean hasComment = result.result().hasComment();
+        assertSoftly(softly -> {
+            softly.assertThat(commentsCount).isEqualTo(3L);
+            softly.assertThat(hasComment).isEqualTo(false);
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());
             softly.assertThat(result.message()).isEqualTo(resultType.getMessage());
         });

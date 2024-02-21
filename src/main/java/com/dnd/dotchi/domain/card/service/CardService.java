@@ -196,8 +196,17 @@ public class CardService {
         return GetCommentOnCardResponse.of(
             card,
             authors,
+            hasComment(member.getId(), cardId),
             CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean hasComment(final Long memberId, final Long cardId) {
+        if(commentRepository.findByMemberIdAndCardId(memberId, cardId).isPresent()) {
+            return true;
+        }
+        return false;
     }
 
     public Card findById(final Long cardId) {
