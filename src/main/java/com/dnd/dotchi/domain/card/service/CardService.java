@@ -222,7 +222,7 @@ public class CardService {
         return commentRepository.findByMemberIdAndCardId(memberId, cardId).isPresent();
     }
 
-    public Card findById(final Long cardId) {
+    private Card findById(final Long cardId) {
         return cardRepository.findById(cardId)
             .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
     }
