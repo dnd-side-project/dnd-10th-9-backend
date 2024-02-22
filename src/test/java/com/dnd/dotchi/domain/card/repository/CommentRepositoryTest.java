@@ -1,9 +1,11 @@
 package com.dnd.dotchi.domain.card.repository;
 
-import static org.assertj.core.api.SoftAssertions.*;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.dnd.dotchi.domain.card.entity.Comment;
+import com.dnd.dotchi.global.config.JpaConfig;
+import com.dnd.dotchi.global.config.QuerydslConfig;
 import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +13,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.dnd.dotchi.domain.card.entity.Comment;
-import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.service.MemberService;
-import com.dnd.dotchi.global.config.JpaConfig;
-import com.dnd.dotchi.global.config.QuerydslConfig;
-
 @Import({JpaConfig.class, QuerydslConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class CommentRepositoryTest {
+class CommentRepositoryTest {
 
 	@Autowired
 	CommentRepository commentRepository;
@@ -30,11 +26,10 @@ public class CommentRepositoryTest {
 	void getCommentsOnCardTest1() {
 		// given
 		// data-test.sql
-		final Long viewerId = 2L;
 		final Long cardId = 2L;
 
 		// when
-		final List<Comment> result = commentRepository.findTop3LatestCommentsFilter(viewerId, cardId);
+		final List<Comment> result = commentRepository.findTop3LatestCommentsFilter(List.of(1L), cardId);
 
 		// then
 		assertSoftly(softly -> {

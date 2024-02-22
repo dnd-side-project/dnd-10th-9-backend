@@ -11,14 +11,14 @@ public interface CardCustomRepository {
             final CardSortType cardSortType,
             final Long lastCardId,
             final Long lastCardCommentCount,
-            final Long memberId
+            final List<Long> idsRelatedToBlocking
     );
 
     List<Card> findCardsAllWithFilteringAndPaging(
             final CardSortType cardSortType,
             final Long lastCardId,
             final Long lastCardCommentCount,
-            final Long myId
+            final List<Long> idsRelatedToBlocking
     );
 
     List<Card> findCardsByMemberWithFilteringAndPaging(

@@ -1,23 +1,12 @@
 package com.dnd.dotchi.domain.card.repository;
 
-import static com.dnd.dotchi.domain.blacklist.entity.QBlackList.*;
-import static com.dnd.dotchi.domain.card.entity.QCard.*;
-import static com.dnd.dotchi.domain.card.entity.QComment.*;
-import static com.querydsl.jpa.JPAExpressions.*;
+import static com.dnd.dotchi.domain.card.entity.QComment.comment;
 
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
-import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.Comment;
-import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
@@ -28,29 +17,17 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Comment> findTop3LatestCommentsFilter(final Long viewerId, final Long cardId) {
-        return blacklistFilter(viewerId)
-            .where(
-                comment.card.id.eq(cardId),
-                blackList.blacklister.id.isNull(),
-                blackList.blacklisted.id.isNull()
-            )
-            .orderBy(comment.id.desc())
-            .limit(LIMIT_COMMENTS)
-            .fetch();
-    }
-
-    private JPAQuery<Comment> blacklistFilter(final Long viewerId) {
+    public List<Comment> findTop3LatestCommentsFilter(final List<Long> idsRelatedToBlocking, final Long cardId) {
         return jpaQueryFactory.selectFrom(comment)
-            .join(comment.card).fetchJoin()
-            .join(comment.member).fetchJoin()
-            .leftJoin(blackList)
-            .on(
-                comment.member.id.eq(blackList.blacklisted.id)
-                    .and(blackList.blacklister.id.eq(viewerId))
-                .or(comment.member.id.eq(blackList.blacklister.id)
-                    .and(blackList.blacklisted.id.eq(viewerId)))
-            );
+                .join(comment.card).fetchJoin()
+                .join(comment.member).fetchJoin()
+                .where(
+                        comment.member.id.notIn(idsRelatedToBlocking),
+                        comment.card.id.eq(cardId)
+                )
+                .orderBy(comment.id.desc())
+                .limit(LIMIT_COMMENTS)
+                .fetch();
     }
 
 }

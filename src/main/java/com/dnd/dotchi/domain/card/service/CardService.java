@@ -4,6 +4,8 @@ import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestRes
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_CARDS_SUCCESS;
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
+import com.dnd.dotchi.domain.blacklist.entity.BlackList;
+import com.dnd.dotchi.domain.blacklist.repository.BlackListRepository;
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
@@ -30,9 +32,11 @@ import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.infra.image.S3FileUploader;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -52,6 +56,7 @@ public class CardService {
     private final TodayCardRepository todayCardRepository;
     private final ThemeRepository themeJpaRepository;
     private final CommentRepository commentRepository;
+    private final BlackListRepository blackListRepository;
     private final S3FileUploader s3FileUploader;
 
     public CardsWriteResponse write(final CardsWriteRequest request, final Member member) {
@@ -83,7 +88,7 @@ public class CardService {
                 request.cardSortType(),
                 request.lastCardId(),
                 request.lastCardCommentCount(),
-                member.getId()
+                getIdsRelatedToBlocking(member)
         );
 
         return CardsByThemeResponse.of(GET_CARDS_BY_THEME_SUCCESS, cardsByTheme);
@@ -159,7 +164,7 @@ public class CardService {
                 request.cardSortType(),
                 request.lastCardId(),
                 request.lastCardCommentCount(),
-                member.getId()
+                getIdsRelatedToBlocking(member)
         );
 
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
@@ -187,7 +192,7 @@ public class CardService {
         final Card card = findById(cardId);
 
         final List<Member> authors
-            = commentRepository.findTop3LatestCommentsFilter(member.getId(), cardId).stream()
+            = commentRepository.findTop3LatestCommentsFilter(getIdsRelatedToBlocking(member), cardId).stream()
             .map(Comment::getMember)
             .toList();
 
@@ -197,6 +202,20 @@ public class CardService {
             hasComment(member.getId(), cardId),
             CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
         );
+    }
+
+    private List<Long> getIdsRelatedToBlocking(final Member member) {
+        final List<Long> blacklistedIds = blackListRepository.findByBlacklisterId(member.getId()).stream()
+                .map(BlackList::getBlacklisted)
+                .map(Member::getId)
+                .toList();
+        final List<Long> blacklisterids = blackListRepository.findByBlacklistedId(member.getId()).stream()
+                .map(BlackList::getBlacklister)
+                .map(Member::getId)
+                .toList();
+        return Stream.of(blacklisterids, blacklistedIds)
+                .flatMap(Collection::stream)
+                .toList();
     }
 
     private Boolean hasComment(final Long memberId, final Long cardId) {
