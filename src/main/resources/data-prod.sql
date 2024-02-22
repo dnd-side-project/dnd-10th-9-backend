@@ -1,30 +1,30 @@
-INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (1, '회원이다1', 'abc1@email.com', '회원1', 'https://example.com/image1.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (2, '회원이다2', 'abc2@email.com', '회원2', 'https://example.com/image2.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (3, '회원이다3', 'abc3@email.com', '회원3', 'https://example.com/image3.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (4, '회원이다4', 'abc4@email.com', '회원4', 'https://example.com/image4.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (5, '회원이다5', 'abc5@email.com', '회원5', 'https://example.com/image5.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
-VALUES (6, '회원이다6', 'abc6@email.com', '회원6', 'https://example.com/image6.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+-- VALUES (1, '회원이다1', 'abc1@email.com', '회원1', 'https://example.com/image1.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 --
+-- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+-- VALUES (2, '회원이다2', 'abc2@email.com', '회원2', 'https://example.com/image2.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 --
-INSERT INTO THEME (theme_concept, created_at, updated_at)
-VALUES ('건강운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO THEME (theme_concept, created_at, updated_at)
-VALUES ('행운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO THEME (theme_concept, created_at, updated_at)
-VALUES ('재물운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO THEME (theme_concept, created_at, updated_at)
-VALUES ('애정운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+-- VALUES (3, '회원이다3', 'abc3@email.com', '회원3', 'https://example.com/image3.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+--
+-- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+-- VALUES (4, '회원이다4', 'abc4@email.com', '회원4', 'https://example.com/image4.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+--
+-- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+-- VALUES (5, '회원이다5', 'abc5@email.com', '회원5', 'https://example.com/image5.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+--
+-- INSERT INTO MEMBER (sub, description, email, nickname, image_url, created_at, updated_at)
+-- VALUES (6, '회원이다6', 'abc6@email.com', '회원6', 'https://example.com/image6.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- --
+-- --
+-- INSERT INTO THEME (theme_concept, created_at, updated_at)
+-- VALUES ('건강운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- INSERT INTO THEME (theme_concept, created_at, updated_at)
+-- VALUES ('행운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- INSERT INTO THEME (theme_concept, created_at, updated_at)
+-- VALUES ('재물운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- INSERT INTO THEME (theme_concept, created_at, updated_at)
+-- VALUES ('애정운', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 --
 -- INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 -- VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치1', '행복해1', '뭐든 더 써봐1', 31, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
