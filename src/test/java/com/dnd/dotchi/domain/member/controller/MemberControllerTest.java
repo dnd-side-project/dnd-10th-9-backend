@@ -56,6 +56,7 @@ class MemberControllerTest extends ControllerTest {
     void getMemberInfoReturn200Success() {
         // given
         // data.sql
+        final Long memberId = 1L;
         final Long lastCardId = 25L;
 
         final MemberInfoResponse response = MemberInfoResponse.of(
@@ -63,14 +64,14 @@ class MemberControllerTest extends ControllerTest {
                 Member.builder().build(),
                 List.of()
         );
-        final Member member = memberService.findById(1L);
-        given(memberService.getMemberInfo(member, lastCardId)).willReturn(response);
+        given(memberService.getMemberInfo(anyLong(), anyLong())).willReturn(response);
 
         // when
         final MemberInfoResponse result = RestAssuredMockMvc.given().log().all()
                 .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .param("lastCardId", lastCardId)
-                .when().get("/members")
+                .pathParam("memberId", memberId)
+                .queryParam("lastCardId", lastCardId)
+                .when().get("/members/{memberId}")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()
@@ -86,13 +87,14 @@ class MemberControllerTest extends ControllerTest {
     void getMemberInfoReturn400BadRequest() {
         // given
         final Long lastCardId = 0L;
-        final Member member = memberService.findById(1L);
+        final Long memberId = 1L;
 
         // when, then
         RestAssuredMockMvc.given().log().all()
                 .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .param("lastCardId", lastCardId)
-                .when().get("/members")
+                .pathParam("memberId", memberId)
+                .queryParam("lastCardId", lastCardId)
+                .when().get("/members/{memberId}")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body("code", equalTo(200))

@@ -12,6 +12,9 @@ public record CommentResultResponse(
 	CardsResponse card,
 
 	@Schema(description = "댓글을 작성한 멤버 정보")
-	List<CommentsResponse> comments
+	List<CommentsResponse> comments,
+
+	@Schema(description = "댓글을 작성 여부에 대한 정보")
+	Boolean hasComment
 ) {
 }

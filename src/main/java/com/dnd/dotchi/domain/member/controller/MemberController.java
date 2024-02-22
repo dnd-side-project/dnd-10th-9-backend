@@ -26,6 +26,7 @@ import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.jwt.Auth;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -36,12 +37,13 @@ public class MemberController implements MemberControllerDocs {
 
     private final MemberService memberService;
 
-    @GetMapping
+    @GetMapping("/{memberId}")
     public ResponseEntity<MemberInfoResponse> getMemberInfo(
             @Auth final Member member,
+            @PathVariable("memberId") final Long memberId,
             @Valid @ModelAttribute final MemberInfoRequest request
     ) {
-        final MemberInfoResponse response = memberService.getMemberInfo(member, request.lastCardId());
+        final MemberInfoResponse response = memberService.getMemberInfo(memberId, request.lastCardId());
         return ResponseEntity.ok(response);
     }
 

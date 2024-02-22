@@ -63,11 +63,11 @@ class MemberServiceTest {
     void getMemberInfo() {
         // given
         // data-test.sql
-        final Member member = memberService.findById(1L);
+        final long memberId = 1L;
         final long lastCardId = 25L;
 
         // when
-        final MemberInfoResponse response = memberService.getMemberInfo(member, lastCardId);
+        final MemberInfoResponse response = memberService.getMemberInfo(memberId, lastCardId);
 
         // then
         final MemberRequestResultType resultType = MemberRequestResultType.GET_MEMBER_INFO_SUCCESS;
@@ -76,18 +76,15 @@ class MemberServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(response.code()).isEqualTo(resultType.getCode());
             softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
-            softly.assertThat(resultResponse.member().id()).isEqualTo(member.getId());
-            softly.assertThat(recentCards).hasSize(10);
+            softly.assertThat(resultResponse.member().id()).isEqualTo(memberId);
+            softly.assertThat(recentCards).hasSize(7);
             softly.assertThat(recentCards.get(0).cardId()).isEqualTo(23);
             softly.assertThat(recentCards.get(1).cardId()).isEqualTo(21);
-            softly.assertThat(recentCards.get(2).cardId()).isEqualTo(19);
-            softly.assertThat(recentCards.get(3).cardId()).isEqualTo(17);
-            softly.assertThat(recentCards.get(4).cardId()).isEqualTo(15);
-            softly.assertThat(recentCards.get(5).cardId()).isEqualTo(13);
-            softly.assertThat(recentCards.get(6).cardId()).isEqualTo(11);
-            softly.assertThat(recentCards.get(7).cardId()).isEqualTo(9);
-            softly.assertThat(recentCards.get(8).cardId()).isEqualTo(7);
-            softly.assertThat(recentCards.get(9).cardId()).isEqualTo(5);
+            softly.assertThat(recentCards.get(2).cardId()).isEqualTo(17);
+            softly.assertThat(recentCards.get(3).cardId()).isEqualTo(15);
+            softly.assertThat(recentCards.get(4).cardId()).isEqualTo(7);
+            softly.assertThat(recentCards.get(5).cardId()).isEqualTo(5);
+            softly.assertThat(recentCards.get(6).cardId()).isEqualTo(1);
         });
     }
 

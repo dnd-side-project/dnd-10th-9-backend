@@ -24,6 +24,10 @@ public class BlacklistController implements BlacklistControllerDocs {
             @PathVariable("blacklistedId") final Long blacklistedId
     ) {
         final BlockResponse response = blacklistService.block(blacklistedId, member);
+
+        if(response.code() == 1201) {
+            return ResponseEntity.accepted().body(response);
+        }
         return ResponseEntity.ok(response);
     }
 

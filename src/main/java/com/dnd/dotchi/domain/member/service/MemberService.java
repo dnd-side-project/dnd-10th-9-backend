@@ -38,10 +38,10 @@ public class MemberService {
     private final S3FileUploader s3FileUploader;
 
     @Transactional(readOnly = true)
-    public MemberInfoResponse getMemberInfo(final Member member, final Long lastCardId) {
-
+    public MemberInfoResponse getMemberInfo(final Long memberId, final Long lastCardId) {
         final List<Card> recentCardsByMember =
-                cardRepository.findCardsByMemberWithFilteringAndPaging(member.getId(), lastCardId);
+                cardRepository.findCardsByMemberWithFilteringAndPaging(memberId, lastCardId);
+        final Member member = findById(memberId);
 
         return MemberInfoResponse.of(MemberRequestResultType.GET_MEMBER_INFO_SUCCESS, member, recentCardsByMember);
     }
@@ -61,7 +61,6 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    @Transactional
     public MemberModifyResponse patchMemberInfo(final Member member, final MemberModifyRequest request) {
         final Optional<MultipartFile> multipartFile = request.memberImage();
         if(isModifyProfileImage(multipartFile)) {

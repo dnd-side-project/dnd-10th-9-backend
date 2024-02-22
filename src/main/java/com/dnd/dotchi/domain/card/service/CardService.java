@@ -4,6 +4,8 @@ import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestRes
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_CARDS_SUCCESS;
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
+import com.dnd.dotchi.domain.blacklist.entity.BlackList;
+import com.dnd.dotchi.domain.blacklist.repository.BlackListRepository;
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
@@ -30,7 +32,6 @@ import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
 import com.dnd.dotchi.infra.image.S3FileUploader;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public class CardService {
     public CardsWriteResponse write(final CardsWriteRequest request, final Member member) {
         final String fileFullPath = s3FileUploader.upload(request.image());
 
-        final Card cardEntity = Card.builder()
+        final Card card = Card.builder()
                 .member(member)
                 .theme(getTheme(request))
                 .imageUrl(fileFullPath)
@@ -66,7 +67,8 @@ public class CardService {
                 .backMood(request.backMood())
                 .backContent(request.backContent())
                 .build();
-        cardRepository.save(cardEntity);
+        member.increaseCardCountByOne();
+        cardRepository.save(card);
 
         return CardsWriteResponse.from(WRITE_CARDS_SUCCESS);
     }
@@ -77,12 +79,13 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public CardsByThemeResponse getCardsByTheme(final @Valid CardsByThemeRequest request) {
+    public CardsByThemeResponse getCardsByTheme(final Member member, final CardsByThemeRequest request) {
         final List<Card> cardsByTheme = cardRepository.findCardsByThemeWithFilteringAndPaging(
                 request.themeId(),
                 request.cardSortType(),
                 request.lastCardId(),
-                request.lastCardCommentCount()
+                request.lastCardCommentCount(),
+                member.getId()
         );
 
         return CardsByThemeResponse.of(GET_CARDS_BY_THEME_SUCCESS, cardsByTheme);
@@ -153,11 +156,12 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public CardsAllResponse getCardAll(final CardsAllRequest request) {
+    public CardsAllResponse getCardAll(final Member member, final CardsAllRequest request) {
         final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
                 request.cardSortType(),
                 request.lastCardId(),
-                request.lastCardCommentCount()
+                request.lastCardCommentCount(),
+                member.getId()
         );
 
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
@@ -181,20 +185,33 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public GetCommentOnCardResponse getCommentOnCard(final Long cardId) {
-        final Card card = cardRepository.findById(cardId)
-            .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
+    public GetCommentOnCardResponse getCommentOnCard(final Member member, final Long cardId) {
+        final Card card = findById(cardId);
 
         final List<Member> authors
-            = commentRepository.findTop3ByCardIdOrderByIdDesc(cardId).stream()
+            = commentRepository.findTop3LatestCommentsFilter(member.getId(), cardId).stream()
             .map(Comment::getMember)
             .toList();
 
         return GetCommentOnCardResponse.of(
             card,
             authors,
+            hasComment(member.getId(), cardId),
             CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean hasComment(final Long memberId, final Long cardId) {
+        if(commentRepository.findByMemberIdAndCardId(memberId, cardId).isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    public Card findById(final Long cardId) {
+        return cardRepository.findById(cardId)
+            .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
     }
 
     @Transactional(readOnly = true)

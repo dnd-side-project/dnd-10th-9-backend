@@ -10,13 +10,15 @@ public interface CardCustomRepository {
             final Long themeId,
             final CardSortType cardSortType,
             final Long lastCardId,
-            final Long lastCardCommentCount
+            final Long lastCardCommentCount,
+            final Long memberId
     );
 
     List<Card> findCardsAllWithFilteringAndPaging(
             final CardSortType cardSortType,
             final Long lastCardId,
-            final Long lastCardCommentCount
+            final Long lastCardCommentCount,
+            final Long myId
     );
 
     List<Card> findCardsByMemberWithFilteringAndPaging(

@@ -36,8 +36,9 @@ class BlacklistServiceTest {
     @DisplayName("유저를 차단한다.")
     void block() {
         // given
-        final long blacklisterId = 1L;
-        final long blacklistedId = 2L;
+        // data-test.sql
+        final long blacklisterId = 2L;
+        final long blacklistedId = 1L;
         final Member member = memberRepository.findById(blacklisterId).get();
 
         // when
@@ -45,12 +46,31 @@ class BlacklistServiceTest {
 
         // then
         final List<BlackList> blackLists = blackListRepository.findAll();
-        final BlackList report = blackLists.get(0);
+        final BlackList report = blackLists.get(1);
         final BlockRequestResultType resultType = BlockRequestResultType.BLOCK_SUCCESS;
         assertSoftly(softly -> {
-            softly.assertThat(blackLists).hasSize(1);
+            softly.assertThat(blackLists).hasSize(2);
             softly.assertThat(report.getBlacklister().getId()).isEqualTo(blacklisterId);
             softly.assertThat(report.getBlacklisted().getId()).isEqualTo(blacklistedId);
+            softly.assertThat(response.code()).isEqualTo(resultType.getCode());
+            softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
+        });
+    }
+
+    @Test
+    @DisplayName("이미 차단한 유저이다.")
+    void alreadyBlock() {
+        // given
+        final long blacklisterId = 1L;
+        final long blacklistedId = 2L;
+        final Member member = memberRepository.findById(blacklisterId).get();
+
+        // when
+        final BlockResponse response = blacklistService.block(blacklistedId, member);
+
+        // then=
+        final BlockRequestResultType resultType = BlockRequestResultType.ALREADY_BLOCK;
+        assertSoftly(softly -> {
             softly.assertThat(response.code()).isEqualTo(resultType.getCode());
             softly.assertThat(response.message()).isEqualTo(resultType.getMessage());
         });

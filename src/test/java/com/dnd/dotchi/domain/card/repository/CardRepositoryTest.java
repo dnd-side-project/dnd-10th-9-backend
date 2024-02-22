@@ -33,17 +33,14 @@ class CardRepositoryTest {
 			2L,
 			CardSortType.HOT,
 			20L,
-			20L
+			20L,
+			1L
 		);
 
 		// then
 		assertSoftly(softly -> {
-			softly.assertThat(result).hasSize(5);
-			softly.assertThat(result.get(0).getId()).isEqualTo(14);
-			softly.assertThat(result.get(1).getId()).isEqualTo(18);
-			softly.assertThat(result.get(2).getId()).isEqualTo(22);
-			softly.assertThat(result.get(3).getId()).isEqualTo(26);
-			softly.assertThat(result.get(4).getId()).isEqualTo(30);
+			softly.assertThat(result).hasSize(1);
+			softly.assertThat(result.get(0).getId()).isEqualTo(22);
 		});
 	}
 
@@ -58,17 +55,15 @@ class CardRepositoryTest {
 			2L,
 			CardSortType.LATEST,
 			20L,
-			20L
+			20L,
+			1L
 		);
 
 		// then
 		assertSoftly(softly -> {
-			softly.assertThat(result).hasSize(5);
-			softly.assertThat(result.get(0).getId()).isEqualTo(18);
-			softly.assertThat(result.get(1).getId()).isEqualTo(14);
-			softly.assertThat(result.get(2).getId()).isEqualTo(10);
-			softly.assertThat(result.get(3).getId()).isEqualTo(6);
-			softly.assertThat(result.get(4).getId()).isEqualTo(2);
+			softly.assertThat(result).hasSize(2);
+			softly.assertThat(result.get(0).getId()).isEqualTo(10);
+			softly.assertThat(result.get(1).getId()).isEqualTo(6);
 		});
 	}
 
@@ -81,18 +76,17 @@ class CardRepositoryTest {
 		// when
 		final List<Card> result = cardRepository.findCardsAllWithFilteringAndPaging(
 			CardSortType.LATEST,
-			15L,
-			20L
+			5L,
+			20L,
+			2L
 		);
 
 		// then
 		assertSoftly(softly -> {
-			softly.assertThat(result).hasSize(10);
-			softly.assertThat(result.get(0).getId()).isEqualTo(14);
-			softly.assertThat(result.get(1).getId()).isEqualTo(13);
-			softly.assertThat(result.get(2).getId()).isEqualTo(12);
-			softly.assertThat(result.get(3).getId()).isEqualTo(11);
-			softly.assertThat(result.get(4).getId()).isEqualTo(10);
+			softly.assertThat(result).hasSize(3);
+			softly.assertThat(result.get(0).getId()).isEqualTo(4);
+			softly.assertThat(result.get(1).getId()).isEqualTo(3);
+			softly.assertThat(result.get(2).getId()).isEqualTo(2);
 		});
 	}
 
@@ -106,17 +100,21 @@ class CardRepositoryTest {
 		final List<Card> result = cardRepository.findCardsAllWithFilteringAndPaging(
 			CardSortType.HOT,
 			15L,
-			20L
+			15L,
+			1L
 		);
 
 		// then
 		assertSoftly(softly -> {
-			softly.assertThat(result).hasSize(10);
-			softly.assertThat(result.get(0).getId()).isEqualTo(13);
-			softly.assertThat(result.get(1).getId()).isEqualTo(14);
-			softly.assertThat(result.get(2).getId()).isEqualTo(15);
-			softly.assertThat(result.get(3).getId()).isEqualTo(16);
-			softly.assertThat(result.get(4).getId()).isEqualTo(17);
+			softly.assertThat(result).hasSize(8);
+			softly.assertThat(result.get(0).getId()).isEqualTo(19);
+			softly.assertThat(result.get(1).getId()).isEqualTo(20);
+			softly.assertThat(result.get(2).getId()).isEqualTo(21);
+			softly.assertThat(result.get(3).getId()).isEqualTo(22);
+			softly.assertThat(result.get(4).getId()).isEqualTo(23);
+			softly.assertThat(result.get(5).getId()).isEqualTo(25);
+			softly.assertThat(result.get(6).getId()).isEqualTo(27);
+			softly.assertThat(result.get(7).getId()).isEqualTo(29);
 		});
 	}
 
@@ -133,17 +131,14 @@ class CardRepositoryTest {
 
 		// then
 		assertSoftly(softly -> {
-			softly.assertThat(recent).hasSize(10);
+			softly.assertThat(recent).hasSize(7);
 			softly.assertThat(recent.get(0).getId()).isEqualTo(23);
 			softly.assertThat(recent.get(1).getId()).isEqualTo(21);
-			softly.assertThat(recent.get(2).getId()).isEqualTo(19);
-			softly.assertThat(recent.get(3).getId()).isEqualTo(17);
-			softly.assertThat(recent.get(4).getId()).isEqualTo(15);
-			softly.assertThat(recent.get(5).getId()).isEqualTo(13);
-			softly.assertThat(recent.get(6).getId()).isEqualTo(11);
-			softly.assertThat(recent.get(7).getId()).isEqualTo(9);
-			softly.assertThat(recent.get(8).getId()).isEqualTo(7);
-			softly.assertThat(recent.get(9).getId()).isEqualTo(5);
+			softly.assertThat(recent.get(2).getId()).isEqualTo(17);
+			softly.assertThat(recent.get(3).getId()).isEqualTo(15);
+			softly.assertThat(recent.get(4).getId()).isEqualTo(7);
+			softly.assertThat(recent.get(5).getId()).isEqualTo(5);
+			softly.assertThat(recent.get(6).getId()).isEqualTo(1);
 		});
 	}
 

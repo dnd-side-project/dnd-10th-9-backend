@@ -30,37 +30,37 @@ INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_con
 VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치2', '행복해2', '뭐든 더 써봐2', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (1, 3, 'http://example.com/image.jpg', '따봉도치3', '행복해3', '뭐든 더 써봐3', 29, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (3, 3, 'http://example.com/image.jpg', '따봉도치3', '행복해3', '뭐든 더 써봐3', 29, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (2, 4, 'http://example.com/image.jpg', '따봉도치4', '행복해4', '뭐든 더 써봐4', 28, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (4, 4, 'http://example.com/image.jpg', '따봉도치4', '행복해4', '뭐든 더 써봐4', 28, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치5', '행복해5', '뭐든 더 써봐5', 27, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치6', '행복해6', '뭐든 더 써봐6', 26, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (3, 2, 'http://example.com/image.jpg', '따봉도치6', '행복해6', '뭐든 더 써봐6', 26, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (1, 3, 'http://example.com/image.jpg', '따봉도치7', '행복해7', '뭐든 더 써봐7', 25, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (2, 4, 'http://example.com/image.jpg', '따봉도치8', '행복해8', '뭐든 더 써봐8', 24, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (5, 4, 'http://example.com/image.jpg', '따봉도치8', '행복해8', '뭐든 더 써봐8', 24, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치9', '행복해9', '뭐든 더 써봐9', 23, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (4, 1, 'http://example.com/image.jpg', '따봉도치9', '행복해9', '뭐든 더 써봐9', 23, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치10', '행복해10', '뭐든 더 써봐10', 22, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (4, 2, 'http://example.com/image.jpg', '따봉도치10', '행복해10', '뭐든 더 써봐10', 22, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (1, 3, 'http://example.com/image.jpg', '따봉도치11', '행복해11', '뭐든 더 써봐11', 21, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (3, 3, 'http://example.com/image.jpg', '따봉도치11', '행복해11', '뭐든 더 써봐11', 21, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (2, 4, 'http://example.com/image.jpg', '따봉도치12', '행복해12', '뭐든 더 써봐12', 20, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (3, 4, 'http://example.com/image.jpg', '따봉도치12', '행복해12', '뭐든 더 써봐12', 20, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치13', '행복해13', '뭐든 더 써봐13', 19, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (2, 1, 'http://example.com/image.jpg', '따봉도치13', '행복해13', '뭐든 더 써봐13', 19, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치14', '행복해14', '뭐든 더 써봐14', 18, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -78,16 +78,16 @@ INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_con
 VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치18', '행복해18', '뭐든 더 써봐18', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (1, 3, 'http://example.com/image.jpg', '따봉도치19', '행복해19', '뭐든 더 써봐19', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (4, 3, 'http://example.com/image.jpg', '따봉도치19', '행복해19', '뭐든 더 써봐19', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (2, 4, 'http://example.com/image.jpg', '따봉도치20', '행복해20', '뭐든 더 써봐20', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (4, 4, 'http://example.com/image.jpg', '따봉도치20', '행복해20', '뭐든 더 써봐20', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치21', '행복해21', '뭐든 더 써봐21', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
-VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치22', '행복해22', '뭐든 더 써봐22', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (4, 2, 'http://example.com/image.jpg', '따봉도치22', '행복해22', '뭐든 더 써봐22', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (1, 3, 'http://example.com/image.jpg', '따봉도치23', '행복해23', '뭐든 더 써봐23', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -115,6 +115,8 @@ VALUES (1, 1, 'http://example.com/image.jpg', '따봉도치29', '행복해29', '
 INSERT INTO CARD (member_id, theme_id, image_url, back_name, back_mood, back_content, comment_count, created_at, updated_at)
 VALUES (2, 2, 'http://example.com/image.jpg', '따봉도치30', '행복해30', '뭐든 더 써봐30', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+INSERT INTO BLACKLIST (blacklister_id, blacklisted_id, created_at, updated_at)
+VALUES (1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO COMMENT (member_id, card_id, created_at, updated_at)
 VALUES (2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

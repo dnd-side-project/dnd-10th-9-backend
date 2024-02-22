@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.card.controller;
 
+import com.dnd.dotchi.domain.blacklist.service.BlacklistService;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.jwt.Auth;
 import org.springframework.http.MediaType;
@@ -63,7 +64,7 @@ public class CardController implements CardControllerDocs {
             @Auth final Member member,
             @Valid @ModelAttribute final CardsByThemeRequest request
     ) {
-        final CardsByThemeResponse response = cardService.getCardsByTheme(request);
+        final CardsByThemeResponse response = cardService.getCardsByTheme(member, request);
         return ResponseEntity.ok(response);
     }
 
@@ -72,7 +73,7 @@ public class CardController implements CardControllerDocs {
             @Auth final Member member,
             @Valid @ModelAttribute CardsAllRequest request
     ) {
-        final CardsAllResponse response = cardService.getCardAll(request);
+        final CardsAllResponse response = cardService.getCardAll(member, request);
         return ResponseEntity.ok(response);
     }
 
@@ -90,9 +91,10 @@ public class CardController implements CardControllerDocs {
             @Auth final Member member,
             @PathVariable("cardId") Long cardId
     ) {
-        final GetCommentOnCardResponse response = cardService.getCommentOnCard(cardId);
+        final GetCommentOnCardResponse response = cardService.getCommentOnCard(member, cardId);
         return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/main")
     public ResponseEntity<HomePageResponse> home() {
