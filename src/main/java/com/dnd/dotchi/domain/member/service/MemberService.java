@@ -41,7 +41,8 @@ public class MemberService {
     public MemberInfoResponse getMemberInfo(final Long memberId, final Long lastCardId) {
         final List<Card> recentCardsByMember =
                 cardRepository.findCardsByMemberWithFilteringAndPaging(memberId, lastCardId);
-        final Member member = findById(memberId);
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         return MemberInfoResponse.of(MemberRequestResultType.GET_MEMBER_INFO_SUCCESS, member, recentCardsByMember);
     }

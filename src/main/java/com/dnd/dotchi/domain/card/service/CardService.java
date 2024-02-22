@@ -4,8 +4,6 @@ import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestRes
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_CARDS_SUCCESS;
 import static com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType.WRITE_COMMENT_ON_CARD_SUCCESS;
 
-import com.dnd.dotchi.domain.blacklist.entity.BlackList;
-import com.dnd.dotchi.domain.blacklist.repository.BlackListRepository;
 import com.dnd.dotchi.domain.card.dto.request.CardsAllRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsByThemeRequest;
 import com.dnd.dotchi.domain.card.dto.request.CardsWriteRequest;
@@ -201,12 +199,8 @@ public class CardService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public Boolean hasComment(final Long memberId, final Long cardId) {
-        if(commentRepository.findByMemberIdAndCardId(memberId, cardId).isPresent()) {
-            return true;
-        }
-        return false;
+    private Boolean hasComment(final Long memberId, final Long cardId) {
+        return commentRepository.findByMemberIdAndCardId(memberId, cardId).isPresent();
     }
 
     public Card findById(final Long cardId) {
