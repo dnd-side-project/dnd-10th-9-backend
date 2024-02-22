@@ -34,7 +34,7 @@ class CardRepositoryTest {
 			CardSortType.HOT,
 			20L,
 			20L,
-			1L
+			List.of(2L)
 		);
 
 		// then
@@ -56,7 +56,7 @@ class CardRepositoryTest {
 			CardSortType.LATEST,
 			20L,
 			20L,
-			1L
+				List.of(2L)
 		);
 
 		// then
@@ -78,7 +78,7 @@ class CardRepositoryTest {
 			CardSortType.LATEST,
 			5L,
 			20L,
-			2L
+				List.of(1L)
 		);
 
 		// then
@@ -101,7 +101,7 @@ class CardRepositoryTest {
 			CardSortType.HOT,
 			15L,
 			15L,
-			1L
+				List.of(2L)
 		);
 
 		// then

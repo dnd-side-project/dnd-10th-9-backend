@@ -28,8 +28,9 @@ import org.hibernate.annotations.ColumnDefault;
         name = "CARD",
         indexes = {
                 @Index(name = "idx_member_id_id", columnList = "member_id, id"),
-                @Index(name = "idx_theme_id_id", columnList = "theme_id, id"),
-                @Index(name = "idx_theme_id_comment_count", columnList = "theme_id, comment_count")
+                @Index(name = "idx_member_id_comment_count", columnList = "member_id, comment_count"),
+                @Index(name = "idx_theme_id_member_id_id", columnList = "theme_id, member_id, id"),
+                @Index(name = "idx_theme_id_member_id_comment_count", columnList = "theme_id, member_id, comment_count")
         }
 )
 public class Card extends BaseEntity {

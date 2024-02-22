@@ -42,10 +42,7 @@ public class BlacklistService {
         final Optional<BlackList> alreadyBlock
             = blackListRepository.findByBlacklisterIdAndBlacklistedId(blacklisterId, blacklistedId);
 
-        if(alreadyBlock.isPresent()) {
-            return true;
-        }
-        return false;
+        return alreadyBlock.isPresent();
     }
 
 }

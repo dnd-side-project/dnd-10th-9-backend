@@ -1,15 +1,12 @@
 package com.dnd.dotchi.domain.card.repository;
 
-import static com.dnd.dotchi.domain.blacklist.entity.QBlackList.*;
 import static com.dnd.dotchi.domain.card.entity.QCard.card;
 import static com.querydsl.jpa.JPAExpressions.select;
 
-import com.dnd.dotchi.domain.blacklist.entity.QBlackList;
 import com.dnd.dotchi.domain.card.entity.Card;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +26,15 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
             final CardSortType cardSortType,
             final Long lastCardId,
             final Long lastCardCommentCount,
-            final Long myId
+            final List<Long> idsRelatedToBlocking
     ) {
-        return blacklistFilter(myId)
+        return jpaQueryFactory.selectFrom(card)
+                .join(card.member).fetchJoin()
+                .join(card.theme).fetchJoin()
                 .where(
                         card.theme.id.eq(themeId),
-                        defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount),
-                        blackList.blacklister.id.isNull(),
-                        blackList.blacklisted.id.isNull()
+                        card.member.id.notIn(idsRelatedToBlocking),
+                        defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount)
                 )
                 .orderBy(orderBy(cardSortType))
                 .limit(BASIC_PAGE_SIZE)
@@ -48,17 +46,29 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
             final CardSortType cardSortType,
             final Long lastCardId,
             final Long lastCardCommentCount,
-            final Long myId
+            final List<Long> idsRelatedToBlocking
     ) {
-        return blacklistFilter(myId)
+        return jpaQueryFactory.selectFrom(card)
+                .join(card.member).fetchJoin()
+                .join(card.theme).fetchJoin()
                 .where(
-                    defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount),
-                    blackList.blacklister.id.isNull(),
-                    blackList.blacklisted.id.isNull()
+                        card.member.id.notIn(idsRelatedToBlocking),
+                        defineCriteriaForSortedCards(cardSortType, lastCardId, lastCardCommentCount)
                 )
                 .orderBy(orderBy(cardSortType))
                 .limit(BASIC_PAGE_SIZE)
                 .fetch();
+    }
+
+    private Predicate defineCriteriaForSortedCards(
+            final CardSortType cardSortType,
+            final Long lastCardId,
+            final Long lastCardCommentCount
+    ) {
+        return switch (cardSortType) {
+            case LATEST -> card.id.lt(lastCardId);
+            case HOT -> card.commentCount.lt(lastCardCommentCount);
+        };
     }
 
     @Override
@@ -88,35 +98,11 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
                 .fetch();
     }
 
-    private Predicate defineCriteriaForSortedCards(
-            final CardSortType cardSortType,
-            final Long lastCardId,
-            final Long lastCardCommentCount
-    ) {
-        return switch (cardSortType) {
-            case LATEST -> card.id.lt(lastCardId);
-            case HOT -> card.commentCount.lt(lastCardCommentCount);
-        };
-    }
-
     private OrderSpecifier<?> orderBy(final CardSortType cardSortType) {
         return switch (cardSortType) {
             case LATEST -> card.id.desc();
             case HOT -> card.commentCount.desc();
         };
-    }
-
-    private JPAQuery<Card> blacklistFilter(final Long viewerId) {
-        return jpaQueryFactory.selectFrom(card)
-            .join(card.member).fetchJoin()
-            .join(card.theme).fetchJoin()
-            .leftJoin(blackList)
-            .on(
-                card.member.id.eq(blackList.blacklisted.id)
-                    .and(blackList.blacklister.id.eq(viewerId))
-                .or(card.member.id.eq(blackList.blacklister.id)
-                    .and(blackList.blacklisted.id.eq(viewerId)))
-            );
     }
 
 }
