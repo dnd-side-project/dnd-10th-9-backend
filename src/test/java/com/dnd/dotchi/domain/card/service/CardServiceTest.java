@@ -455,9 +455,10 @@ class CardServiceTest {
     void getMainHome() {
         // given
         // data-test.sql
+        final Member member = memberService.findById(1L);
 
         // when
-        final HomePageResponse result = cardService.home();
+        final HomePageResponse result = cardService.home(member);
         final CardsRequestResultType resultType = CardsRequestResultType.GET_MAIN_HOME_SUCCESS;
 
         // then
@@ -471,9 +472,9 @@ class CardServiceTest {
             softly.assertThat(todayCards.size()).isEqualTo(3);
             softly.assertThat(recentCardsCount).isEqualTo(5);
             softly.assertThat(recentThemeInfoCount).isEqualTo(4);
-            softly.assertThat(todayCards.get(0).cardId()).isEqualTo(2);
-            softly.assertThat(todayCards.get(1).cardId()).isEqualTo(3);
-            softly.assertThat(todayCards.get(2).cardId()).isEqualTo(10);
+            softly.assertThat(todayCards.get(0).cardId()).isEqualTo(3);
+            softly.assertThat(todayCards.get(1).cardId()).isEqualTo(10);
+            softly.assertThat(todayCards.get(2).cardId()).isEqualTo(1);
         });
     }
 

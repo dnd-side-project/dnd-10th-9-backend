@@ -1,9 +1,12 @@
 package com.dnd.dotchi.domain.card.repository;
 
 import static com.dnd.dotchi.domain.card.entity.QCard.card;
+import static com.dnd.dotchi.domain.card.entity.QTodayCard.*;
+import static com.dnd.dotchi.domain.member.entity.QMember.*;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 import com.dnd.dotchi.domain.card.entity.Card;
+import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Repository;
 public class CardCustomRepositoryImpl implements CardCustomRepository {
 
     private static final int BASIC_PAGE_SIZE = 10;
+    private static final int LIMIT_CARDS = 5;
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -96,6 +100,16 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
                 ))
                 .orderBy(card.theme.id.asc())
                 .fetch();
+    }
+
+    @Override
+    public List<Card> findTop5ByOrderByIdDesc(List<Long> idsRelatedToBlocking) {
+        return jpaQueryFactory.selectFrom(card)
+            .join(card.member).fetchJoin()
+            .where(card.member.id.notIn(idsRelatedToBlocking))
+            .orderBy(card.commentCount.desc())
+            .limit(LIMIT_CARDS)
+            .fetch();
     }
 
     private OrderSpecifier<?> orderBy(final CardSortType cardSortType) {

@@ -95,10 +95,9 @@ public class CardController implements CardControllerDocs {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/main")
-    public ResponseEntity<HomePageResponse> home() {
-        final HomePageResponse response = cardService.home();
+    public ResponseEntity<HomePageResponse> home(@Auth final Member member) {
+        final HomePageResponse response = cardService.home(member);
         return ResponseEntity.ok(response);
     }
 

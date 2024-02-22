@@ -350,10 +350,11 @@ class CardControllerTest extends ControllerTest {
                 List.of()
             );
 
-        given(cardService.home()).willReturn(response);
+        given(cardService.home(any())).willReturn(response);
 
         // when
         final HomePageResponse result = RestAssuredMockMvc.given().log().all()
+            .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             .when().get("/cards/main")
             .then().log().all()
             .status(HttpStatus.OK)
