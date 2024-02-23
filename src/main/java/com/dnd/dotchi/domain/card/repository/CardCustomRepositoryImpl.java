@@ -10,6 +10,7 @@ import com.dnd.dotchi.domain.card.entity.TodayCard;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
 
     private static final int BASIC_PAGE_SIZE = 10;
     private static final int LIMIT_CARDS = 5;
+    private static final int DEFAULT_FIRST_LAST_CARD_ID = 99999;
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -71,7 +73,14 @@ public class CardCustomRepositoryImpl implements CardCustomRepository {
     ) {
         return switch (cardSortType) {
             case LATEST -> card.id.lt(lastCardId);
-            case HOT -> card.commentCount.lt(lastCardCommentCount);
+            case HOT -> {
+                if (lastCardId == DEFAULT_FIRST_LAST_CARD_ID) {
+                    yield card.commentCount.loe(lastCardCommentCount);
+                }
+                yield card.commentCount.eq(lastCardCommentCount)
+                        .and(card.id.gt(lastCardId))
+                        .or(card.commentCount.lt(lastCardCommentCount));
+            }
         };
     }
 
