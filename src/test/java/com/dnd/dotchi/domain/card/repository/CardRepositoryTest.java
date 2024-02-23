@@ -106,15 +106,16 @@ class CardRepositoryTest {
 
 		// then
 		assertSoftly(softly -> {
-			softly.assertThat(result).hasSize(8);
-			softly.assertThat(result.get(0).getId()).isEqualTo(19);
-			softly.assertThat(result.get(1).getId()).isEqualTo(20);
-			softly.assertThat(result.get(2).getId()).isEqualTo(21);
-			softly.assertThat(result.get(3).getId()).isEqualTo(22);
-			softly.assertThat(result.get(4).getId()).isEqualTo(23);
-			softly.assertThat(result.get(5).getId()).isEqualTo(25);
-			softly.assertThat(result.get(6).getId()).isEqualTo(27);
-			softly.assertThat(result.get(7).getId()).isEqualTo(29);
+			softly.assertThat(result).hasSize(9);
+			softly.assertThat(result.get(0).getId()).isEqualTo(17);
+			softly.assertThat(result.get(1).getId()).isEqualTo(19);
+			softly.assertThat(result.get(2).getId()).isEqualTo(20);
+			softly.assertThat(result.get(3).getId()).isEqualTo(21);
+			softly.assertThat(result.get(4).getId()).isEqualTo(22);
+			softly.assertThat(result.get(5).getId()).isEqualTo(23);
+			softly.assertThat(result.get(6).getId()).isEqualTo(25);
+			softly.assertThat(result.get(7).getId()).isEqualTo(27);
+			softly.assertThat(result.get(8).getId()).isEqualTo(29);
 		});
 	}
 
