@@ -28,4 +28,6 @@ public interface CardCustomRepository {
 
     List<Card> findRecentCardByThemes();
 
+    List<Card> findTop5ByOrderByIdDesc(final List<Long> idsRelatedToBlocking);
+
 }

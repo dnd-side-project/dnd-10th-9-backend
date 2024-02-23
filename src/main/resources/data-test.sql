@@ -140,3 +140,5 @@ INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
 VALUES (2, 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
 VALUES (3, 29, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO TODAY_CARD (card_id, today_comment_count, created_at, updated_at)
+VALUES (1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

@@ -209,11 +209,11 @@ public class CardService {
                 .map(BlackList::getBlacklisted)
                 .map(Member::getId)
                 .toList();
-        final List<Long> blacklisterids = blackListRepository.findByBlacklistedId(member.getId()).stream()
+        final List<Long> blacklisterIds = blackListRepository.findByBlacklistedId(member.getId()).stream()
                 .map(BlackList::getBlacklister)
                 .map(Member::getId)
                 .toList();
-        return Stream.of(blacklisterids, blacklistedIds)
+        return Stream.of(blacklisterIds, blacklistedIds)
                 .flatMap(Collection::stream)
                 .toList();
     }
@@ -228,9 +228,9 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public HomePageResponse home() {
-        final List<TodayCard> todayCards = todayCardRepository.findTop3ByOrderByTodayCommentCountDesc();
-        final List<Card> recentCards = cardRepository.findTop5ByOrderByIdDesc();
+    public HomePageResponse home(final Member member) {
+        final List<TodayCard> todayCards = todayCardRepository.findTodayCards(getIdsRelatedToBlocking(member));
+        final List<Card> recentCards = cardRepository.findTop5ByOrderByIdDesc(getIdsRelatedToBlocking(member));
         final List<Card> recentCardsByThemes = cardRepository.findRecentCardByThemes();
 
         return HomePageResponse.of(

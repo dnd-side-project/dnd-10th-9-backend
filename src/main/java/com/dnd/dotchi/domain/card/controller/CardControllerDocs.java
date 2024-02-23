@@ -128,16 +128,13 @@ public interface CardControllerDocs {
             description = "존재하지 않는 카드인 경우",
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(
-            final Member member,
-            final Long cardId
-    );
+    ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(final Member member, final Long cardId);
 
 	@Operation(summary = "메인 홈 조회", description = "메인 홈을 조회한다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "메인 홈 조회 성공"
 	)
-	ResponseEntity<HomePageResponse> home();
+	ResponseEntity<HomePageResponse> home(final Member member);
 
 }
