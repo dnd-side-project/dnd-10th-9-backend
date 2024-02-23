@@ -111,14 +111,14 @@ class CardControllerTest extends ControllerTest {
                 .queryParam("themeId", 0L)
                 .queryParam("cardSortType", CardSortType.HOT)
                 .queryParam("lastCardId", 0L)
-                .queryParam("lastCardCommentCount", 0L)
+                .queryParam("lastCardCommentCount", -1L)
                 .when().get("/cards/theme")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body("code", equalTo(200))
                 .body("message", containsString("테마 ID는 양수만 가능합니다."))
                 .body("message", containsString("마지막 조회 가드 ID는 양수만 가능합니다."))
-                .body("message", containsString("마지막 조회 카드의 댓글 개수는 양수만 가능합니다."));
+                .body("message", containsString("마지막으로 조회한 카드의 댓글 수는 0 이상만 가능합니다."));
     }
 
     @Test
@@ -270,13 +270,13 @@ class CardControllerTest extends ControllerTest {
                 .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .queryParam("cardSortType", CardSortType.HOT)
                 .queryParam("lastCardId", 0L)
-                .queryParam("lastCardCommentCount", 0L)
+                .queryParam("lastCardCommentCount", -1L)
                 .when().get("/cards/all")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body("code", equalTo(200))
                 .body("message", containsString("마지막으로 조회한 카드 ID는 양수만 가능합니다."))
-                .body("message", containsString("마지막으로 조회한 카드의 댓글 수는 양수만 가능합니다."));
+                .body("message", containsString("마지막으로 조회한 카드의 댓글 수는 0 이상만 가능합니다."));
     }
 
     @Test
