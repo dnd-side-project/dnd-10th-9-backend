@@ -101,7 +101,7 @@ class CardServiceTest {
         final CardsByThemeResponse result = cardService.getCardsByTheme(member, request);
 
         // then
-        final List<RecentCardsByThemeResponse> responses = result.result().recentCards();
+        final List<RecentCardsByThemeResponse> responses = result.result().cards();
         assertSoftly(softly -> {
             softly.assertThat(responses).hasSize(1);
             softly.assertThat(responses.get(0).cardId()).isEqualTo(22);
@@ -125,7 +125,7 @@ class CardServiceTest {
         final CardsByThemeResponse result = cardService.getCardsByTheme(member, request);
 
         // then
-        final List<RecentCardsByThemeResponse> responses = result.result().recentCards();
+        final List<RecentCardsByThemeResponse> responses = result.result().cards();
         assertSoftly(softly -> {
             softly.assertThat(responses).hasSize(2);
             softly.assertThat(responses.get(0).cardId()).isEqualTo(10);
@@ -150,7 +150,7 @@ class CardServiceTest {
         final CardsAllResponse result = cardService.getCardAll(member, request);
 
         // then
-        final List<CardsResponse> responses = result.result().recentCards();
+        final List<CardsResponse> responses = result.result().cards();
         final CardsRequestResultType resultType = CardsRequestResultType.GET_CARDS_ALL_SUCCESS;
         assertSoftly(softly -> {
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());
@@ -184,7 +184,7 @@ class CardServiceTest {
         final CardsAllResponse result = cardService.getCardAll(member, request);
 
         // then
-        final List<CardsResponse> responses = result.result().recentCards();
+        final List<CardsResponse> responses = result.result().cards();
         final CardsRequestResultType resultType = CardsRequestResultType.GET_CARDS_ALL_SUCCESS;
         assertSoftly(softly -> {
             softly.assertThat(result.code()).isEqualTo(resultType.getCode());

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "전체 카드 최신순/인기순 응답")
 public record CadsAllResultResponse(
 	@Schema(description = "전체 카드 최신순/인기순 응답")
-	List<CardsResponse> recentCards
+	List<CardsResponse> cards
 ) {
 	public static CadsAllResultResponse from(final List<Card> cards) {
 		return new CadsAllResultResponse(parseRecentCardsAllResponse(cards));

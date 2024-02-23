@@ -14,6 +14,9 @@ public record RecentCardsByThemeResponse(
         @Schema(description = "해당 카드를 작성한 회원 닉네임")
         String memberName,
 
+        @Schema(description = "해당 카드를 작성한 회원 프로필 이미지 URL")
+        String memberImageUrl,
+
         @Schema(description = "카드 이미지 URL")
         String cardImageUrl,
 
@@ -32,6 +35,7 @@ public record RecentCardsByThemeResponse(
                 card.getId(),
                 card.getMember().getId(),
                 card.getMember().getNickname(),
+                card.getMember().getImageUrl(),
                 card.getImageUrl(),
                 card.getTheme().getId(),
                 card.getBackName(),
