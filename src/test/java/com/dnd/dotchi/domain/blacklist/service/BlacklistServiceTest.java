@@ -11,6 +11,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
 import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
+import com.dnd.dotchi.global.redis.CacheMember;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ class BlacklistServiceTest {
         final Member member = memberRepository.findById(blacklisterId).get();
 
         // when
-        final BlockResponse response = blacklistService.block(blacklistedId, member);
+        final BlockResponse response = blacklistService.block(blacklistedId, CacheMember.from(member));
 
         // then
         final List<BlackList> blackLists = blackListRepository.findAll();
@@ -66,7 +67,7 @@ class BlacklistServiceTest {
         final Member member = memberRepository.findById(blacklisterId).get();
 
         // when
-        final BlockResponse response = blacklistService.block(blacklistedId, member);
+        final BlockResponse response = blacklistService.block(blacklistedId, CacheMember.from(member));
 
         // then=
         final BlockRequestResultType resultType = BlockRequestResultType.ALREADY_BLOCK;
@@ -85,7 +86,7 @@ class BlacklistServiceTest {
         final Member member = memberRepository.findById(blacklisterId).get();
 
         // when, then
-        assertThatThrownBy(() -> blacklistService.block(blacklistedId, member))
+        assertThatThrownBy(() -> blacklistService.block(blacklistedId, CacheMember.from(member)))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(MemberExceptionType.NOT_FOUND_MEMBER.getMessage());
     }

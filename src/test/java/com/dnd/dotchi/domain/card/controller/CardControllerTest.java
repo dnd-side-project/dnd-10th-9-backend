@@ -22,8 +22,8 @@ import com.dnd.dotchi.domain.card.entity.Theme;
 import com.dnd.dotchi.domain.card.entity.vo.CardSortType;
 import com.dnd.dotchi.domain.card.service.CardService;
 import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
+import com.dnd.dotchi.global.redis.CacheMember;
 import com.dnd.dotchi.infra.image.S3FileUploader;
 import com.dnd.dotchi.test.ControllerTest;
 import io.restassured.common.mapper.TypeRef;
@@ -66,21 +66,12 @@ class CardControllerTest extends ControllerTest {
     void getCardsByThemeReturn200Success() {
         // given
         // data-test.sql
-        final CardsByThemeRequest request = new CardsByThemeRequest(
-                1L,
-                CardSortType.HOT,
-                1L,
-                1L
-        );
-
         final CardsByThemeResponse response = CardsByThemeResponse.of(
                 CardsRequestResultType.GET_CARDS_BY_THEME_SUCCESS,
                 List.of()
         );
 
-        final Member member = memberService.findById(1L);
-
-        given(cardService.getCardsByTheme(member, request)).willReturn(response);
+        given(cardService.getCardsByTheme(any(), any())).willReturn(response);
 
         // when
         final CardsByThemeResponse result = RestAssuredMockMvc.given().log().all()
@@ -229,19 +220,12 @@ class CardControllerTest extends ControllerTest {
     void getCardsAllReturn200Success() {
         // given
         // data.sql
-        final CardsAllRequest request = new CardsAllRequest(
-                CardSortType.HOT,
-                1L,
-                1L
-        );
-
         final CardsAllResponse response = CardsAllResponse.of(
                 CardsRequestResultType.GET_CARDS_ALL_SUCCESS,
                 List.of()
         );
 
-        final Member member = memberService.findById(1L);
-        given(cardService.getCardAll(member, request)).willReturn(response);
+        given(cardService.getCardAll(any(), any())).willReturn(response);
 
         // when
         final CardsAllResponse result = RestAssuredMockMvc.given().log().all()

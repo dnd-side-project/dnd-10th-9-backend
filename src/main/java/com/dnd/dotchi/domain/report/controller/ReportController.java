@@ -1,10 +1,10 @@
 package com.dnd.dotchi.domain.report.controller;
 
-import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.report.dto.response.ReportResponse;
 import com.dnd.dotchi.domain.report.request.ReportRequest;
 import com.dnd.dotchi.domain.report.service.ReportService;
 import com.dnd.dotchi.global.jwt.Auth;
+import com.dnd.dotchi.global.redis.CacheMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class ReportController implements ReportControllerDocs {
 
     @PostMapping("{reportedId}")
     public ResponseEntity<ReportResponse> report(
-            @Auth final Member member,
+            @Auth final CacheMember member,
             @PathVariable("reportedId") final Long reportedId,
             @Valid @RequestBody final ReportRequest request
     ) {

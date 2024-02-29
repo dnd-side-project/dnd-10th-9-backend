@@ -28,9 +28,12 @@ import com.dnd.dotchi.domain.card.repository.CommentRepository;
 import com.dnd.dotchi.domain.card.repository.ThemeRepository;
 import com.dnd.dotchi.domain.card.repository.TodayCardRepository;
 import com.dnd.dotchi.domain.member.entity.Member;
+import com.dnd.dotchi.domain.member.exception.MemberExceptionType;
+import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.exception.RetryLimitExceededException;
+import com.dnd.dotchi.global.redis.CacheMember;
 import com.dnd.dotchi.infra.image.S3FileUploader;
 import java.util.Collection;
 import java.util.List;
@@ -57,10 +60,12 @@ public class CardService {
     private final ThemeRepository themeJpaRepository;
     private final CommentRepository commentRepository;
     private final BlackListRepository blackListRepository;
+    private final MemberRepository memberRepository;
     private final S3FileUploader s3FileUploader;
 
-    public CardsWriteResponse write(final CardsWriteRequest request, final Member member) {
+    public CardsWriteResponse write(final CardsWriteRequest request, final CacheMember cacheMember) {
         final String fileFullPath = s3FileUploader.upload(request.image());
+        final Member member = getMemberByCacheMember(cacheMember);
 
         final Card card = Card.builder()
                 .member(member)
@@ -82,7 +87,7 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public CardsByThemeResponse getCardsByTheme(final Member member, final CardsByThemeRequest request) {
+    public CardsByThemeResponse getCardsByTheme(final CacheMember member, final CardsByThemeRequest request) {
         final List<Card> cardsByTheme = cardRepository.findCardsByThemeWithFilteringAndPaging(
                 request.themeId(),
                 request.cardSortType(),
@@ -98,7 +103,7 @@ public class CardService {
             retryFor = ObjectOptimisticLockingFailureException.class,
             backoff = @Backoff(delay = 100)
     )
-    public WriteCommentOnCardResponse writeCommentOnCard(final Member member, final Long cardId) {
+    public WriteCommentOnCardResponse writeCommentOnCard(final CacheMember member, final Long cardId) {
         commentRepository.findByMemberIdAndCardId(member.getId(), cardId)
                 .ifPresent(comment -> {throw new BadRequestException(CardExceptionType.MY_COMMENT_ALREADY_EXIST);});
         final Card card = cardRepository.findById(cardId)
@@ -111,9 +116,9 @@ public class CardService {
         return WriteCommentOnCardResponse.from(WRITE_COMMENT_ON_CARD_SUCCESS);
     }
 
-    private void saveComment(final Member member, final Card card) {
+    private void saveComment(final CacheMember member, final Card card) {
         final Comment comment = Comment.builder()
-                .member(member)
+                .member(getMemberByCacheMember(member))
                 .card(card)
                 .build();
         commentRepository.save(comment);
@@ -134,7 +139,7 @@ public class CardService {
     @Recover
     public WriteCommentOnCardResponse recoverWriteCommentOnCard(
             final OptimisticLockingFailureException e,
-            final Member member,
+            final CacheMember member,
             final Long cardId
     ) {
         throw new RetryLimitExceededException(CardExceptionType.WRITE_COMMENT_ON_CARD_FAILURE);
@@ -143,7 +148,7 @@ public class CardService {
     @Recover
     public WriteCommentOnCardResponse recoverWriteCommentOnCard(
             final NotFoundException e,
-            final Member member,
+            final CacheMember member,
             final Long cardId
     ) {
         throw e;
@@ -152,14 +157,14 @@ public class CardService {
     @Recover
     public WriteCommentOnCardResponse recoverWriteCommentOnCard(
             final BadRequestException e,
-            final Member member,
+            final CacheMember member,
             final Long cardId
     ) {
         throw e;
     }
 
     @Transactional(readOnly = true)
-    public CardsAllResponse getCardAll(final Member member, final CardsAllRequest request) {
+    public CardsAllResponse getCardAll(final CacheMember member, final CardsAllRequest request) {
         final List<Card> cards = cardRepository.findCardsAllWithFilteringAndPaging(
                 request.cardSortType(),
                 request.lastCardId(),
@@ -170,7 +175,7 @@ public class CardService {
         return CardsAllResponse.of(CardsRequestResultType.GET_CARDS_ALL_SUCCESS, cards);
     }
 
-    public DeleteCardResponse delete(final Member member, final Long cardId) {
+    public DeleteCardResponse delete(final CacheMember member, final Long cardId) {
         final Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(CardExceptionType.NOT_FOUND_CARD));
 
@@ -188,7 +193,7 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public GetCommentOnCardResponse getCommentOnCard(final Member member, final Long cardId) {
+    public GetCommentOnCardResponse getCommentOnCard(final CacheMember member, final Long cardId) {
         final Card card = findById(cardId);
 
         final List<Member> authors
@@ -204,7 +209,7 @@ public class CardService {
         );
     }
 
-    private List<Long> getIdsRelatedToBlocking(final Member member) {
+    private List<Long> getIdsRelatedToBlocking(final CacheMember member) {
         final List<Long> blacklistedIds = blackListRepository.findByBlacklisterId(member.getId()).stream()
                 .map(BlackList::getBlacklisted)
                 .map(Member::getId)
@@ -228,7 +233,7 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
-    public HomePageResponse home(final Member member) {
+    public HomePageResponse home(final CacheMember member) {
         final List<TodayCard> todayCards = todayCardRepository.findTodayCards(getIdsRelatedToBlocking(member));
         final List<Card> recentCards = cardRepository.findTop5ByOrderByIdDesc(getIdsRelatedToBlocking(member));
         final List<Card> recentCardsByThemes = cardRepository.findRecentCardByThemes();
@@ -239,6 +244,11 @@ public class CardService {
             recentCards,
             recentCardsByThemes
         );
+    }
+
+    private Member getMemberByCacheMember(final CacheMember cacheMember) {
+        return memberRepository.findById(cacheMember.getId())
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
 }

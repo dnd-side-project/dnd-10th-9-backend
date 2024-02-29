@@ -4,6 +4,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.report.dto.response.ReportResponse;
 import com.dnd.dotchi.domain.report.request.ReportRequest;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
+import com.dnd.dotchi.global.redis.CacheMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,7 +38,7 @@ public interface ReportControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<ReportResponse> report(
-            final Member member,
+            final CacheMember member,
             @Parameter(description = "신고 당한 유저 ID", example = "1") final Long reportedId,
             final ReportRequest request
     );

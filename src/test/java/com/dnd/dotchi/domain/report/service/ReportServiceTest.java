@@ -12,6 +12,7 @@ import com.dnd.dotchi.domain.report.entity.Report;
 import com.dnd.dotchi.domain.report.repository.ReportRepository;
 import com.dnd.dotchi.domain.report.request.ReportRequest;
 import com.dnd.dotchi.global.exception.NotFoundException;
+import com.dnd.dotchi.global.redis.CacheMember;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +45,7 @@ class ReportServiceTest {
         final Member member = memberRepository.findById(reporterId).get();
 
         // when
-        final ReportResponse response = reportService.report(reportedId, request, member);
+        final ReportResponse response = reportService.report(reportedId, request, CacheMember.from(member));
 
         // then
         final List<Report> reports = reportRepository.findAll();
@@ -70,7 +71,7 @@ class ReportServiceTest {
         final Member member = memberRepository.findById(reporterId).get();
 
         // when, then
-        assertThatThrownBy(() -> reportService.report(reportedId, request, member))
+        assertThatThrownBy(() -> reportService.report(reportedId, request, CacheMember.from(member)))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(MemberExceptionType.NOT_FOUND_MEMBER.getMessage());
     }

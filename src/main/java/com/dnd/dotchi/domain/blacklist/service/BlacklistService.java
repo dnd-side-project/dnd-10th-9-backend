@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.blacklist.service;
 
+import com.dnd.dotchi.global.redis.CacheMember;
 import java.util.Optional;
 
 import com.dnd.dotchi.domain.blacklist.dto.response.BlockResponse;
@@ -22,20 +23,23 @@ public class BlacklistService {
     private final BlackListRepository blackListRepository;
     private final MemberRepository memberRepository;
 
-    public BlockResponse block(final Long blacklistedId, final Member blacklister) {
-        final Member blacklisted = memberRepository.findById(blacklistedId)
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public BlockResponse block(final Long blacklistedId, final CacheMember blacklister) {
         if (isAlready(blacklister.getId(), blacklistedId)) {
             return BlockResponse.from(BlockRequestResultType.ALREADY_BLOCK);
         }
 
         final BlackList blackList = BlackList.builder()
-            .blacklister(blacklister)
-            .blacklisted(blacklisted)
+            .blacklister(getMember(blacklister.getId()))
+            .blacklisted(getMember(blacklistedId))
             .build();
 
         blackListRepository.save(blackList);
         return BlockResponse.from(BlockRequestResultType.BLOCK_SUCCESS);
+    }
+
+    private Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     private boolean isAlready(final Long blacklisterId, final Long blacklistedId) {

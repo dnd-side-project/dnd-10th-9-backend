@@ -1,25 +1,20 @@
 package com.dnd.dotchi.domain.member.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-
 import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
 import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
 import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
-import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
-import com.dnd.dotchi.global.jwt.Auth;
-
+import com.dnd.dotchi.global.redis.CacheMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 
 @Tag(name = "회원", description = "회원 API")
 public interface MemberControllerDocs {
@@ -45,7 +40,6 @@ public interface MemberControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<MemberInfoResponse> getMemberInfo(
-        final Member member,
         @Parameter(description = "조회할 회원 ID", example = "1") final Long memberId,
         final MemberInfoRequest request
     );
@@ -92,7 +86,7 @@ public interface MemberControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<MemberModifyResponse> patchMemberInfo(
-        final Member member,
+        final CacheMember member,
         final MemberModifyRequest request
     );
 
