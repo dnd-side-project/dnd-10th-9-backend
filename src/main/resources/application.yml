@@ -37,6 +37,16 @@ spring:
       max-file-size: 5MB
       max-request-size: 35MB
 
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
+      sentinel:
+        master: ${REDIS_SENTINEL_MASTER}
+        nodes:
+          - ${REDIS_SENTINEL_NODE1}
+          - ${REDIS_SENTINEL_NODE2}
+          - ${REDIS_SENTINEL_NODE3}
+
 springdoc:
   swagger-ui:
     enabled: ${SWAGGER_UI_ENABLE}

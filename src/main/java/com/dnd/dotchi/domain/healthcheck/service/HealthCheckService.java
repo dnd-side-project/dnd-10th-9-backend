@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 public class HealthCheckService {
 
     public String check() {
-        return "health-check";
+        return "health-check-new";
     }
 
 }

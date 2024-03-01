@@ -1,22 +1,25 @@
 package com.dnd.dotchi.domain.member.entity;
 
 import com.dnd.dotchi.domain.common.BaseEntity;
+import com.dnd.dotchi.global.redis.CacheMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
+@Setter
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "MEMBER")
@@ -61,19 +64,13 @@ public class Member extends BaseEntity {
         this.cardCount = 0L;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public void increaseCardCountByOne() {
         this.cardCount += 1L;
     }
+
+    public void update(final String name, final String description) {
+        this.nickname = name;
+        this.description = description;
+    }
+
 }

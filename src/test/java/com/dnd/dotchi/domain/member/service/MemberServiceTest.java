@@ -21,6 +21,7 @@ import com.dnd.dotchi.domain.member.repository.MemberRepository;
 import com.dnd.dotchi.global.exception.NotFoundException;
 import com.dnd.dotchi.global.jwt.TokenPayload;
 import com.dnd.dotchi.global.jwt.TokenProcessor;
+import com.dnd.dotchi.global.redis.CacheMember;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -142,7 +143,7 @@ class MemberServiceTest {
                 = new MemberModifyRequest(Optional.of(image), "오뜨", "멍청이");
 
         // when
-        final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
+        final MemberModifyResponse response = memberService.patchMemberInfo(CacheMember.from(member), request);
 
         // then
         final MemberRequestResultType resultType = MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS;
@@ -162,7 +163,7 @@ class MemberServiceTest {
                 = new MemberModifyRequest(Optional.empty(), "오뜨", "멍청이");
 
         // when
-        final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
+        final MemberModifyResponse response = memberService.patchMemberInfo(CacheMember.from(member), request);
 
         // then
         final MemberRequestResultType resultType = MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS;
@@ -185,7 +186,7 @@ class MemberServiceTest {
                 = new MemberModifyRequest(Optional.of(image), "오뜨", "멍청이");
 
         // when
-        final MemberModifyResponse response = memberService.patchMemberInfo(member, request);
+        final MemberModifyResponse response = memberService.patchMemberInfo(CacheMember.from(member), request);
 
         // then
         final MemberRequestResultType resultType = MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS;

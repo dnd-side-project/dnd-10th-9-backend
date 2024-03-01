@@ -3,39 +3,32 @@ package com.dnd.dotchi.domain.member.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import com.dnd.dotchi.domain.card.dto.response.CardsWriteResponse;
-import com.dnd.dotchi.domain.card.dto.response.resultinfo.CardsRequestResultType;
 import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
-import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
 import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
 import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
 import com.dnd.dotchi.domain.member.dto.response.resultinfo.MemberRequestResultType;
 import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.GlobalExceptionHandler;
 import com.dnd.dotchi.test.ControllerTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(MemberController.class)
 class MemberControllerTest extends ControllerTest {
@@ -166,7 +159,7 @@ class MemberControllerTest extends ControllerTest {
         given(memberService.patchMemberInfo(any(), any())).willReturn(response);
 
         // when
-        final CardsWriteResponse resultHasImage = RestAssuredMockMvc.given().log().all()
+        final MemberModifyResponse resultHasImage = RestAssuredMockMvc.given().log().all()
             .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .multiPart("memberImage", contentBody, MediaType.IMAGE_PNG_VALUE)
@@ -179,7 +172,7 @@ class MemberControllerTest extends ControllerTest {
             .as(new TypeRef<>() {
             });
 
-        final CardsWriteResponse resultHasNotImage = RestAssuredMockMvc.given().log().all()
+        final MemberModifyResponse resultHasNotImage = RestAssuredMockMvc.given().log().all()
             .headers(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .multiPart("memberImage", contentBody, MediaType.IMAGE_PNG_VALUE)
@@ -201,7 +194,6 @@ class MemberControllerTest extends ControllerTest {
     @DisplayName("회원 정보 수정시 잘못된 데이터를 입력받으면 400을 반환한다.")
     void MemberModifiedReturn400BadRequest() {
         // given
-        final String contentBody = "Image";
 
         // when, then
         RestAssuredMockMvc.given().log().all()

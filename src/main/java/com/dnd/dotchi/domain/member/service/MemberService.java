@@ -1,5 +1,6 @@
 package com.dnd.dotchi.domain.member.service;
 
+import com.dnd.dotchi.global.redis.CacheMember;
 import java.util.List;
 
 import java.util.Objects;
@@ -56,23 +57,23 @@ public class MemberService {
         return MemberAuthorizationResponse.of(MemberRequestResultType.LOGIN_SUCCESS, member, accessToken);
     }
 
-    @Transactional(readOnly = true)
-    public Member findById(final Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
-    }
-
-    public MemberModifyResponse patchMemberInfo(final Member member, final MemberModifyRequest request) {
+    public MemberModifyResponse patchMemberInfo(final CacheMember cacheMember, final MemberModifyRequest request) {
+        final Member member = findById(cacheMember.getId());
         final Optional<MultipartFile> multipartFile = request.memberImage();
         if(isModifyProfileImage(multipartFile)) {
             final MultipartFile image = multipartFile.get();
             final String fileFullPath = s3FileUploader.upload(image);
             member.setImageUrl(fileFullPath);
         }
-        member.setNickname(request.memberName());
-        member.setDescription(request.memberDescription());
+
+        member.update(request.memberName(), request.memberDescription());
 
         return MemberModifyResponse.of(MemberRequestResultType.PATCH_MEMBER_INFO_SUCCESS);
+    }
+
+    public Member findById(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     private boolean isModifyProfileImage(final Optional<MultipartFile> multipartFile) {

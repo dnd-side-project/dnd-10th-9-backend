@@ -12,6 +12,7 @@ import com.dnd.dotchi.domain.card.dto.response.HomePageResponse;
 import com.dnd.dotchi.domain.card.dto.response.WriteCommentOnCardResponse;
 import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.global.exception.ExceptionResponse;
+import com.dnd.dotchi.global.redis.CacheMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -44,7 +45,7 @@ public interface CardControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<CardsWriteResponse> write(final Member member, final CardsWriteRequest request);
+    ResponseEntity<CardsWriteResponse> write(final CacheMember member, final CardsWriteRequest request);
 
     @Operation(summary = "테마별 카드 조회", description = "테마별 카드를 조회한다.")
     @ApiResponse(
@@ -65,7 +66,7 @@ public interface CardControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<CardsByThemeResponse> getCardsByTheme(
-            final Member member,
+            final CacheMember member,
             final CardsByThemeRequest request
     );
 
@@ -80,7 +81,7 @@ public interface CardControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<WriteCommentOnCardResponse> writeCommentOnCard(
-            final Member member,
+            final CacheMember member,
             @Parameter(description = "카드 ID", example = "1") final Long cardId
     );
 
@@ -98,7 +99,7 @@ public interface CardControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<CardsAllResponse> getCardsAll(
-            final Member member,
+            final CacheMember member,
             final CardsAllRequest request
     );
 
@@ -114,7 +115,7 @@ public interface CardControllerDocs {
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<DeleteCardResponse> delete(
-            final Member member,
+            final CacheMember member,
             @Parameter(description = "카드 ID", example = "1") final Long cardId
     );
 
@@ -128,13 +129,13 @@ public interface CardControllerDocs {
             description = "존재하지 않는 카드인 경우",
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(final Member member, final Long cardId);
+    ResponseEntity<GetCommentOnCardResponse> getCommentOnCard(final CacheMember member, final Long cardId);
 
-	@Operation(summary = "메인 홈 조회", description = "메인 홈을 조회한다.")
-	@ApiResponse(
-		responseCode = "200",
-		description = "메인 홈 조회 성공"
-	)
-	ResponseEntity<HomePageResponse> home(final Member member);
+    @Operation(summary = "메인 홈 조회", description = "메인 홈을 조회한다.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "메인 홈 조회 성공"
+    )
+    ResponseEntity<HomePageResponse> home(final CacheMember member);
 
 }

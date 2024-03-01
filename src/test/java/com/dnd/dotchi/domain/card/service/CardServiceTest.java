@@ -34,6 +34,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.exception.BadRequestException;
 import com.dnd.dotchi.global.exception.NotFoundException;
+import com.dnd.dotchi.global.redis.CacheMember;
 import jakarta.persistence.EntityManager;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -98,7 +99,7 @@ class CardServiceTest {
 
         // when
 
-        final CardsByThemeResponse result = cardService.getCardsByTheme(member, request);
+        final CardsByThemeResponse result = cardService.getCardsByTheme(CacheMember.from(member), request);
 
         // then
         final List<RecentCardsByThemeResponse> responses = result.result().cards();
@@ -122,7 +123,7 @@ class CardServiceTest {
         final Member member = memberService.findById(1L);
 
         // when
-        final CardsByThemeResponse result = cardService.getCardsByTheme(member, request);
+        final CardsByThemeResponse result = cardService.getCardsByTheme(CacheMember.from(member), request);
 
         // then
         final List<RecentCardsByThemeResponse> responses = result.result().cards();
@@ -147,7 +148,7 @@ class CardServiceTest {
 
         // when
 
-        final CardsAllResponse result = cardService.getCardAll(member, request);
+        final CardsAllResponse result = cardService.getCardAll(CacheMember.from(member), request);
 
         // then
         final List<CardsResponse> responses = result.result().cards();
@@ -181,7 +182,7 @@ class CardServiceTest {
 
         // when
 
-        final CardsAllResponse result = cardService.getCardAll(member, request);
+        final CardsAllResponse result = cardService.getCardAll(CacheMember.from(member), request);
 
         // then
         final List<CardsResponse> responses = result.result().cards();
@@ -212,7 +213,7 @@ class CardServiceTest {
         final Member member = memberService.findById(1L);
 
         // when
-        final CardsWriteResponse result = cardService.write(request, member);
+        final CardsWriteResponse result = cardService.write(request, CacheMember.from(member));
 
         // then
         assertSoftly(softly -> {
@@ -238,7 +239,7 @@ class CardServiceTest {
 
         // when
         final NotFoundException exception
-                = assertThrows(NotFoundException.class, () -> cardService.write(request, member));
+                = assertThrows(NotFoundException.class, () -> cardService.write(request, CacheMember.from(member)));
 
         // then
         assertEquals(ThemeExceptionType.NOT_FOUND_THEME.getCode(), exception.getExceptionType().getCode());
@@ -255,7 +256,7 @@ class CardServiceTest {
 
         // when
         final Long oldCommentCount = cardRepository.findById(cardId).get().getCommentCount();
-        final WriteCommentOnCardResponse result = cardService.writeCommentOnCard(member, cardId);
+        final WriteCommentOnCardResponse result = cardService.writeCommentOnCard(CacheMember.from(member), cardId);
         em.flush();
         em.clear();
 
@@ -279,9 +280,10 @@ class CardServiceTest {
         // data-test.sql
         final long cardId = cardRepository.count() + 1L;
         final Member member = memberService.findById(1L);
+        final CacheMember cacheMember = CacheMember.from(member);
 
         // when, then
-        assertThatThrownBy(() -> cardService.writeCommentOnCard(member, cardId))
+        assertThatThrownBy(() -> cardService.writeCommentOnCard(cacheMember, cardId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
     }
@@ -293,9 +295,10 @@ class CardServiceTest {
         // data-test.sql
         final Member member = memberService.findById(1L);
         final long cardId = 2L;
+        final CacheMember cacheMember = CacheMember.from(member);
 
         // when, then
-        assertThatThrownBy(() -> cardService.writeCommentOnCard(member, cardId))
+        assertThatThrownBy(() -> cardService.writeCommentOnCard(cacheMember, cardId))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(CardExceptionType.MY_COMMENT_ALREADY_EXIST.getMessage());
     }
@@ -311,9 +314,9 @@ class CardServiceTest {
         long cardIdB = 2L;
 
         CompletableFuture<Void> futureA =
-                CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(memberA, cardIdA));
+                CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(CacheMember.from(memberA), cardIdA));
         CompletableFuture<Void> futureB =
-                CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(memberB, cardIdB));
+                CompletableFuture.runAsync(() -> cardService.writeCommentOnCard(CacheMember.from(memberB), cardIdB));
 
         CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(futureA, futureB);
 
@@ -330,7 +333,7 @@ class CardServiceTest {
 
         // when
         final long oldCardCount = cardRepository.count();
-        final DeleteCardResponse result = cardService.delete(member, 30L);
+        final DeleteCardResponse result = cardService.delete(CacheMember.from(member), 30L);
 
         // then
         final long newCardCount = cardRepository.count();
@@ -351,7 +354,7 @@ class CardServiceTest {
         final Member member = memberService.findById(2L);
 
         // when, then
-        assertThatThrownBy(() -> cardService.delete(member, cardId))
+        assertThatThrownBy(() -> cardService.delete(CacheMember.from(member), cardId))
             .isInstanceOf(NotFoundException.class)
             .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
     }
@@ -365,7 +368,7 @@ class CardServiceTest {
         final Member member = memberService.findById(1L);
 
         // when, then
-        assertThatThrownBy(() -> cardService.delete(member, cardId))
+        assertThatThrownBy(() -> cardService.delete(CacheMember.from(member), cardId))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(CardExceptionType.NOT_CARD_WRITER.getMessage());
     }
@@ -379,7 +382,7 @@ class CardServiceTest {
         final Member member = memberService.findById(1L);
 
         // when
-        final GetCommentOnCardResponse result = cardService.getCommentOnCard(member, cardId);
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(CacheMember.from(member), cardId);
         final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
 
         // then
@@ -402,7 +405,7 @@ class CardServiceTest {
         final Member member = memberService.findById(2L);
 
         // when
-        final GetCommentOnCardResponse result = cardService.getCommentOnCard(member, cardId);
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(CacheMember.from(member), cardId);
         final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
 
         // then
@@ -425,7 +428,7 @@ class CardServiceTest {
         final Member member = memberService.findById(1L);
 
         // when
-        final GetCommentOnCardResponse result = cardService.getCommentOnCard(member, cardId);
+        final GetCommentOnCardResponse result = cardService.getCommentOnCard(CacheMember.from(member), cardId);
         final CardsRequestResultType resultType = CardsRequestResultType.GET_COMMENT_ON_CARD_SUCCESS;
 
         // then
@@ -446,7 +449,7 @@ class CardServiceTest {
         final Member member = memberService.findById(1L);
 
         // when, then
-        assertThatThrownBy(() -> cardService.getCommentOnCard(member, cardId))
+        assertThatThrownBy(() -> cardService.getCommentOnCard(CacheMember.from(member), cardId))
             .isInstanceOf(NotFoundException.class)
             .hasMessage(CardExceptionType.NOT_FOUND_CARD.getMessage());
     }
@@ -458,7 +461,7 @@ class CardServiceTest {
         final Member member = memberService.findById(1L);
 
         // when
-        final HomePageResponse result = cardService.home(member);
+        final HomePageResponse result = cardService.home(CacheMember.from(member));
         final CardsRequestResultType resultType = CardsRequestResultType.GET_MAIN_HOME_SUCCESS;
 
         // then

@@ -1,7 +1,19 @@
 package com.dnd.dotchi.domain.member.controller;
 
+import com.dnd.dotchi.domain.card.exception.CardExceptionType;
+import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
+import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
+import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
+import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
+import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
+import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
+import com.dnd.dotchi.domain.member.service.MemberService;
+import com.dnd.dotchi.global.exception.BadRequestException;
+import com.dnd.dotchi.global.jwt.Auth;
+import com.dnd.dotchi.global.redis.CacheMember;
+import jakarta.validation.Valid;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,22 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dnd.dotchi.domain.card.exception.CardExceptionType;
-import com.dnd.dotchi.domain.member.dto.request.MemberAuthorizationRequest;
-import com.dnd.dotchi.domain.member.dto.request.MemberInfoRequest;
-import com.dnd.dotchi.domain.member.dto.request.MemberModifyRequest;
-import com.dnd.dotchi.domain.member.dto.response.MemberAuthorizationResponse;
-import com.dnd.dotchi.domain.member.dto.response.MemberInfoResponse;
-import com.dnd.dotchi.domain.member.dto.response.MemberModifyResponse;
-import com.dnd.dotchi.domain.member.entity.Member;
-import com.dnd.dotchi.domain.member.service.MemberService;
-import com.dnd.dotchi.global.exception.BadRequestException;
-import com.dnd.dotchi.global.jwt.Auth;
-
-import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -39,7 +35,6 @@ public class MemberController implements MemberControllerDocs {
 
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberInfoResponse> getMemberInfo(
-            @Auth final Member member,
             @PathVariable("memberId") final Long memberId,
             @Valid @ModelAttribute final MemberInfoRequest request
     ) {
@@ -56,12 +51,12 @@ public class MemberController implements MemberControllerDocs {
     }
 
     @PatchMapping(
-        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE},
-        value = "/me"
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            value = "/me"
     )
     public ResponseEntity<MemberModifyResponse> patchMemberInfo(
-        @Auth final Member member,
-        @Valid @ModelAttribute final MemberModifyRequest request
+            @Auth final CacheMember member,
+            @Valid @ModelAttribute final MemberModifyRequest request
     ) {
         validMultiPartFileisImage(request.memberImage());
 
@@ -70,7 +65,7 @@ public class MemberController implements MemberControllerDocs {
     }
 
     private void validMultiPartFileisImage(final Optional<MultipartFile> imageOpt) {
-        if(imageOpt.isPresent()) {
+        if (imageOpt.isPresent()) {
             final MultipartFile image = imageOpt.get();
             if (!image.getContentType().startsWith("image")) {
                 throw new BadRequestException(CardExceptionType.NOT_IMAGE);

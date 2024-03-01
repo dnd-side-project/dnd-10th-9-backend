@@ -8,6 +8,7 @@ import com.dnd.dotchi.domain.member.entity.Member;
 import com.dnd.dotchi.domain.member.service.MemberService;
 import com.dnd.dotchi.global.jwt.TokenPayload;
 import com.dnd.dotchi.global.jwt.TokenProcessor;
+import com.dnd.dotchi.global.redis.MemberRedisRepository;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -18,6 +19,9 @@ public class ControllerTest {
 
     @MockBean
     protected MemberService memberService;
+
+    @MockBean
+    protected MemberRedisRepository memberRedisRepository;
 
     protected static final String BEARER_TOKEN = "Bearer token";
 
